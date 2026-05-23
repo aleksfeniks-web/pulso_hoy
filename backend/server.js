@@ -194,6 +194,39 @@ app.get('/api/readlater/:user_token', async (req, res) => {
   res.json(result.rows);
 });
 
+// Obtener comentarios de una noticia
+app.get('/api/comments/:news_id', async (req, res) => {
+  const { news_id } = req.params;
+  try {
+    const result = await pool.query(
+      'SELECT id, news_id, author_name, comment_text, created_at FROM comments WHERE news_id = $1 ORDER BY created_at ASC',
+      [news_id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al obtener comentarios' });
+  }
+});
+
+// Guardar un nuevo comentario
+app.post('/api/comments', async (req, res) => {
+  const { news_id, author_name, comment_text } = req.body;
+  if (!news_id || !author_name || !comment_text) {
+    return res.status(400).json({ error: 'Faltan campos obligatorios' });
+  }
+  try {
+    const result = await pool.query(
+      'INSERT INTO comments (news_id, author_name, comment_text) VALUES ($1, $2, $3) RETURNING *',
+      [news_id, author_name.trim(), comment_text.trim()]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al guardar comentario' });
+  }
+});
+
 // Generar RSS feed
 app.get('/rss.xml', async (req, res) => {
   const result = await pool.query(`

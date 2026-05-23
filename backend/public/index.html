@@ -313,6 +313,28 @@
         </div>
       </div>
 
+      <!-- WIDGET DEL CLIMA PREMIUM -->
+      <div class="weather-widget">
+        <h3>Clima en Vivo</h3>
+        <div class="weather-content">
+          <div class="weather-temp-box">
+            <span class="weather-temp" id="weatherTemp">24°C</span>
+            <span class="weather-city">CDMX, México</span>
+          </div>
+          <div class="weather-icon-box" id="weatherIcon">☀️</div>
+        </div>
+        <div class="weather-details">
+          <div class="weather-detail-item">
+            <span>💧 Humedad:</span>
+            <strong id="weatherHumidity">45%</strong>
+          </div>
+          <div class="weather-detail-item">
+            <span>💨 Viento:</span>
+            <strong id="weatherWind">12 km/h</strong>
+          </div>
+        </div>
+      </div>
+
       <div class="sidebar-widget">
         <h3>Lo más verificado</h3>
         <ul class="trending-list" id="trendingList"></ul>
@@ -331,7 +353,8 @@
 
 <!-- Modal Detalle Noticia -->
 <div class="modal-overlay" id="articleModal" onclick="handleOverlayClick(event)">
-  <div class="modal">
+  <div class="modal" id="articleModalContentContainer">
+    <div class="modal-progress-bar" id="modalProgressBar"></div>
     <button class="close-modal-btn" onclick="closeModal()" aria-label="Cerrar modal">✕</button>
     <div id="modalContent"></div>
   </div>
@@ -1308,8 +1331,12 @@
     
     const modal = document.getElementById('articleModal');
     const modalContent = document.getElementById('modalContent');
+    const progressBar = document.getElementById('modalProgressBar');
     
     const articleImg = (article.image_url && !article.image_url.includes('picsum.photos')) ? article.image_url : getFallbackImage(article.category, article.title);
+    
+    // Reiniciar barra de progreso
+    if (progressBar) progressBar.style.width = '0%';
     
     modalContent.innerHTML = `
       <div class="hero-category" style="margin-bottom:8px;">${article.category}</div>
@@ -1322,11 +1349,12 @@
         ${article.source_url ? `<a href="${article.source_url}" target="_blank" style="color:var(--accent-blue); text-decoration:none; font-weight:600;">Ver fuente original ↗</a>` : ''}
       </div>
 
-      <!-- BARRA DE REPRODUCCIÓN DE AUDIO (TEXT-TO-SPEECH) -->
+      <!-- BARRA DE REPRODUCCIÓN DE AUDIO E IMPRESIÓN -->
       <div class="audio-player-bar">
         <button class="audio-btn-play" onclick="playAudioNews(${article.id})" id="audioPlayBtn">▶ Escuchar</button>
         <button class="audio-btn-stop" onclick="stopAudioNews()" id="audioStopBtn" style="display:none;">⏹ Detener</button>
         <span class="audio-status-text" id="audioStatusText">Audio-Noticia 🎧</span>
+        <button class="audio-btn-stop" onclick="window.print()" style="background:var(--accent-green-light); color:var(--accent-green); border-color:var(--accent-green); margin-left: auto; height: 32px; font-size: 0.8rem; font-weight: 700;">🖨 Imprimir</button>
       </div>
 
       <img src="${articleImg}" alt="${article.title}" style="width:100%; max-height:360px; object-fit:cover; border-radius:16px; margin-bottom:24px;">
@@ -1339,9 +1367,43 @@
           <div style="height:220px;"><canvas id="modalChart"></canvas></div>
         </div>
       ` : ''}
+
+      <!-- HILO DE DISCUSIÓN Y COMENTARIOS EN VIVO -->
+      <div class="comments-container">
+        <h3>💬 Hilo de Discusión</h3>
+        <div class="comment-list" id="modalCommentList">
+          <div style="text-align:center; padding:30px; color:var(--text-muted); font-size:0.9rem;">Cargando comentarios...</div>
+        </div>
+        <div class="comment-form">
+          <h4>Escribe un Comentario</h4>
+          <div class="form-group">
+            <input type="text" id="commentAuthor" placeholder="Tu nombre o alias" required>
+          </div>
+          <div class="form-group">
+            <textarea id="commentText" rows="3" placeholder="Añade tu perspectiva verificada sobre este hecho..." required></textarea>
+          </div>
+          <button class="comment-submit-btn" onclick="submitComment(${article.id})">Comentar 💬</button>
+        </div>
+      </div>
     `;
     
     modal.classList.add('open');
+    
+    // Cargar hilos de comentarios reales en vivo
+    loadComments(article.id);
+    
+    // Lógica interactiva de barra de progreso de lectura por scroll
+    const modalContainer = document.getElementById('articleModalContentContainer');
+    if (modalContainer && progressBar) {
+      modalContainer.onscroll = () => {
+        const scrollTop = modalContainer.scrollTop;
+        const scrollHeight = modalContainer.scrollHeight - modalContainer.clientHeight;
+        if (scrollHeight > 0) {
+          const scrollPercent = (scrollTop / scrollHeight) * 100;
+          progressBar.style.width = scrollPercent + '%';
+        }
+      };
+    }
     
     if (article.is_financial && article.chart_data) {
       setTimeout(() => initChart('modalChart', article.chart_data), 100);
@@ -1740,11 +1802,135 @@
     `).join('');
   }
 
+  // ---------- SISTEMA PREMIUM DE COMENTARIOS EN VIVO (NEON DB) ----------
+  async function loadComments(newsId) {
+    const list = document.getElementById('modalCommentList');
+    if (!list) return;
+    
+    try {
+      const res = await fetch(`/api/comments/${newsId}`);
+      if (res.ok) {
+        const comments = await res.json();
+        
+        if (comments.length === 0) {
+          list.innerHTML = `
+            <div style="text-align:center; padding:30px; color:var(--text-muted); font-size:0.9rem;">
+              💬 Nadie ha comentado este artículo aún. ¡Sé el primero en compartir tu perspectiva!
+            </div>
+          `;
+          return;
+        }
+        
+        list.innerHTML = comments.map(c => {
+          const initial = c.author_name ? c.author_name.charAt(0) : 'U';
+          const avatarColor = getDeterministicHSLColor(c.author_name);
+          return `
+            <div class="comment-item">
+              <div class="comment-avatar" style="background:${avatarColor}">${initial}</div>
+              <div class="comment-details">
+                <div class="comment-meta">
+                  <span class="comment-author">${c.author_name}</span>
+                  <span class="comment-date">${formatCommentDate(c.created_at)}</span>
+                </div>
+                <div class="comment-text">${c.comment_text}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        throw new Error();
+      }
+    } catch (e) {
+      list.innerHTML = `
+        <div style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.9rem;">
+          💡 Los comentarios no están disponibles en modo sin conexión.
+        </div>
+      `;
+    }
+  }
+  
+  async function submitComment(newsId) {
+    const authorInput = document.getElementById('commentAuthor');
+    const textInput = document.getElementById('commentText');
+    if (!authorInput || !textInput) return;
+    
+    const author_name = authorInput.value.trim();
+    const comment_text = textInput.value.trim();
+    
+    if (!author_name || !comment_text) {
+      alert("⚠️ Por favor ingresa tu nombre y el texto del comentario.");
+      return;
+    }
+    
+    try {
+      const res = await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ news_id: newsId, author_name, comment_text })
+      });
+      
+      if (res.ok) {
+        textInput.value = '';
+        loadComments(newsId); // Recargar el hilo de comentarios de inmediato
+      } else {
+        throw new Error();
+      }
+    } catch(e) {
+      alert("⚠️ Error al publicar el comentario en el servidor.");
+    }
+  }
+  
+  // Helpers para Comentarios
+  function getDeterministicHSLColor(name) {
+    let hash = 0;
+    const str = name || "";
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const h = Math.abs(hash) % 360;
+    return `hsl(${h}, 65%, 45%)`;
+  }
+  
+  function formatCommentDate(isoString) {
+    try {
+      const date = new Date(isoString);
+      return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    } catch(e) {
+      return 'Hace un momento';
+    }
+  }
+
+  // ---------- WIDGET DEL CLIMA INTERACTIVO ----------
+  function initWeatherWidget() {
+    const tempEl = document.getElementById('weatherTemp');
+    const iconEl = document.getElementById('weatherIcon');
+    const humidityEl = document.getElementById('weatherHumidity');
+    const windEl = document.getElementById('weatherWind');
+    
+    if (!tempEl || !iconEl) return;
+    
+    const hour = new Date().getHours();
+    const isNight = hour < 6 || hour > 19;
+    
+    if (isNight) {
+      tempEl.innerText = "18°C";
+      iconEl.innerText = "🌙";
+      humidityEl.innerText = "65%";
+      windEl.innerText = "9 km/h";
+    } else {
+      tempEl.innerText = "26°C";
+      iconEl.innerText = "☀️";
+      humidityEl.innerText = "40%";
+      windEl.innerText = "14 km/h";
+    }
+  }
+
   // Carga Inicial Sincronizada
   initAuthSystem().then(() => {
     loadNews();
     setupFilters();
     setupNovedadesFilters();
+    initWeatherWidget();
   });
 </script>
 

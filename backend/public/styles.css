@@ -1386,3 +1386,286 @@ input:focus, textarea:focus, select:focus {
   color: var(--text-secondary);
 }
 
+/* ===== BARRA DE PROGRESO DE LECTURA EN MODAL ===== */
+.modal-progress-bar {
+  position: sticky;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: var(--accent-red);
+  width: 0%;
+  z-index: 101;
+  transition: width 0.1s ease-out;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ===== NEWSLETTER SUBSCRIPTION WIDGET ===== */
+.comments-container {
+  margin-top: 36px;
+  border-top: 2px solid var(--border-light);
+  padding-top: 28px;
+}
+.comments-container h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+.comment-item {
+  display: flex;
+  gap: 12px;
+  background: var(--bg-body);
+  border: 1px solid var(--border-light);
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  align-items: flex-start;
+  transition: var(--transition);
+}
+.comment-item:hover {
+  border-color: var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+.comment-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  border: 2px solid var(--bg-card);
+}
+.comment-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+.comment-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  gap: 8px;
+}
+.comment-author {
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.comment-date {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.comment-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+.comment-form {
+  background: var(--bg-body);
+  border: 1px solid var(--border-light);
+  padding: 20px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.comment-form h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.comment-form-row {
+  display: flex;
+  gap: 12px;
+}
+.comment-form input, .comment-form textarea {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+}
+.comment-submit-btn {
+  align-self: flex-end;
+  background: var(--accent-red);
+  color: white;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-size: 0.85rem;
+}
+.comment-submit-btn:hover {
+  background: var(--accent-red-hover);
+  transform: translateY(-1px);
+}
+
+/* ===== WIDGET DEL CLIMA LATERAL ===== */
+.weather-widget {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  padding: 24px;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: var(--transition);
+}
+.weather-widget:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-green);
+}
+.weather-widget h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  margin-bottom: 0px;
+  border-left: 4px solid var(--accent-green);
+  padding-left: 12px;
+}
+.weather-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.weather-temp-box {
+  display: flex;
+  flex-direction: column;
+}
+.weather-temp {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-primary);
+  font-family: 'Playfair Display', serif;
+}
+.weather-city {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-top: 4px;
+}
+.weather-icon-box {
+  font-size: 2.8rem;
+  animation: weather-float 4s ease-in-out infinite;
+}
+@keyframes weather-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(5deg); }
+}
+.weather-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 12px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.weather-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ===== HOJAS DE ESTILOS DE IMPRESIÓN PERIÓDICO RETRO ===== */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 11pt !important;
+  }
+  /* Ocultar elementos no relevantes */
+  .top-bar, .header, .ad-top, .filters, .control-panel, .sidebar-col,
+  .close-modal-btn, .audio-player-bar, .newsletter-widget, .weather-widget,
+  .card-actions, .card-footer, .comments-container, .modal-progress-bar,
+  #bookmarksDrawer, .drawer-overlay {
+    display: none !important;
+  }
+  /* Formatear el modal para impresión */
+  .modal-overlay {
+    position: relative !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    display: block !important;
+    inset: auto !important;
+    z-index: auto !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  .modal {
+    position: relative !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: none !important;
+    overflow-y: visible !important;
+    border-radius: 0 !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    background: white !important;
+  }
+  /* Títulos y fuentes de Diario Clásico */
+  .hero-title {
+    font-family: 'Playfair Display', Georgia, serif !important;
+    font-size: 26pt !important;
+    line-height: 1.15 !important;
+    font-weight: 800 !important;
+    text-align: center !important;
+    margin-bottom: 12px !important;
+    color: black !important;
+  }
+  .hero-meta {
+    text-align: center !important;
+    border-bottom: 2px double black !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 20px !important;
+    font-size: 9pt !important;
+    font-style: italic !important;
+    display: block !important;
+    color: black !important;
+  }
+  /* Cuerpo de texto en dos columnas clásicas */
+  #modalContent {
+    display: block !important;
+  }
+  #modalContent > div:nth-child(5) {
+    column-count: 2 !important;
+    column-gap: 24pt !important;
+    column-rule: 1px solid #ccc !important;
+    text-align: justify !important;
+    line-height: 1.5 !important;
+  }
+  img {
+    max-height: 250px !important;
+    display: block !important;
+    margin: 0 auto 16px !important;
+    page-break-inside: avoid !important;
+    filter: grayscale(100%) !important;
+  }
+}
+

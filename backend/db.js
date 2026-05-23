@@ -52,6 +52,14 @@ async function initTables() {
         created_at TIMESTAMP DEFAULT NOW(),
         UNIQUE(news_id, user_token)
       );
+      
+      CREATE TABLE IF NOT EXISTS comments (
+        id SERIAL PRIMARY KEY,
+        news_id INT REFERENCES news(id) ON DELETE CASCADE,
+        author_name TEXT NOT NULL,
+        comment_text TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
     `);
     console.log('✅ Tablas listas');
   } catch (err) {
