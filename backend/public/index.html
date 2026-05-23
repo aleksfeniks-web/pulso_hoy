@@ -47,9 +47,11 @@
     <div class="logo" onclick="handleLogoClick()">Pulso<span>Hoy</span></div>
     <div class="nav-links">
       <button class="nav-btn active" data-section="noticias" onclick="switchSection('noticias')">Noticias</button>
+      <button class="nav-btn" data-section="tendencias" onclick="switchSection('tendencias')">🔥 Tendencias</button>
       <button class="nav-btn" data-section="escribir" onclick="switchSection('escribir')">✍ Escribir</button>
       <button class="nav-btn" onclick="toggleBookmarksDrawer()">🔖 Marcadores</button>
       <button class="dark-toggle" id="darkToggle" aria-label="Cambiar tema">🌙</button>
+      <button class="dark-toggle" id="interestsToggle" onclick="togglePreferencesModal()" aria-label="Intereses" style="margin-left: 8px;">🎯</button>
       <button class="dark-toggle" id="adminToggle" onclick="toggleAdminLoginModal()" aria-label="Administrador" style="margin-left: 8px; display: none;">🔑</button>
       <span id="adminNavBadge" class="admin-badge" style="display:none;">ADMIN</span>
     </div>
@@ -166,6 +168,46 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- SECCIÓN TENDENCIAS -->
+      <div id="tendenciasSection" class="section" style="display:none;">
+        <div class="section-header">
+          <h2>🔥 Tendencias de Moda</h2>
+          <span style="font-size:0.9rem; color:var(--text-muted); font-weight:600;">TikTok, Werd, Compras y X en vivo</span>
+        </div>
+        
+        <!-- Bloque 1: TikTok de Moda -->
+        <div style="margin-bottom: 40px;">
+          <h3 style="font-family:'Playfair Display', serif; font-size:1.5rem; margin-bottom:12px; border-left:4px solid var(--accent-red); padding-left:12px;">📱 TikToks del Momento</h3>
+          <div class="tiktok-container" id="tiktokContainer">
+            <!-- Los videos se renderizan dinámicamente -->
+          </div>
+        </div>
+
+        <!-- Bloque 2: Artículos de Moda (Werd.com) -->
+        <div style="margin-bottom: 40px;">
+          <h3 style="font-family:'Playfair Display', serif; font-size:1.5rem; margin-bottom:12px; border-left:4px solid var(--accent-orange); padding-left:12px;">⚙️ Artículos & Gadgets Premium (Werd)</h3>
+          <div class="werd-grid" id="werdGrid">
+            <!-- Los artículos tipo Werd se renderizan dinámicamente -->
+          </div>
+        </div>
+
+        <!-- Bloque 3: Compras de Amazon y Shein -->
+        <div style="margin-bottom: 40px;">
+          <h3 style="font-family:'Playfair Display', serif; font-size:1.5rem; margin-bottom:12px; border-left:4px solid var(--accent-blue); padding-left:12px;">🛍️ Ofertas de Amazon & Shein</h3>
+          <div class="shopping-carousel" id="shoppingCarousel">
+            <!-- Las ofertas de compras se renderizan dinámicamente -->
+          </div>
+        </div>
+
+        <!-- Bloque 4: X / Twitter Verificados -->
+        <div style="margin-bottom: 40px;">
+          <h3 style="font-family:'Playfair Display', serif; font-size:1.5rem; margin-bottom:12px; border-left:4px solid var(--text-primary); padding-left:12px;">𝕏 Últimos Mensajes Verificados</h3>
+          <div class="x-feed-grid" id="xFeedGrid">
+            <!-- El feed de X se renderiza dinámicamente -->
+          </div>
+        </div>
       </div>
 
       <!-- SECCIÓN ESCRIBIR (Bloqueada con pared de suscripción si no está activo) -->
@@ -335,11 +377,46 @@
             <strong id="weatherWind">12 km/h</strong>
           </div>
         </div>
+        <div class="weather-clock-container">
+          <span style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">🕒 Hora Local:</span>
+          <span class="weather-clock" id="liveClock">00:00:00</span>
+        </div>
       </div>
 
       <div class="sidebar-widget">
         <h3>Lo más verificado</h3>
         <ul class="trending-list" id="trendingList"></ul>
+      </div>
+
+      <!-- WIDGET DE ACCIONES DE LA BANCA -->
+      <div class="sidebar-widget">
+        <h3 style="border-left: 4px solid var(--accent-green); padding-left: 12px; margin-bottom: 16px; font-family:'Playfair Display', serif; font-size:1.3rem;">💵 Bolsa & Acciones</h3>
+        <table class="banking-table">
+          <thead>
+            <tr>
+              <th>Banco / Indice</th>
+              <th>Valor</th>
+              <th>Var. %</th>
+            </tr>
+          </thead>
+          <tbody id="bankingStocksBody">
+            <!-- Los indicadores se cargan dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- WIDGET DE MIS LINKS PERSONALES -->
+      <div class="mylinks-widget">
+        <h3 style="border-left: 4px solid var(--accent-red); padding-left: 12px; margin-bottom: 0px; font-family:'Playfair Display', serif; font-size:1.3rem;">🔗 Mis Links Rápidos</h3>
+        <p style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px;">Guarda tus sitios favoritos para un rápido acceso personalizado.</p>
+        <div class="mylinks-form">
+          <input type="text" id="linkTitleInput" class="mylinks-input" placeholder="Nombre (ej. Google)" style="margin-bottom: 4px;">
+          <input type="url" id="linkUrlInput" class="mylinks-input" placeholder="URL (ej. https://google.com)" style="margin-bottom: 8px;">
+          <button class="mylinks-add-btn" onclick="addUserLink()">Agregar Enlace 🔗</button>
+        </div>
+        <div class="mylinks-list" id="mylinksList">
+          <!-- Los enlaces se inyectan dinámicamente -->
+        </div>
       </div>
 
       <div class="sidebar-widget sidebar-ad">
@@ -350,6 +427,47 @@
         <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
       </div>
     </aside>
+  </div>
+</div>
+
+<!-- Modal de Selección de Intereses / Onboarding -->
+<div class="modal-overlay" id="preferencesModal" onclick="handlePreferencesOverlayClick(event)">
+  <div class="modal" style="max-width: 500px; border-radius: var(--radius-card); padding: 32px; text-align: center;">
+    <button class="close-modal-btn" onclick="togglePreferencesModal()" aria-label="Cerrar modal">✕</button>
+    <div style="font-size: 3.5rem; margin-bottom: 12px;">🎯</div>
+    <h3 style="font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 8px;">Tus Temas de Interés</h3>
+    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px;">
+      Selecciona tus categorías favoritas para personalizar las noticias que ves en la portada.
+    </p>
+    
+    <div class="interests-grid" id="interestsGrid">
+      <div class="interest-card" data-category="economia" onclick="toggleInterestCard(this)">
+        <span class="interest-card-icon">📈</span>
+        <span>Economía</span>
+      </div>
+      <div class="interest-card" data-category="politica" onclick="toggleInterestCard(this)">
+        <span class="interest-card-icon">🏛️</span>
+        <span>Política</span>
+      </div>
+      <div class="interest-card" data-category="tecnologia" onclick="toggleInterestCard(this)">
+        <span class="interest-card-icon">💻</span>
+        <span>Tecnología</span>
+      </div>
+      <div class="interest-card" data-category="mundo" onclick="toggleInterestCard(this)">
+        <span class="interest-card-icon">🌍</span>
+        <span>Mundo</span>
+      </div>
+      <div class="interest-card" data-category="salud" onclick="toggleInterestCard(this)">
+        <span class="interest-card-icon">🏥</span>
+        <span>Salud</span>
+      </div>
+      <div class="interest-card" data-category="business" onclick="toggleInterestCard(this)">
+        <span class="interest-card-icon">💼</span>
+        <span>Negocios</span>
+      </div>
+    </div>
+    
+    <button class="newsletter-btn" style="background:var(--accent-red); width: 100%; height: 44px; margin-top: 16px; font-weight:700;" onclick="saveUserInterests()">Guardar Preferencias 💾</button>
   </div>
 </div>
 
@@ -760,14 +878,18 @@
     });
     
     document.getElementById('noticiasSection').style.display = section === 'noticias' ? 'block' : 'none';
+    document.getElementById('tendenciasSection').style.display = section === 'tendencias' ? 'block' : 'none';
     document.getElementById('escribirSection').style.display = section === 'escribir' ? 'block' : 'none';
     
     // Ocultar o mostrar panel de control
     document.getElementById('controlPanel').style.display = section === 'noticias' ? 'flex' : 'none';
-    document.getElementById('sidebarCol').style.display = section === 'noticias' ? 'flex' : 'none';
+    document.getElementById('sidebarCol').style.display = (section === 'noticias' || section === 'tendencias') ? 'flex' : 'none';
     
     if (section === 'escribir') {
       checkSubscriptionState();
+    }
+    if (section === 'tendencias') {
+      renderTendencias();
     }
   }
 
@@ -915,6 +1037,11 @@
         localStorage.setItem('subscriberPlan', plan);
         alert("🎉 ¡Te has registrado como redactor exitosamente!");
         checkSubscriptionState();
+        
+        // Disparar Onboarding de Intereses de inmediato
+        setTimeout(() => {
+          togglePreferencesModal();
+        }, 800);
       } else {
         throw new Error();
       }
@@ -924,6 +1051,11 @@
       localStorage.setItem('subscriberPlan', plan);
       alert("💡 Suscripción registrada localmente en modo fuera de línea.");
       checkSubscriptionState();
+      
+      // Disparar Onboarding de Intereses de inmediato
+      setTimeout(() => {
+        togglePreferencesModal();
+      }, 800);
     }
   }
 
@@ -949,6 +1081,13 @@
         localStorage.setItem('subscriberPlan', sub.plan || 'gratis');
         alert(`👋 ¡Acceso verificado! Bienvenido de vuelta, ${sub.name}.`);
         checkSubscriptionState();
+        
+        // Si no tiene intereses registrados, mostrar onboarding
+        if (!localStorage.getItem(`interests_${userToken}`)) {
+          setTimeout(() => {
+            togglePreferencesModal();
+          }, 800);
+        }
       } else {
         const err = await res.json();
         alert(`⚠️ ${err.error || 'El email no está registrado como suscriptor.'}`);
@@ -1126,6 +1265,22 @@
     
     // 3. Filtrar por puntuación de veracidad
     filtered = filtered.filter(n => (n.truth_score || 85) >= currentMinTruth);
+
+    // 4. Personalizar/Acomodar por intereses del usuario
+    const rawInterests = localStorage.getItem(`interests_${userToken}`);
+    const userInterests = rawInterests ? JSON.parse(rawInterests) : [];
+    
+    if (userInterests.length > 0 && currentFilter === 'todos' && !currentSearch) {
+      filtered = [...filtered].sort((a, b) => {
+        const aMatch = userInterests.includes(a.category);
+        const bMatch = userInterests.includes(b.category);
+        
+        if (aMatch && !bMatch) return -1;
+        if (!aMatch && bMatch) return 1;
+        
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+    }
 
     renderHero(filtered);
     renderNewsGrid(filtered);
@@ -1997,8 +2152,77 @@
     }
   }
 
-  // ---------- WIDGET DEL CLIMA INTERACTIVO ----------
+  // ---------- WIDGET DEL CLIMA INTERACTIVO CON GEOLOCALIZACIÓN Y RELOJ ----------
   function initWeatherWidget() {
+    // 1. Iniciar reloj digital premium
+    const clockEl = document.getElementById('liveClock');
+    if (clockEl) {
+      setInterval(() => {
+        const now = new Date();
+        clockEl.innerText = now.toLocaleTimeString('es-MX', { hour12: false });
+      }, 1000);
+    }
+    
+    const tempEl = document.getElementById('weatherTemp');
+    const cityEl = document.querySelector('.weather-city');
+    const iconEl = document.getElementById('weatherIcon');
+    const humidityEl = document.getElementById('weatherHumidity');
+    const windEl = document.getElementById('weatherWind');
+    
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        try {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          
+          // Obtener ciudad real del usuario
+          const geoRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`);
+          const geoData = await geoRes.json();
+          const city = geoData.city || geoData.locality || "Tu Ciudad";
+          const principalSubdivision = geoData.principalSubdivision ? `, ${geoData.principalSubdivision}` : "";
+          if (cityEl) cityEl.innerText = `${city}${principalSubdivision}`;
+          
+          // Obtener clima en vivo real de Open-Meteo
+          const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&relative_humidity_2m=true&wind_speed_10m=true`);
+          const weatherData = await weatherRes.json();
+          
+          if (weatherData && weatherData.current_weather) {
+            const temp = Math.round(weatherData.current_weather.temperature);
+            const wind = Math.round(weatherData.current_weather.windspeed);
+            const wcode = weatherData.current_weather.weathercode;
+            
+            if (tempEl) tempEl.innerText = `${temp}°C`;
+            if (windEl) windEl.innerText = `${wind} km/h`;
+            
+            // Mapear código de clima a emoji
+            let emoji = "☀️";
+            if (wcode >= 1 && wcode <= 3) emoji = "⛅";
+            else if (wcode >= 45 && wcode <= 48) emoji = "🌫️";
+            else if (wcode >= 51 && wcode <= 67) emoji = "🌧️";
+            else if (wcode >= 71 && wcode <= 77) emoji = "❄️";
+            else if (wcode >= 80 && wcode <= 82) emoji = "🌧️";
+            else if (wcode >= 95 && wcode <= 99) emoji = "⛈️";
+            
+            if (iconEl) iconEl.innerText = emoji;
+            
+            // Humedad
+            const hum = weatherData.current_weather.relative_humidity || Math.floor(Math.random() * 20) + 40;
+            if (humidityEl) humidityEl.innerText = `${hum}%`;
+          }
+        } catch (e) {
+          console.warn("Fallo al obtener clima real API, usando simulador local:", e);
+          simulateLocalWeather();
+        }
+      }, (error) => {
+        console.log("Geolocalización denegada o no disponible, usando CDMX.");
+        simulateLocalWeather();
+      });
+    } else {
+      simulateLocalWeather();
+    }
+  }
+
+  function simulateLocalWeather() {
     const tempEl = document.getElementById('weatherTemp');
     const iconEl = document.getElementById('weatherIcon');
     const humidityEl = document.getElementById('weatherHumidity');
@@ -2029,6 +2253,9 @@
     setupNovedadesFilters();
     initWeatherWidget();
     updateAdminUI();
+    updateBankingStocks();
+    startBankingTickerSimulation();
+    loadUserLinks();
   });
 
   // ---------- CONTROL DE SUPERUSUARIO (ADMINISTRACIÓN) ----------
@@ -2219,6 +2446,398 @@
     } catch(e) {
       alert("❌ Error de red al intentar actualizar la noticia.");
     }
+  }
+
+  // ---------- DATASETS MOCK DE TENDENCIAS (TIKTOK, WERD, COMPRAS, X) ----------
+  const tiktokData = [
+    {
+      user: "@finanzas_hoy",
+      desc: "Cómo el peso mexicano resiste a la volatilidad global del dólar 📈🇲🇽 #finanzas #economia",
+      music: "Sonido Original - FinanzasHoy",
+      likes: "142k",
+      views: "1.2M",
+      comments: "3.4k",
+      img: "https://images.unsplash.com/photo-1502920514313-52581002a659?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      user: "@cyber_tecnologia",
+      desc: "Probando el nuevo modelo de Inteligencia Artificial multimodal 🧠🤖 ¿Es el fin del desarrollo tradicional? #ia #tech",
+      music: "Cyber Beats - TechnoMix",
+      likes: "98k",
+      views: "890k",
+      comments: "1.8k",
+      img: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      user: "@viajando_el_mundo",
+      desc: "Explorando la arquitectura futurista y sustentable en Singapur 🌍🇸🇬 #viajes #mundo #futuro",
+      music: "Ambient Sky - TravelVibe",
+      likes: "215k",
+      views: "2.4M",
+      comments: "4.2k",
+      img: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      user: "@salud_bienestar",
+      desc: "5 hábitos de alimentación y meditación respaldados por la ciencia para duplicar tu energía 🧘‍♂️🥗 #salud",
+      music: "Relaxing Flute - ZenMusic",
+      likes: "67k",
+      views: "450k",
+      comments: "890",
+      img: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      user: "@emprende_negocios",
+      desc: "Cómo esta startup mexicana duplicó sus ventas usando modelos predictivos de datos financieros 💼🇲🇽 #business",
+      music: "Motivation Beats - HustleHard",
+      likes: "83k",
+      views: "720k",
+      comments: "1.2k",
+      img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80"
+    }
+  ];
+
+  const werdData = [
+    {
+      brand: "GIGA-TECH",
+      title: "Consola Portátil Vector Pro",
+      excerpt: "Una obra de arte de ingeniería de bolsillo equipada con enfriamiento líquido de grafeno y procesamiento neuronal.",
+      price: "$699 USD",
+      img: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      brand: "LUMINARY",
+      title: "Lámpara de Escritorio Orbital",
+      excerpt: "Diseño industrial minimalista suspendido magnéticamente que proyecta una luz que emula perfectamente el ciclo solar natural.",
+      price: "$245 USD",
+      img: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      brand: "NOMAD GEAR",
+      title: "Mochila Impermeable Stealth 25L",
+      excerpt: "Tejido balístico reciclado ultra-resistente con cerraduras electromagnéticas y cargador solar de inducción integrado.",
+      price: "$180 USD",
+      img: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80"
+    }
+  ];
+
+  const shoppingData = [
+    {
+      store: "amazon",
+      title: "Audífonos Inalámbricos Sony WH-1000XM4 con Cancelación de Ruido Activa",
+      rating: "★★★★★ (4.8)",
+      price: "$4,999 MXN",
+      oldPrice: "$6,499 MXN",
+      img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=400&q=80",
+      link: "https://www.amazon.com.mx"
+    },
+    {
+      store: "shein",
+      title: "Chaqueta Cortavientos Estilo Urbano Techwear Impermeable Unisex",
+      rating: "★★★★☆ (4.5)",
+      price: "$589 MXN",
+      oldPrice: "$999 MXN",
+      img: "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=400&q=80",
+      link: "https://www.shein.com.mx"
+    },
+    {
+      store: "amazon",
+      title: "Teclado Mecánico Inalámbrico Logitech MX Mechanical Tactile",
+      rating: "★★★★★ (4.7)",
+      price: "$2,899 MXN",
+      oldPrice: "$3,699 MXN",
+      img: "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?auto=format&fit=crop&w=400&q=80",
+      link: "https://www.amazon.com.mx"
+    },
+    {
+      store: "shein",
+      title: "Gafas de Sol Deportivas Polarizadas con Protección UV400",
+      rating: "★★★★☆ (4.3)",
+      price: "$189 MXN",
+      oldPrice: "$320 MXN",
+      img: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=400&q=80",
+      link: "https://www.shein.com.mx"
+    }
+  ];
+
+  const xFeedData = [
+    {
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80",
+      name: "Bloomberg México",
+      handle: "@BloombergMex",
+      body: "ÚLTIMA HORA: El peso mexicano registra su mejor jornada del trimestre al cotizar en 16.82 por dólar tras el anuncio de Banxico de mantener sin cambios la tasa de interés. La confianza del mercado se fortalece. <span class='x-hashtag'>#EconomiaMex</span>",
+      likes: "1,245",
+      retweets: "348",
+      replies: "89"
+    },
+    {
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80",
+      name: "Reuters Latam",
+      handle: "@ReutersLatam",
+      body: "Análisis tecnológico: El desarrollo e implantación masiva de procesadores gráficos neuronales dedicados acelera el lanzamiento de sistemas automatizados en las bancas de inversión globales. <span class='x-hashtag'>#InteligenciaArtificial</span> <span class='x-hashtag'>#Tech</span>",
+      likes: "956",
+      retweets: "215",
+      replies: "64"
+    },
+    {
+      avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=100&q=80",
+      name: "Banco de México",
+      handle: "@Banxico",
+      body: "El Directorio del Banco de México reitera el compromiso de mantener la estabilidad del poder adquisitivo. Reporte trimestral disponible en nuestro sitio oficial. <span class='x-hashtag'>#Inflacion</span>",
+      likes: "2,350",
+      retweets: "890",
+      replies: "345"
+    }
+  ];
+
+  // ---------- RENDERIZADOR DE TENDENCIAS ----------
+  function renderTendencias() {
+    const tikContainer = document.getElementById('tiktokContainer');
+    if (tikContainer) {
+      tikContainer.innerHTML = tiktokData.map(t => `
+        <div class="tiktok-card">
+          <div class="tiktok-video-placeholder" style="background-image: url('${t.img}')"></div>
+          <div class="tiktok-play-btn">▶</div>
+          <div class="tiktok-stats">
+            <div class="tiktok-stat-item"><span class="tiktok-stat-icon">❤️</span><span>${t.likes}</span></div>
+            <div class="tiktok-stat-item"><span class="tiktok-stat-icon">👁️</span><span>${t.views}</span></div>
+            <div class="tiktok-stat-item"><span class="tiktok-stat-icon">💬</span><span>${t.comments}</span></div>
+          </div>
+          <div class="tiktok-overlay">
+            <div class="tiktok-user">
+              <span class="tiktok-user-avatar">${t.user.charAt(1).toUpperCase()}</span>
+              <span>${t.user}</span>
+            </div>
+            <div class="tiktok-desc">${t.desc}</div>
+            <div class="tiktok-music">🎵 ${t.music}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    const werdGrid = document.getElementById('werdGrid');
+    if (werdGrid) {
+      werdGrid.innerHTML = werdData.map(w => `
+        <div class="werd-card">
+          <img class="werd-img" src="${w.img}" alt="${w.title}" loading="lazy">
+          <div class="werd-content">
+            <span class="werd-brand">${w.brand}</span>
+            <h4 class="werd-title">${w.title}</h4>
+            <p class="werd-excerpt">${w.excerpt}</p>
+            <div class="werd-footer">
+              <span class="werd-price">${w.price}</span>
+              <button class="werd-btn" onclick="alert('⚡ Redirigiendo a Werd Gear...')">Ver Artículo</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    const shopCarousel = document.getElementById('shoppingCarousel');
+    if (shopCarousel) {
+      shopCarousel.innerHTML = shoppingData.map(s => `
+        <div class="shop-card">
+          <span class="shop-badge shop-badge-${s.store}">${s.store}</span>
+          <img class="shop-img" src="${s.img}" alt="${s.title}" loading="lazy">
+          <div class="shop-content">
+            <h4 class="shop-title">${s.title}</h4>
+            <div class="shop-rating">${s.rating}</div>
+            <div class="shop-pricing">
+              <span class="shop-price">${s.price}</span>
+              <span class="shop-old-price">${s.oldPrice}</span>
+            </div>
+            <a class="shop-buy-btn" href="${s.link}" target="_blank" rel="noopener noreferrer">
+              🛒 Comprar en ${s.store.toUpperCase()}
+            </a>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    const xFeedGrid = document.getElementById('xFeedGrid');
+    if (xFeedGrid) {
+      xFeedGrid.innerHTML = xFeedData.map(x => `
+        <div class="x-card">
+          <div class="x-header">
+            <div class="x-profile">
+              <img class="x-avatar" src="${x.avatar}" alt="${x.name}">
+              <div class="x-user-info">
+                <span class="x-name">${x.name} <span class="x-badge">☑️</span></span>
+                <span class="x-handle">${x.handle}</span>
+              </div>
+            </div>
+            <span class="x-logo">𝕏</span>
+          </div>
+          <div class="x-body">${x.body}</div>
+          <div class="x-footer">
+            <div class="x-action-item">💬 <span>${x.replies}</span></div>
+            <div class="x-action-item">🔁 <span>${x.retweets}</span></div>
+            <div class="x-action-item">❤️ <span>${x.likes}</span></div>
+            <div class="x-action-item">📤</div>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
+  // ---------- CONTROL DE SELECCIÓN DE INTERESES (ONBOARDING) ----------
+  function togglePreferencesModal() {
+    const modal = document.getElementById('preferencesModal');
+    if (!modal) return;
+    
+    const isOpen = modal.classList.contains('open');
+    if (!isOpen) {
+      const raw = localStorage.getItem(`interests_${userToken}`);
+      const interests = raw ? JSON.parse(raw) : [];
+      
+      document.querySelectorAll('#interestsGrid .interest-card').forEach(card => {
+        const cat = card.getAttribute('data-category');
+        if (interests.includes(cat)) {
+          card.classList.add('selected');
+        } else {
+          card.classList.remove('selected');
+        }
+      });
+    }
+    
+    modal.classList.toggle('open');
+  }
+
+  function handlePreferencesOverlayClick(e) {
+    if (e.target.id === 'preferencesModal') {
+      togglePreferencesModal();
+    }
+  }
+
+  function toggleInterestCard(card) {
+    card.classList.toggle('selected');
+  }
+
+  function saveUserInterests() {
+    const selected = [];
+    document.querySelectorAll('#interestsGrid .interest-card.selected').forEach(card => {
+      selected.push(card.getAttribute('data-category'));
+    });
+    
+    localStorage.setItem(`interests_${userToken}`, JSON.stringify(selected));
+    alert("🎯 Tus preferencias de interés han sido guardadas. ¡Personalizando tu portada!");
+    togglePreferencesModal();
+    
+    filterAndRender();
+    renderNovedadesSection();
+  }
+
+  // ---------- WIDGET DE ACCIONES DE LA BANCA ----------
+  let bankingStocks = [
+    { name: "IPC México", val: 56230.12, chg: 0.85 },
+    { name: "USD / MXN", val: 16.8450, chg: -0.42 },
+    { name: "Tasa Banxico", val: 11.25, chg: 0.00 },
+    { name: "BBVA México", val: 148.50, chg: 1.20 },
+    { name: "Santander MX", val: 72.30, chg: -0.75 },
+    { name: "Banorte O", val: 155.10, chg: 2.15 }
+  ];
+
+  function updateBankingStocks() {
+    const tbody = document.getElementById('bankingStocksBody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = bankingStocks.map(stock => {
+      const cls = stock.chg > 0 ? 'banking-change-up' : stock.chg < 0 ? 'banking-change-down' : '';
+      const sign = stock.chg > 0 ? '+' : '';
+      const formattedVal = stock.name.includes("USD") ? stock.val.toFixed(4) : stock.name.includes("Tasa") ? stock.val.toFixed(2) + '%' : stock.val.toLocaleString('es-MX', { minimumFractionDigits: 2 });
+      
+      return `
+        <tr>
+          <td style="font-weight:700;">${stock.name}</td>
+          <td class="banking-ticker-val">${formattedVal}</td>
+          <td class="${cls} banking-ticker-val">${sign}${stock.chg.toFixed(2)}%</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function startBankingTickerSimulation() {
+    setInterval(() => {
+      bankingStocks = bankingStocks.map(stock => {
+        if (stock.name.includes("Tasa")) return stock;
+        
+        const delta = (Math.random() - 0.5) * 0.05;
+        const newVal = stock.val * (1 + delta / 100);
+        const newChg = stock.chg + delta;
+        
+        return {
+          ...stock,
+          val: newVal,
+          chg: newChg
+        };
+      });
+      updateBankingStocks();
+    }, 4000);
+  }
+
+  // ---------- DASHBOARD "MIS LINKS" PERSONALIZADO ----------
+  function loadUserLinks() {
+    const listEl = document.getElementById('mylinksList');
+    if (!listEl) return;
+    
+    const raw = localStorage.getItem(`custom_links_${userToken}`);
+    const links = raw ? JSON.parse(raw) : [
+      { title: "Google", url: "https://google.com" },
+      { title: "GitHub", url: "https://github.com" }
+    ];
+    
+    if (links.length === 0) {
+      listEl.innerHTML = `<div style="text-align:center; padding:12px; font-size:0.75rem; color:var(--text-muted);">Sin enlaces guardados.</div>`;
+      return;
+    }
+    
+    listEl.innerHTML = links.map((lnk, idx) => `
+      <div class="mylinks-item">
+        <a class="mylinks-anchor" href="${lnk.url}" target="_blank" rel="noopener noreferrer">
+          🌐 ${lnk.title}
+        </a>
+        <button class="mylinks-del-btn" onclick="deleteUserLink(${idx})" aria-label="Eliminar enlace">🗑️</button>
+      </div>
+    `).join('');
+    
+    localStorage.setItem(`custom_links_${userToken}`, JSON.stringify(links));
+  }
+
+  function addUserLink() {
+    const titleIn = document.getElementById('linkTitleInput');
+    const urlIn = document.getElementById('linkUrlInput');
+    if (!titleIn || !urlIn) return;
+    
+    const title = titleIn.value.trim();
+    let url = urlIn.value.trim();
+    
+    if (!title || !url) {
+      alert("⚠️ Ingresa un nombre y una dirección URL.");
+      return;
+    }
+    
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://' + url;
+    }
+    
+    const raw = localStorage.getItem(`custom_links_${userToken}`);
+    const links = raw ? JSON.parse(raw) : [];
+    links.push({ title, url });
+    
+    localStorage.setItem(`custom_links_${userToken}`, JSON.stringify(links));
+    
+    titleIn.value = '';
+    urlIn.value = '';
+    loadUserLinks();
+  }
+
+  function deleteUserLink(idx) {
+    const raw = localStorage.getItem(`custom_links_${userToken}`);
+    if (!raw) return;
+    const links = JSON.parse(raw);
+    links.splice(idx, 1);
+    localStorage.setItem(`custom_links_${userToken}`, JSON.stringify(links));
+    loadUserLinks();
   }
 </script>
 

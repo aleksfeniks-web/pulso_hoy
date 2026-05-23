@@ -1750,3 +1750,602 @@ input:focus, textarea:focus, select:focus {
   display: inline-block;
 }
 
+/* ===== SECCIÓN TENDENCIAS SECTION ===== */
+.section-tendencias {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+.section-tendencias.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Onboarding / Interests Modal Styles */
+.interests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.interest-card {
+  background: var(--bg-body);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+.interest-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-red);
+  box-shadow: var(--shadow-sm);
+}
+.interest-card.selected {
+  background: var(--accent-red-light);
+  border-color: var(--accent-red);
+  color: var(--accent-red);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
+}
+.interest-card-icon {
+  font-size: 1.8rem;
+}
+
+/* Werd.com Minimalist Gadgets Styles */
+.werd-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+.werd-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+.werd-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--text-primary);
+}
+.werd-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+.werd-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.werd-brand {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--accent-orange);
+  margin-bottom: 4px;
+}
+.werd-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+.werd-excerpt {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.werd-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  border-top: 1px solid var(--border-light);
+  padding-top: 12px;
+}
+.werd-price {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+.werd-btn {
+  background: var(--text-primary);
+  color: var(--bg-card);
+  border: none;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.werd-btn:hover {
+  background: var(--accent-orange);
+  color: white;
+}
+
+/* TikTok Vertical Phone Style Styles */
+.tiktok-container {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 10px 0 20px;
+  scrollbar-width: thin;
+}
+.tiktok-card {
+  width: 220px;
+  height: 380px;
+  background: black;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.tiktok-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-lg);
+}
+.tiktok-video-placeholder {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.7);
+  transition: filter 0.3s ease;
+}
+.tiktok-card:hover .tiktok-video-placeholder {
+  filter: brightness(0.9);
+}
+.tiktok-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.9);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: var(--transition-fast);
+}
+.tiktok-card:hover .tiktok-play-btn {
+  background: var(--accent-red);
+  color: white;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+.tiktok-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.85));
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tiktok-user {
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.tiktok-user-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+.tiktok-desc {
+  font-size: 0.75rem;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tiktok-music {
+  font-size: 0.65rem;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.tiktok-stats {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+  z-index: 2;
+}
+.tiktok-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.tiktok-stat-icon {
+  font-size: 1.1rem;
+}
+
+/* Amazon / Shein Deal Carousel Styles */
+.shopping-carousel {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 10px 0 20px;
+  scrollbar-width: thin;
+}
+.shop-card {
+  width: 200px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.shop-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-blue);
+}
+.shop-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: white;
+  font-weight: 800;
+  font-size: 0.65rem;
+  padding: 3px 8px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  z-index: 2;
+}
+.shop-badge-amazon { background: #ff9900; }
+.shop-badge-shein { background: black; }
+.shop-img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+.shop-content {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.shop-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 2.6em;
+}
+.shop-rating {
+  font-size: 0.75rem;
+  color: var(--accent-orange);
+  margin-bottom: 8px;
+}
+.shop-pricing {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+  margin-top: auto;
+}
+.shop-price {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+.shop-old-price {
+  font-size: 0.8rem;
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+.shop-buy-btn {
+  background: var(--accent-blue);
+  color: white;
+  border: none;
+  font-weight: 700;
+  width: 100%;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.shop-buy-btn:hover {
+  background: hsl(210, 100%, 38%);
+}
+
+/* Twitter/X Verified Embed Mock Styles */
+.x-feed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+.x-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: var(--transition-fast);
+}
+.x-card:hover {
+  border-color: var(--accent-blue);
+  box-shadow: var(--shadow-sm);
+}
+.x-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.x-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.x-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.x-user-info {
+  display: flex;
+  flex-direction: column;
+}
+.x-name {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.x-badge {
+  color: var(--accent-blue);
+  font-size: 0.95rem;
+}
+.x-handle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.x-logo {
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+.x-body {
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+.x-hashtag {
+  color: var(--accent-blue);
+  text-decoration: none;
+}
+.x-footer {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-light);
+  padding-top: 10px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.x-action-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.x-action-item:hover {
+  color: var(--accent-blue);
+}
+
+/* Digital Clock and Weather Additions */
+.weather-clock-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border-light);
+  padding-top: 12px;
+  margin-top: 8px;
+  width: 100%;
+}
+.weather-clock {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--accent-red);
+  background: var(--bg-body);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  letter-spacing: 1.5px;
+}
+
+/* Banking Stocks Widget Table */
+.banking-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+.banking-table th {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 2px solid var(--border-light);
+  color: var(--text-muted);
+  font-weight: 700;
+}
+.banking-table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--border-light);
+  font-weight: 600;
+}
+.banking-ticker-val {
+  font-family: monospace;
+  font-weight: 800;
+}
+.banking-change-up {
+  color: var(--accent-green);
+}
+.banking-change-down {
+  color: var(--accent-red);
+}
+
+/* "Mis Links" Dashboard Panel */
+.mylinks-widget {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  padding: 24px;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: var(--transition);
+}
+.mylinks-widget:hover {
+  border-color: var(--accent-red);
+  box-shadow: var(--shadow-md);
+}
+.mylinks-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mylinks-input {
+  height: 34px;
+  padding: 0 10px;
+  font-size: 0.8rem;
+}
+.mylinks-add-btn {
+  background: var(--text-primary);
+  color: var(--bg-card);
+  border: none;
+  font-weight: 700;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.mylinks-add-btn:hover {
+  background: var(--accent-red);
+  color: white;
+}
+.mylinks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.mylinks-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--bg-body);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+.mylinks-item:hover {
+  border-color: var(--accent-red-light);
+  transform: translateX(2px);
+}
+.mylinks-anchor {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.mylinks-anchor:hover {
+  color: var(--accent-red);
+}
+.mylinks-del-btn {
+  background: transparent;
+  border: none;
+  color: var(--accent-red);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 2px;
+  opacity: 0.6;
+  transition: var(--transition-fast);
+}
+.mylinks-del-btn:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
