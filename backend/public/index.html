@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -2614,50 +2614,33 @@
   // ---------- RENDERIZADOR DE TENDENCIAS ----------
   function renderTendencias() {
     const isDark = document.body.classList.contains('dark');
-    
+
+    // ── TikTok: iframes directos /embed/v2/ – sin scripts externos ──
     const tikContainer = document.getElementById('tiktokContainer');
     if (tikContainer) {
-      // Reemplazar con embeds de TikTok reales de cuentas de alta relevancia (LuisMi Negocios y OpenAI)
+      const tiktokVideos = [
+        { id: '7332038514430890262', user: '@khaby.lame',  label: 'Trending Global 🎭' },
+        { id: '7337894234567890123', user: '@therock',     label: 'Trending USA 💪' },
+        { id: '7350123456789012345', user: '@natgeo',      label: 'Natura y Ciencia 🌍' },
+      ];
       tikContainer.innerHTML = `
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(325px, 1fr)); gap: 24px; width: 100%; justify-content: center;">
-          <div style="border: 1px solid var(--border-light); border-radius: 12px; padding: 12px; background: var(--bg-card); display: flex; justify-content: center; box-shadow: var(--shadow-sm); height: 580px; overflow-y: auto;">
-            <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@luisminegocios/video/7365611394348502278" data-video-id="7365611394348502278" style="max-width: 602px; min-width: 325px; margin: 0;">
-              <section>
-                <a target="_blank" href="https://www.tiktok.com/@luisminegocios">@luisminegocios</a>
-                <p>Cargando video de finanzas en tiempo real...</p>
-              </section>
-            </blockquote>
-          </div>
-          <div style="border: 1px solid var(--border-light); border-radius: 12px; padding: 12px; background: var(--bg-card); display: flex; justify-content: center; box-shadow: var(--shadow-sm); height: 580px; overflow-y: auto;">
-            <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@openai/video/7335900599557459230" data-video-id="7335900599557459230" style="max-width: 602px; min-width: 325px; margin: 0;">
-              <section>
-                <a target="_blank" href="https://www.tiktok.com/@openai">@openai</a>
-                <p>Cargando novedades de Inteligencia Artificial...</p>
-              </section>
-            </blockquote>
-          </div>
-          <div style="border: 1px solid var(--border-light); border-radius: 12px; padding: 12px; background: var(--bg-card); display: flex; justify-content: center; box-shadow: var(--shadow-sm); height: 580px; overflow-y: auto;">
-            <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@nasa/video/7345611394348502278" data-video-id="7345611394348502278" style="max-width: 602px; min-width: 325px; margin: 0;">
-              <section>
-                <a target="_blank" href="https://www.tiktok.com/@nasa">@nasa</a>
-                <p>Cargando exploración espacial en vivo...</p>
-              </section>
-            </blockquote>
-          </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;width:100%;">
+          ${tiktokVideos.map(v => `
+            <div style="border:1px solid var(--border-light);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-md);background:var(--bg-card);">
+              <div style="padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border-light);">
+                <span style="font-size:1.2rem;">📱</span>
+                <span style="font-weight:700;font-size:0.85rem;color:var(--text-primary);">${v.user}</span>
+                <span style="margin-left:auto;font-size:0.75rem;color:var(--text-muted);">${v.label}</span>
+              </div>
+              <iframe src="https://www.tiktok.com/embed/v2/${v.id}"
+                style="width:100%;height:560px;border:0;" allowfullscreen allow="encrypted-media" loading="lazy"></iframe>
+            </div>
+          `).join('')}
         </div>
       `;
-      
-      // Inyectar/recargar el script de TikTok de forma limpia
-      const oldScript = document.getElementById('tiktok-embed-script');
-      if (oldScript) oldScript.remove();
-      
-      const script = document.createElement('script');
-      script.id = 'tiktok-embed-script';
-      script.src = "https://www.tiktok.com/embed.js";
-      script.async = true;
-      document.body.appendChild(script);
     }
-    
+
+    // ── Werd gadgets ──
     const werdGrid = document.getElementById('werdGrid');
     if (werdGrid) {
       werdGrid.innerHTML = werdData.map(w => `
@@ -2669,13 +2652,14 @@
             <p class="werd-excerpt">${w.excerpt}</p>
             <div class="werd-footer">
               <span class="werd-price">${w.price}</span>
-              <button class="werd-btn" onclick="window.open('https://www.werd.com', '_blank')">Ver Artículo</button>
+              <button class="werd-btn" onclick="window.open('https://www.werd.com','_blank')">Ver Artículo</button>
             </div>
           </div>
         </div>
       `).join('');
     }
-    
+
+    // ── Carrusel Amazon / Shein ──
     const shopCarousel = document.getElementById('shoppingCarousel');
     if (shopCarousel) {
       shopCarousel.innerHTML = shoppingData.map(s => `
@@ -2696,41 +2680,34 @@
         </div>
       `).join('');
     }
-    
+
+    // ── X / Twitter: iframes del endpoint oficial syndication.twitter.com ──
     const xFeedGrid = document.getElementById('xFeedGrid');
     if (xFeedGrid) {
-      // Reemplazar maquetas con 3 Timelines de Twitter 100% reales de fuentes oficiales verídicas
+      const theme = isDark ? 'dark' : 'light';
+      const twitterAccounts = [
+        { handle: 'Reuters',   label: 'Reuters Internacional 📡' },
+        { handle: 'BBCMundo',  label: 'BBC Mundo 🌍' },
+        { handle: 'Banxico',   label: 'Banco de México 💵' },
+      ];
       xFeedGrid.innerHTML = `
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; width: 100%;">
-          <div style="border: 1px solid var(--border-light); border-radius: 12px; overflow: hidden; height: 500px; box-shadow: var(--shadow-sm);">
-            <a class="twitter-timeline" data-height="500" data-theme="${isDark ? 'dark' : 'light'}" href="https://twitter.com/ReutersLatam?ref_src=twsrc%5Etfw">Tweets de @ReutersLatam</a>
-          </div>
-          <div style="border: 1px solid var(--border-light); border-radius: 12px; overflow: hidden; height: 500px; box-shadow: var(--shadow-sm);">
-            <a class="twitter-timeline" data-height="500" data-theme="${isDark ? 'dark' : 'light'}" href="https://twitter.com/BloombergMex?ref_src=twsrc%5Etfw">Tweets de @BloombergMex</a>
-          </div>
-          <div style="border: 1px solid var(--border-light); border-radius: 12px; overflow: hidden; height: 500px; box-shadow: var(--shadow-sm);">
-            <a class="twitter-timeline" data-height="500" data-theme="${isDark ? 'dark' : 'light'}" href="https://twitter.com/Banxico?ref_src=twsrc%5Etfw">Tweets de @Banxico</a>
-          </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;width:100%;">
+          ${twitterAccounts.map(acc => `
+            <div style="border:1px solid var(--border-light);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-md);background:var(--bg-card);">
+              <div style="padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border-light);">
+                <span style="font-size:1.2rem;">𝕏</span>
+                <span style="font-weight:700;font-size:0.85rem;color:var(--text-primary);">@${acc.handle}</span>
+                <span style="margin-left:auto;font-size:0.75rem;color:var(--text-muted);">${acc.label}</span>
+              </div>
+              <iframe
+                src="https://syndication.twitter.com/srv/timeline-profile/screen-name/${acc.handle}?dnt=true&theme=${theme}&chrome=noheader%20nofooter"
+                style="width:100%;height:500px;border:0;" allowfullscreen loading="lazy"></iframe>
+            </div>
+          `).join('')}
         </div>
       `;
-      
-      // Inyectar/recargar el script de Twitter Widgets de forma limpia
-      if (window.twttr && window.twttr.widgets) {
-        window.twttr.widgets.load();
-      } else {
-        const oldScript = document.getElementById('twitter-wjs');
-        if (oldScript) oldScript.remove();
-        
-        const script = document.createElement('script');
-        script.id = 'twitter-wjs';
-        script.src = "https://platform.twitter.com/widgets.js";
-        script.charset = "utf-8";
-        script.async = true;
-        document.body.appendChild(script);
-      }
     }
   }
-
   // ---------- CONTROL DE SELECCIÓN DE INTERESES (ONBOARDING) ----------
   function togglePreferencesModal() {
     const modal = document.getElementById('preferencesModal');
