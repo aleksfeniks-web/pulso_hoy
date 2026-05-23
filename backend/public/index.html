@@ -50,6 +50,8 @@
       <button class="nav-btn" data-section="escribir" onclick="switchSection('escribir')">✍ Escribir</button>
       <button class="nav-btn" onclick="toggleBookmarksDrawer()">🔖 Marcadores</button>
       <button class="dark-toggle" id="darkToggle" aria-label="Cambiar tema">🌙</button>
+      <button class="dark-toggle" id="adminToggle" onclick="toggleAdminLoginModal()" aria-label="Administrador" style="margin-left: 8px;">🔑</button>
+      <span id="adminNavBadge" class="admin-badge" style="display:none;">ADMIN</span>
     </div>
   </div>
 </header>
@@ -348,6 +350,82 @@
         <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
       </div>
     </aside>
+  </div>
+</div>
+
+<!-- Modal Login de Administrador -->
+<div class="modal-overlay" id="adminLoginModal" onclick="handleAdminOverlayClick(event)">
+  <div class="modal" style="max-width: 420px; border-radius: var(--radius-card); border: 1px solid var(--border-light); padding: 32px;">
+    <button class="close-modal-btn" onclick="toggleAdminLoginModal()" aria-label="Cerrar modal">✕</button>
+    <div style="font-size: 3rem; text-align: center; margin-bottom: 12px;">🔑</div>
+    <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; text-align: center; margin-bottom: 8px;" id="adminModalTitle">Ingreso de Superusuario</h3>
+    <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; margin-bottom: 24px;">Ingresa la contraseña maestra para habilitar el borrado y edición de noticias y comentarios.</p>
+    
+    <div id="adminLoginForm">
+      <div class="form-group" style="text-align: left;">
+        <label for="adminPassword">Contraseña de Superusuario *</label>
+        <input type="password" id="adminPassword" placeholder="••••••••" style="margin-top:4px;">
+      </div>
+      <button class="newsletter-btn" style="background:var(--accent-red); width: 100%; height: 42px; margin-top: 12px;" onclick="handleAdminLogin()">Activar Superusuario 🚀</button>
+    </div>
+    
+    <div id="adminLogoutForm" style="display:none;">
+      <div style="background:var(--accent-green-light); color:var(--accent-green); border:1px solid var(--accent-green); padding:10px; border-radius:var(--radius-sm); text-align:center; font-size:0.85rem; font-weight:700; margin-bottom:20px;">
+        ✅ Modo Administrador Activo
+      </div>
+      <button class="newsletter-btn" style="background:var(--text-secondary); width: 100%; height: 42px;" onclick="handleAdminLogout()">Cerrar Sesión de Admin 🔌</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Edición de Noticia (Administrador) -->
+<div class="modal-overlay" id="adminEditNewsModal" onclick="handleEditOverlayClick(event)">
+  <div class="modal" style="max-width: 650px; border-radius: var(--radius-card); padding: 32px;">
+    <button class="close-modal-btn" onclick="closeEditNewsAdmin()" aria-label="Cerrar modal">✕</button>
+    <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 20px; border-left:4px solid var(--accent-blue); padding-left:12px;">✏️ Editar Noticia (Superusuario)</h3>
+    
+    <div class="write-form" style="padding:0; border:none; box-shadow:none; background:transparent;">
+      <input type="hidden" id="editNewsId">
+      
+      <div class="form-group">
+        <label for="editTitle">Título *</label>
+        <input type="text" id="editTitle" placeholder="Título del artículo">
+      </div>
+      
+      <div class="form-group">
+        <label for="editCategory">Categoría *</label>
+        <select id="editCategory">
+          <option value="economia">Economía</option>
+          <option value="politica">Política</option>
+          <option value="tecnologia">Tecnología</option>
+          <option value="mundo">Mundo</option>
+          <option value="salud">Salud</option>
+          <option value="business">Negocios</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="editSource">Fuente *</label>
+        <input type="text" id="editSource" placeholder="Fuente de la noticia">
+      </div>
+      
+      <div class="form-group">
+        <label for="editImageUrl">URL de la Imagen (Cambiar libremente) *</label>
+        <input type="url" id="editImageUrl" placeholder="https://images.unsplash.com/photo-...">
+      </div>
+      
+      <div class="form-group">
+        <label for="editExcerpt">Resumen del Artículo *</label>
+        <input type="text" id="editExcerpt" placeholder="Resumen del artículo">
+      </div>
+      
+      <div class="form-group">
+        <label for="editBody">Cuerpo del Artículo *</label>
+        <textarea id="editBody" rows="6" placeholder="Escribe el cuerpo de texto aquí..."></textarea>
+      </div>
+      
+      <button class="newsletter-btn" style="background:var(--accent-blue); width:100%; height:46px; margin-top:12px; font-weight:700;" onclick="submitEditNewsAdmin()">Guardar Cambios 💾</button>
+    </div>
   </div>
 </div>
 
@@ -1028,7 +1106,7 @@
     document.getElementById('newsCount').innerText = `${filtered.length} noticias encontradas`;
   }
 
-  // Renderizar Hero (Noticia destacada)
+  // Renderizar Hero (Noticia destacada de Ancho Completo sin secundarias)
   function renderHero(news) {
     const heroContainer = document.getElementById('heroContainer');
     if (!news.length) {
@@ -1037,43 +1115,22 @@
     }
     
     const main = news[0];
-    const subs = news.slice(1, 3);
-    
     const mainImg = (main.image_url && !main.image_url.includes('picsum.photos')) ? main.image_url : getFallbackImage(main.category, main.title);
     
     const heroHtml = `
       <div class="hero-grid">
-        <div class="hero-main" onclick="openArticle(${main.id})">
-          <img class="hero-img" src="${mainImg}" alt="${main.title}" loading="lazy">
+        <div class="hero-main" onclick="openArticle(${main.id})" style="width: 100%;">
+          <img class="hero-img" src="${mainImg}" alt="${main.title}" loading="lazy" style="height: 440px; width: 100%;">
           <div class="hero-content">
             <div class="hero-category">${main.category}</div>
-            <div class="hero-title">${main.title}</div>
-            <div class="hero-excerpt">${main.excerpt}</div>
+            <div class="hero-title" style="font-size: 2.3rem; line-height: 1.2; margin-bottom: 12px;">${main.title}</div>
+            <div class="hero-excerpt" style="font-size: 1.05rem; margin-bottom: 20px;">${main.excerpt}</div>
             <div class="hero-meta">
               <span class="source-name">${main.source}</span>
               ${getTruthBadgeHtml(main.truth_score || 85)}
               <span>${formatDate(main.created_at)}</span>
             </div>
           </div>
-        </div>
-        <div class="hero-sub">
-          ${subs.length === 0 ? '<div style="background:var(--bg-card); padding:20px; border-radius:var(--radius-card); display:flex; align-items:center; justify-content:center; flex:1; border: 1px dashed var(--border-light); font-size:0.9rem; color:var(--text-muted);">Sin noticias secundarias para mostrar</div>' : ''}
-          ${subs.map(s => {
-            const subImg = (s.image_url && !s.image_url.includes('picsum.photos')) ? s.image_url : getFallbackImage(s.category, s.title);
-            return `
-              <div class="sub-card" onclick="openArticle(${s.id})">
-                <img class="sub-img" src="${subImg}" alt="${s.title}" loading="lazy">
-                <div class="sub-content">
-                  <div class="hero-category" style="font-size:0.65rem; margin-bottom:4px;">${s.category}</div>
-                  <h4>${s.title}</h4>
-                  <div class="hero-meta" style="font-size:0.75rem;">
-                    <span>${s.source}</span>
-                    ${getTruthBadgeHtml(s.truth_score || 85)}
-                  </div>
-                </div>
-              </div>
-            `;
-          }).join('')}
         </div>
       </div>
     `;
@@ -1339,6 +1396,15 @@
     if (progressBar) progressBar.style.width = '0%';
     
     modalContent.innerHTML = `
+      ${localStorage.getItem('isSuperuser') === 'true' ? `
+        <div class="admin-control-bar">
+          <span class="admin-control-title">🛡️ Panel Administrativo (Superusuario)</span>
+          <div class="admin-actions">
+            <button class="admin-btn admin-btn-edit" onclick="openEditNewsAdmin(${article.id})">✏️ Editar Noticia</button>
+            <button class="admin-btn admin-btn-delete" onclick="deleteNewsAdmin(${article.id})">🗑️ Eliminar Noticia</button>
+          </div>
+        </div>
+      ` : ''}
       <div class="hero-category" style="margin-bottom:8px;">${article.category}</div>
       <h2 class="hero-title" style="font-size:2rem; margin-bottom:16px;">${article.title}</h2>
       
@@ -1830,7 +1896,10 @@
               <div class="comment-details">
                 <div class="comment-meta">
                   <span class="comment-author">${c.author_name}</span>
-                  <span class="comment-date">${formatCommentDate(c.created_at)}</span>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span class="comment-date">${formatCommentDate(c.created_at)}</span>
+                    \${localStorage.getItem('isSuperuser') === 'true' ? \`<button class="comment-delete-btn" onclick="deleteCommentAdmin(\${c.id}, \${newsId})">Eliminar ❌</button>\` : ''}
+                  </div>
                 </div>
                 <div class="comment-text">${c.comment_text}</div>
               </div>
@@ -1931,7 +2000,184 @@
     setupFilters();
     setupNovedadesFilters();
     initWeatherWidget();
+    updateAdminUI();
   });
+
+  // ---------- CONTROL DE SUPERUSUARIO (ADMINISTRACIÓN) ----------
+  function toggleAdminLoginModal() {
+    const modal = document.getElementById('adminLoginModal');
+    const loginForm = document.getElementById('adminLoginForm');
+    const logoutForm = document.getElementById('adminLogoutForm');
+    const modalTitle = document.getElementById('adminModalTitle');
+    const passwordInput = document.getElementById('adminPassword');
+    
+    if (!modal) return;
+    
+    const isActive = localStorage.getItem('isSuperuser') === 'true';
+    if (isActive) {
+      loginForm.style.display = 'none';
+      logoutForm.style.display = 'block';
+      modalTitle.innerText = "Modo Superusuario";
+    } else {
+      loginForm.style.display = 'block';
+      logoutForm.style.display = 'none';
+      modalTitle.innerText = "Ingreso de Superusuario";
+      if (passwordInput) passwordInput.value = '';
+    }
+    
+    modal.classList.toggle('open');
+  }
+
+  function handleAdminOverlayClick(e) {
+    if (e.target.id === 'adminLoginModal') {
+      toggleAdminLoginModal();
+    }
+  }
+
+  function handleEditOverlayClick(e) {
+    if (e.target.id === 'adminEditNewsModal') {
+      closeEditNewsAdmin();
+    }
+  }
+
+  function handleAdminLogin() {
+    const passwordInput = document.getElementById('adminPassword');
+    if (!passwordInput) return;
+    const password = passwordInput.value;
+    
+    if (password === 'admin123') {
+      localStorage.setItem('isSuperuser', 'true');
+      alert("🔑 ¡Acceso concedido como Superusuario!");
+      toggleAdminLoginModal();
+      updateAdminUI();
+      loadNews();
+    } else {
+      alert("❌ Contraseña incorrecta. Intenta de nuevo.");
+    }
+  }
+
+  function handleAdminLogout() {
+    localStorage.removeItem('isSuperuser');
+    alert("🔌 Sesión de Superusuario cerrada.");
+    toggleAdminLoginModal();
+    updateAdminUI();
+    loadNews();
+  }
+
+  function updateAdminUI() {
+    const badge = document.getElementById('adminNavBadge');
+    if (!badge) return;
+    const isActive = localStorage.getItem('isSuperuser') === 'true';
+    badge.style.display = isActive ? 'inline-block' : 'none';
+  }
+
+  async function deleteNewsAdmin(id) {
+    if (!confirm("⚠️ ¿Estás seguro de que deseas eliminar esta noticia permanentemente? Esta acción borrará la noticia, comentarios y me gusta asociados.")) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`/api/news/${id}`, {
+        method: 'DELETE'
+      });
+      
+      if (res.ok) {
+        alert("🗑️ Noticia eliminada exitosamente.");
+        closeModal();
+        await loadNews();
+      } else {
+        const err = await res.json();
+        alert("❌ Error al eliminar noticia: " + (err.error || "Error desconocido"));
+      }
+    } catch(e) {
+      alert("❌ Error de conexión al intentar eliminar la noticia.");
+    }
+  }
+
+  async function deleteCommentAdmin(commentId, newsId) {
+    if (!confirm("⚠️ ¿Deseas eliminar este comentario?")) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`/api/comments/${commentId}`, {
+        method: 'DELETE'
+      });
+      
+      if (res.ok) {
+        alert("🗑️ Comentario eliminado.");
+        loadComments(newsId);
+      } else {
+        alert("❌ Error al eliminar el comentario.");
+      }
+    } catch(e) {
+      alert("❌ Error de conexión al eliminar el comentario.");
+    }
+  }
+
+  function openEditNewsAdmin(id) {
+    const article = allNews.find(a => a.id === id);
+    if (!article) return;
+    
+    document.getElementById('editNewsId').value = article.id;
+    document.getElementById('editTitle').value = article.title;
+    document.getElementById('editCategory').value = article.category;
+    document.getElementById('editSource').value = article.source;
+    document.getElementById('editImageUrl').value = article.image_url || '';
+    document.getElementById('editExcerpt').value = article.excerpt;
+    document.getElementById('editBody').value = article.body || '';
+    
+    closeModal();
+    document.getElementById('adminEditNewsModal').classList.add('open');
+  }
+
+  function closeEditNewsAdmin() {
+    document.getElementById('adminEditNewsModal').classList.remove('open');
+  }
+
+  async function submitEditNewsAdmin() {
+    const id = document.getElementById('editNewsId').value;
+    const title = document.getElementById('editTitle').value.trim();
+    const category = document.getElementById('editCategory').value;
+    const source = document.getElementById('editSource').value.trim();
+    const image_url = document.getElementById('editImageUrl').value.trim();
+    const excerpt = document.getElementById('editExcerpt').value.trim();
+    const body = document.getElementById('editBody').value.trim();
+    
+    if (!title || !category || !source || !excerpt || !body) {
+      alert("⚠️ Por favor completa todos los campos requeridos.");
+      return;
+    }
+    
+    const payload = {
+      title,
+      category,
+      source,
+      image_url: image_url || null,
+      excerpt,
+      body
+    };
+    
+    try {
+      const res = await fetch(`/api/news/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      if (res.ok) {
+        alert("💾 Noticia actualizada exitosamente.");
+        closeEditNewsAdmin();
+        await loadNews();
+        openArticle(parseInt(id));
+      } else {
+        const err = await res.json();
+        alert("❌ Error al actualizar noticia: " + (err.error || "Error del servidor"));
+      }
+    } catch(e) {
+      alert("❌ Error de red al intentar actualizar la noticia.");
+    }
+  }
 </script>
 
 <!-- ELEMENTOS PARA EFECTO PRE-EMINENTE DE DERRAME DE TINTA LÍQUIDA -->

@@ -227,6 +227,61 @@ app.post('/api/comments', async (req, res) => {
   }
 });
 
+// ELIMINAR COMENTARIO (Superusuario)
+app.delete('/api/comments/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM comments WHERE id = $1', [id]);
+    res.json({ success: true, message: 'Comentario eliminado' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al eliminar comentario' });
+  }
+});
+
+// ELIMINAR NOTICIA (Superusuario)
+app.delete('/api/news/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM likes WHERE news_id = $1', [id]);
+    await pool.query('DELETE FROM read_later WHERE news_id = $1', [id]);
+    await pool.query('DELETE FROM comments WHERE news_id = $1', [id]);
+    await pool.query('DELETE FROM news WHERE id = $1', [id]);
+    res.json({ success: true, message: 'Noticia eliminada' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al eliminar noticia' });
+  }
+});
+
+// EDITAR NOTICIA (Superusuario)
+app.put('/api/news/:id', async (req, res) => {
+  const { id } = req.params;
+  const { title, category, source, excerpt, body, image_url } = req.body;
+  
+  if (!title || !category || !source || !excerpt || !body) {
+    return res.status(400).json({ error: 'Faltan campos obligatorios' });
+  }
+  
+  try {
+    const result = await pool.query(`
+      UPDATE news
+      SET title = $1, category = $2, source = $3, excerpt = $4, body = $5, image_url = $6
+      WHERE id = $7
+      RETURNING *
+    `, [title, category, source, excerpt, body, image_url || null, id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Noticia no encontrada' });
+    }
+    
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al actualizar noticia' });
+  }
+});
+
 // Generar RSS feed
 app.get('/rss.xml', async (req, res) => {
   const result = await pool.query(`

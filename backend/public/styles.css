@@ -282,11 +282,9 @@ body {
   border-color: var(--accent-red);
 }
 
-/* ===== HERO GRID ===== */
+/* ===== HERO GRID (Ancho Completo - Destacado Principal Único) ===== */
 .hero-grid {
-  display: grid;
-  grid-template-columns: 1.8fr 1fr;
-  gap: 24px;
+  display: block;
   margin-bottom: 40px;
 }
 .hero-main {
@@ -1667,5 +1665,88 @@ input:focus, textarea:focus, select:focus {
     page-break-inside: avoid !important;
     filter: grayscale(100%) !important;
   }
+}
+
+/* ===== CONTROLES DE ADMINISTRADOR EN MODAL ===== */
+.admin-control-bar {
+  display: flex;
+  gap: 12px;
+  background: var(--accent-red-light);
+  border: 1px solid var(--accent-red);
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+.admin-control-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-red);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.admin-actions {
+  display: flex;
+  gap: 8px;
+}
+.admin-btn {
+  border: none;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.admin-btn-edit {
+  background: var(--accent-blue);
+  color: white;
+}
+.admin-btn-edit:hover {
+  background: hsl(210, 100%, 38%);
+  transform: translateY(-1px);
+}
+.admin-btn-delete {
+  background: var(--accent-red);
+  color: white;
+}
+.admin-btn-delete:hover {
+  background: var(--accent-red-hover);
+  transform: translateY(-1px);
+}
+
+/* Botón de eliminar comentario */
+.comment-delete-btn {
+  background: transparent;
+  border: none;
+  color: var(--accent-red);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.75rem;
+  transition: var(--transition-fast);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.comment-delete-btn:hover {
+  background: var(--accent-red-light);
+  text-decoration: underline;
+}
+
+/* Badge del estado de Administrador en el navbar */
+.admin-badge {
+  background: var(--accent-red);
+  color: white;
+  padding: 2px 8px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  border-radius: 3px;
+  text-transform: uppercase;
+  margin-left: 8px;
+  display: inline-block;
 }
 
