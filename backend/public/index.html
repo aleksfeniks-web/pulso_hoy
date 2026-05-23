@@ -98,7 +98,7 @@
             Para publicar artículos verificados, analizar la veracidad de los hechos y mostrar gráficas financieras, necesitas unirte a nuestra red de redactores independientes. La suscripción es gratuita y te permite acceder de manera inmediata.
           </p>
           
-          <!-- Formularios Tabs: Suscribirse / Iniciar Sesión -->
+          <!-- Formularios Tabs: Suscribirse / Iniciar Sesión (Oculto en Clerk) -->
           <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; border-bottom: 1px solid var(--border-light); padding-bottom: 16px;">
             <button id="tabRegister" class="filter-chip active" onclick="toggleSubWallTab('register')">Registrarse</button>
             <button id="tabLogin" class="filter-chip" onclick="toggleSubWallTab('login')">Ya tengo cuenta</button>
@@ -273,6 +273,132 @@
   let chartInstances = {};
   let previewChartInstance = null;
 
+  // Variables del Módulo Clerk & Neon Authorize
+  let isClerkActive = false;
+
+  // Inicialización de Autenticación (Clerk + Fallback)
+  async function initAuthSystem() {
+    try {
+      const configRes = await fetch('/api/config');
+      const config = await configRes.json();
+      
+      if (config.clerkPublishableKey) {
+        console.log("🔑 Clerk Publishable Key detectada. Inicializando Clerk Auth...");
+        
+        // Cargar script de Clerk dinámicamente
+        const script = document.createElement('script');
+        script.src = "https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js";
+        script.crossOrigin = "anonymous";
+        script.async = true;
+        
+        script.onload = async () => {
+          try {
+            await window.Clerk.load({
+              publishableKey: config.clerkPublishableKey
+            });
+            
+            isClerkActive = true;
+            setupClerkAuth();
+          } catch (err) {
+            console.error("Error al cargar Clerk:", err);
+            setupCustomAuth();
+          }
+        };
+        
+        script.onerror = () => {
+          console.warn("Fallo al descargar script de Clerk. Usando fallback de email local.");
+          setupCustomAuth();
+        };
+        
+        document.head.appendChild(script);
+      } else {
+        console.log("💡 Clerk Publishable Key vacía. Usando sistema de suscripción por email local.");
+        setupCustomAuth();
+      }
+    } catch (e) {
+      console.warn("Fallo al cargar configuración. Usando fallback de email local.", e);
+      setupCustomAuth();
+    }
+  }
+
+  // Configuración de Clerk
+  function setupClerkAuth() {
+    const navLinks = document.querySelector('.nav-links');
+    
+    // Contenedor para el UserButton de Clerk
+    let clerkUserContainer = document.getElementById('clerkUserContainer');
+    if (!clerkUserContainer) {
+      clerkUserContainer = document.createElement('div');
+      clerkUserContainer.id = 'clerkUserContainer';
+      clerkUserContainer.style.marginLeft = '8px';
+      const darkToggle = document.getElementById('darkToggle');
+      navLinks.insertBefore(clerkUserContainer, darkToggle);
+    }
+    
+    if (Clerk.user) {
+      const email = Clerk.user.primaryEmailAddress.emailAddress;
+      const name = Clerk.user.fullName || Clerk.user.username || 'Redactor';
+      const plan = Clerk.user.publicMetadata.plan || 'premium'; // 'premium' por defecto
+      
+      localStorage.setItem('subscriberEmail', email);
+      localStorage.setItem('subscriberName', name);
+      localStorage.setItem('subscriberPlan', plan);
+      
+      clerkUserContainer.innerHTML = '';
+      Clerk.mountUserButton(clerkUserContainer);
+      
+      if (document.getElementById('escribirSection').style.display === 'block') {
+        checkSubscriptionState();
+      }
+    } else {
+      // Remover sesión local
+      localStorage.removeItem('subscriberEmail');
+      localStorage.removeItem('subscriberName');
+      localStorage.removeItem('subscriberPlan');
+      
+      clerkUserContainer.innerHTML = '';
+      
+      const signInBtn = document.createElement('button');
+      signInBtn.className = 'nav-btn';
+      signInBtn.style.background = 'var(--accent-blue)';
+      signInBtn.style.color = 'white';
+      signInBtn.innerText = 'Iniciar Sesión 👤';
+      signInBtn.onclick = () => Clerk.openSignIn();
+      clerkUserContainer.appendChild(signInBtn);
+      
+      if (document.getElementById('escribirSection').style.display === 'block') {
+        checkSubscriptionState();
+      }
+    }
+    
+    Clerk.addListener(({ user }) => {
+      setupClerkAuth();
+    });
+  }
+
+  function setupCustomAuth() {
+    isClerkActive = false;
+    // Limpiar contenedor de Clerk en el Navbar si existiera
+    const container = document.getElementById('clerkUserContainer');
+    if (container) container.innerHTML = '';
+  }
+
+  // Helper para inyectar cabeceras de autenticación (JWT Bearer Token de Clerk)
+  async function getAuthHeaders() {
+    const headers = { 'Content-Type': 'application/json' };
+    if (isClerkActive && window.Clerk && window.Clerk.session) {
+      try {
+        const token = await window.Clerk.session.getToken();
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+      } catch(e) {
+        console.warn("Fallo al adquirir token JWT de Clerk:", e);
+      }
+    }
+    return headers;
+  }
+
   function generateMockNews() {
     return [
       { id:1, title:"Inflación en México baja al 4.2% en enero", category:"economia", source:"Banxico", source_url:"https://www.banxico.org.mx", excerpt:"Mejor dato en 18 meses, por debajo de expectativas del mercado.", body:"El INEGI reportó una disminución de la inflación general a 4.2% en tasa anual durante el primer mes del año. Esta cifra representa el mejor desempeño inflacionario en un año y medio, impulsado principalmente por una baja en los precios agropecuarios y una estabilidad en el tipo de cambio. Analistas esperan que el Banco de México evalúe una reducción en la tasa de interés de referencia en su próxima junta de política monetaria.", truth_score:94, truth_label:"Verificado", is_financial:true, chart_data:{ type:"line", labels:["Sep","Oct","Nov","Dic","Ene"], values:[4.45,4.26,4.32,4.66,4.20], unit:"%", title:"Inflación Anualizada" }, image_url:"https://picsum.photos/id/20/800/500", created_at:new Date(Date.now() - 3600000).toISOString() },
@@ -305,7 +431,8 @@
   // Carga de Marcadores
   async function loadBookmarks() {
     try {
-      const res = await fetch(`/api/readlater/${userToken}`);
+      const headers = await getAuthHeaders();
+      const res = await fetch(`/api/readlater/${userToken}`, { headers });
       if (res.ok) {
         bookmarkedNews = await res.json();
       } else {
@@ -366,6 +493,32 @@
     if (!subEmail) {
       subWall.style.display = 'block';
       writeApp.style.display = 'none';
+      
+      if (isClerkActive) {
+        // Si Clerk está activo, ocultamos las pestañas personalizadas y montamos el Clerk SignIn directamente!
+        document.getElementById('tabRegister').parentElement.style.display = 'none';
+        document.getElementById('subRegisterForm').style.display = 'none';
+        document.getElementById('subLoginForm').style.display = 'none';
+        
+        let clerkSignInDiv = document.getElementById('clerkSignInDiv');
+        if (!clerkSignInDiv) {
+          clerkSignInDiv = document.createElement('div');
+          clerkSignInDiv.id = 'clerkSignInDiv';
+          clerkSignInDiv.style.display = 'flex';
+          clerkSignInDiv.style.justifyContent = 'center';
+          clerkSignInDiv.style.marginTop = '20px';
+          subWall.appendChild(clerkSignInDiv);
+        }
+        clerkSignInDiv.style.display = 'flex';
+        clerkSignInDiv.innerHTML = '';
+        Clerk.mountSignIn(clerkSignInDiv);
+      } else {
+        // Fallback email normal
+        document.getElementById('tabRegister').parentElement.style.display = 'flex';
+        toggleSubWallTab('register');
+        const clerkSignInDiv = document.getElementById('clerkSignInDiv');
+        if (clerkSignInDiv) clerkSignInDiv.style.display = 'none';
+      }
     } else {
       subWall.style.display = 'none';
       writeApp.style.display = 'grid';
@@ -376,6 +529,12 @@
       const planBadge = document.getElementById('writerPlanBadge');
       planBadge.innerText = subPlan.toUpperCase();
       planBadge.className = 'truth-badge ' + (subPlan === 'premium' ? 'truth-badge-high' : subPlan === 'standard' ? 'truth-badge-mid' : 'truth-badge-low');
+      
+      // Ocultar botón de Cerrar sesión personalizado si está Clerk
+      const logoutBtn = document.querySelector('#writerProfileBadge button');
+      if (logoutBtn) {
+        logoutBtn.style.display = isClerkActive ? 'none' : 'block';
+      }
       
       updateLivePreview();
     }
@@ -393,6 +552,7 @@
       formReg.style.display = 'block';
       formLog.style.display = 'none';
     } else {
+      btnReg.classList.remove('active');
       btnReg.classList.remove('active');
       btnLog.classList.add('active');
       formReg.style.display = 'none';
@@ -637,7 +797,6 @@
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
     
-    // Destruir instancia anterior si existe
     if (chartInstances[canvasId]) {
       chartInstances[canvasId].destroy();
     }
@@ -705,9 +864,10 @@
 
   async function likeArticle(id) {
     try {
+      const headers = await getAuthHeaders();
       const res = await fetch('/api/like', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: headers,
         body: JSON.stringify({ news_id: id, user_token: userToken })
       });
       if (res.ok) {
@@ -755,9 +915,10 @@
 
     try {
       const endpoint = isBookmarked ? `/api/readlater/remove` : `/api/readlater`;
+      const headers = await getAuthHeaders();
       await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: headers,
         body: JSON.stringify({ news_id: id, user_token: userToken })
       });
     } catch(e) {}
@@ -950,7 +1111,7 @@
           }
         }
       } catch(e) {
-        // Ignorar errores JSON en tiempo real para no interrumpir la escritura
+        // Ignorar errores JSON en tiempo real
       }
     }
   }
@@ -1000,9 +1161,10 @@
     };
 
     try {
+      const headers = await getAuthHeaders();
       const res = await fetch('/api/news', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: headers,
         body: JSON.stringify(payload)
       });
       
@@ -1082,9 +1244,11 @@
     `).join('');
   }
 
-  // Carga Inicial
-  loadNews();
-  setupFilters();
+  // Carga Inicial Sincronizada
+  initAuthSystem().then(() => {
+    loadNews();
+    setupFilters();
+  });
 </script>
 </body>
 </html>

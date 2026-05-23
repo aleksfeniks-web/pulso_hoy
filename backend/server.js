@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { pool, initTables } = require('./db');
+const { pool, initTables, queryWithAuth } = require('./db');
 require('dotenv').config();
 
 const app = express();
@@ -12,6 +12,13 @@ app.use(express.static(path.join(__dirname, 'public'))); // Sirve el frontend
 initTables();
 
 // ========== API RUTAS ==========
+
+// Configuración pública (Clerk Publishable Key)
+app.get('/api/config', (req, res) => {
+  res.json({
+    clerkPublishableKey: process.env.CLERK_PUBLISHABLE_KEY || null
+  });
+});
 
 // Obtener todas las noticias publicadas
 app.get('/api/news', async (req, res) => {
@@ -47,8 +54,12 @@ app.post('/api/news', async (req, res) => {
   if (!title || !category || !source || !excerpt || !body) {
     return res.status(400).json({ error: 'Faltan campos obligatorios' });
   }
+
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null;
+
   try {
-    const result = await pool.query(`
+    const result = await queryWithAuth(token, `
       INSERT INTO news (title, category, source, source_url, excerpt, body, is_financial, chart_data, image_url, user_email, status)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'published')
       RETURNING *
@@ -117,8 +128,12 @@ app.get('/api/likes/:news_id', async (req, res) => {
 app.post('/api/readlater', async (req, res) => {
   const { news_id, user_token } = req.body;
   if (!news_id || !user_token) return res.status(400).json({ error: 'Faltan datos' });
+
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null;
+
   try {
-    await pool.query(`
+    await queryWithAuth(token, `
       INSERT INTO read_later (news_id, user_token) VALUES ($1, $2)
       ON CONFLICT (news_id, user_token) DO NOTHING
     `, [news_id, user_token]);
@@ -132,8 +147,12 @@ app.post('/api/readlater', async (req, res) => {
 app.post('/api/readlater/remove', async (req, res) => {
   const { news_id, user_token } = req.body;
   if (!news_id || !user_token) return res.status(400).json({ error: 'Faltan datos' });
+
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null;
+
   try {
-    await pool.query(`
+    await queryWithAuth(token, `
       DELETE FROM read_later WHERE news_id = $1 AND user_token = $2
     `, [news_id, user_token]);
     res.json({ success: true });

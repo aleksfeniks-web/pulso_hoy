@@ -61,4 +61,32 @@ async function initTables() {
   }
 }
 
-module.exports = { pool, initTables };
+async function queryWithAuth(jwt, text, params) {
+  if (!jwt) {
+    return pool.query(text, params);
+  }
+  
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    
+    // Verificar si la función de Neon Authorize (auth.jwt_session_init) está disponible en la base de datos
+    try {
+      await client.query('SELECT auth.jwt_session_init($1)', [jwt]);
+    } catch (authErr) {
+      // Si la función no existe (ej. RLS/Neon Authorize no configurado), ignoramos y continuamos
+      console.warn("⚠️ Neon Authorize (auth.jwt_session_init) no configurado o inactivo en la base de datos. Usando consulta sin políticas RLS.");
+    }
+    
+    const res = await client.query(text, params);
+    await client.query('COMMIT');
+    return res;
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+module.exports = { pool, initTables, queryWithAuth };
