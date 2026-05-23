@@ -276,6 +276,76 @@
   // Variables del Módulo Clerk & Neon Authorize
   let isClerkActive = false;
 
+  // ---------- ALGORITMO DILIGENTE DE IMÁGENES PREMIUM EN VIVO (UNSPLASH MAPPER) ----------
+  const categoryImages = {
+    economia: [
+      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80", // Trading / Gráficos
+      "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=800&q=80", // Monedas
+      "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=800&q=80"  // Billetes / Banco
+    ],
+    politica: [
+      "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=800&q=80", // Senado / Capitolio
+      "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80", // Edificios de gobierno
+      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80"  // Leyes / Mazo de juez
+    ],
+    tecnologia: [
+      "https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80", // Inteligencia Artificial
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80", // Microchip
+      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80"  // Cyber Security
+    ],
+    mundo: [
+      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80", // Red global digital
+      "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80", // Mapa terrestre
+      "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80"  // Noticias Internacionales
+    ],
+    salud: [
+      "https://images.unsplash.com/photo-1584036561566-baf241830940?auto=format&fit=crop&w=800&q=80", // Vacunas
+      "https://images.unsplash.com/photo-1530026405186-ed1ea0ac7a63?auto=format&fit=crop&w=800&q=80", // Estetoscopio
+      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80"  // Médico / Hospital
+    ],
+    business: [
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80", // Rascacielos / Negocios
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80", // Reunión de negocios
+      "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80"  // Finanzas corporativas
+    ]
+  };
+
+  function getFallbackImage(category, title) {
+    const lowerTitle = (title || "").toLowerCase();
+    
+    // Reglas basadas en palabras clave específicas
+    if (lowerTitle.includes("tesla") || lowerTitle.includes("coche") || lowerTitle.includes("auto")) {
+      return "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=800&q=80"; // Tesla
+    }
+    if (lowerTitle.includes("dólar") || lowerTitle.includes("peso") || lowerTitle.includes("divisa") || lowerTitle.includes("arancelario")) {
+      return "https://images.unsplash.com/photo-1502920514313-52581002a659?auto=format&fit=crop&w=800&q=80"; // Billetes / Forex
+    }
+    if (lowerTitle.includes("inflación") || lowerTitle.includes("precios")) {
+      return "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=800&q=80"; // Monedas / Inflación
+    }
+    if (lowerTitle.includes("pensiones") || lowerTitle.includes("jubilación")) {
+      return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80"; // Jubilación
+    }
+    if (lowerTitle.includes("gpt") || lowerTitle.includes("openai") || lowerTitle.includes("inteligencia artificial") || lowerTitle.includes("multimodal")) {
+      return "https://images.unsplash.com/photo-1680814903936-e80b137f7a84?auto=format&fit=crop&w=800&q=80"; // IA / ChatGPT
+    }
+    if (lowerTitle.includes("dengue") || lowerTitle.includes("mosquito") || lowerTitle.includes("brote") || lowerTitle.includes("epidemiológica")) {
+      return "https://images.unsplash.com/photo-1584036561566-baf241830940?auto=format&fit=crop&w=800&q=80"; // Vacuna / Salud
+    }
+
+    // Fallback por Categoría
+    const list = categoryImages[category] || categoryImages['mundo'];
+    
+    // Hash del título para retornar siempre la misma imagen para un título específico
+    let hash = 0;
+    const str = title || "";
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % list.length;
+    return list[index];
+  }
+
   // Inicialización de Autenticación (Clerk + Fallback)
   async function initAuthSystem() {
     try {
@@ -325,7 +395,6 @@
   function setupClerkAuth() {
     const navLinks = document.querySelector('.nav-links');
     
-    // Contenedor para el UserButton de Clerk
     let clerkUserContainer = document.getElementById('clerkUserContainer');
     if (!clerkUserContainer) {
       clerkUserContainer = document.createElement('div');
@@ -338,7 +407,7 @@
     if (Clerk.user) {
       const email = Clerk.user.primaryEmailAddress.emailAddress;
       const name = Clerk.user.fullName || Clerk.user.username || 'Redactor';
-      const plan = Clerk.user.publicMetadata.plan || 'premium'; // 'premium' por defecto
+      const plan = Clerk.user.publicMetadata.plan || 'premium';
       
       localStorage.setItem('subscriberEmail', email);
       localStorage.setItem('subscriberName', name);
@@ -351,7 +420,6 @@
         checkSubscriptionState();
       }
     } else {
-      // Remover sesión local
       localStorage.removeItem('subscriberEmail');
       localStorage.removeItem('subscriberName');
       localStorage.removeItem('subscriberPlan');
@@ -378,12 +446,11 @@
 
   function setupCustomAuth() {
     isClerkActive = false;
-    // Limpiar contenedor de Clerk en el Navbar si existiera
     const container = document.getElementById('clerkUserContainer');
     if (container) container.innerHTML = '';
   }
 
-  // Helper para inyectar cabeceras de autenticación (JWT Bearer Token de Clerk)
+  // Helper para inyectar cabeceras Bearer Token
   async function getAuthHeaders() {
     const headers = { 'Content-Type': 'application/json' };
     if (isClerkActive && window.Clerk && window.Clerk.session) {
@@ -399,19 +466,7 @@
     return headers;
   }
 
-  function generateMockNews() {
-    return [
-      { id:1, title:"Inflación en México baja al 4.2% en enero", category:"economia", source:"Banxico", source_url:"https://www.banxico.org.mx", excerpt:"Mejor dato en 18 meses, por debajo de expectativas del mercado.", body:"El INEGI reportó una disminución de la inflación general a 4.2% en tasa anual durante el primer mes del año. Esta cifra representa el mejor desempeño inflacionario en un año y medio, impulsado principalmente por una baja en los precios agropecuarios y una estabilidad en el tipo de cambio. Analistas esperan que el Banco de México evalúe una reducción en la tasa de interés de referencia en su próxima junta de política monetaria.", truth_score:94, truth_label:"Verificado", is_financial:true, chart_data:{ type:"line", labels:["Sep","Oct","Nov","Dic","Ene"], values:[4.45,4.26,4.32,4.66,4.20], unit:"%", title:"Inflación Anualizada" }, image_url:"https://picsum.photos/id/20/800/500", created_at:new Date(Date.now() - 3600000).toISOString() },
-      { id:2, title:"Senado aprueba reforma integral de pensiones", category:"politica", source:"El Universal", source_url:"https://www.eluniversal.com.mx", excerpt:"Aumento gradual de cuotas patronales y nuevas reglas de jubilación.", body:"La reforma de pensiones ha sido aprobada por el pleno del Senado con una amplia mayoría. La nueva ley estipula un incremento gradual en las aportaciones patronales del 5.15% al 11.9% en un periodo de ocho años. Asimismo, se reduce el número mínimo de semanas cotizadas para acceder a una pensión garantizada, lo que beneficiará a miles de trabajadores que anteriormente no cumplían con los requisitos.", truth_score:82, truth_label:"Verificado", is_financial:true, chart_data:{ type:"bar", labels:["2025","2026","2027","2028"], values:[5.15,7.4,9.6,11.9], unit:"%", title:"Proyección Aporte Patronal" }, image_url:"https://picsum.photos/id/26/800/500", created_at:new Date(Date.now() - 7200000).toISOString() },
-      { id:3, title:"Dólar alcanza $18.50 pesos ante tensiones arancelarias", category:"economia", source:"Bloomberg", source_url:"https://www.bloomberg.com", excerpt:"Alta volatilidad en mercados financieros tras anuncios arancelarios de EE. UU.", body:"El peso mexicano experimentó una depreciación de 2.1% frente al dólar estadounidense, cerrando la jornada de hoy en $18.50 unidades. La volatilidad financiera se desató luego de declaraciones gubernamentales en Washington relativas a la imposición de nuevos aranceles sobre bienes de consumo clave. Bancos comerciales registran alta demanda del billete verde en ventanillas de divisas.", truth_score:76, truth_label:"Probable", is_financial:true, chart_data:{ type:"line", labels:["Lun","Mar","Mié","Jue","Vie"], values:[17.92,17.85,18.10,18.35,18.50], unit:"MXN", title:"Tipo de Cambio" }, image_url:"https://picsum.photos/id/30/800/500", created_at:new Date(Date.now() - 14400000).toISOString() },
-      { id:4, title:"OpenAI presenta GPT-5 con razonamiento multimodal", category:"tecnologia", source:"TechCrunch", source_url:"https://techcrunch.com", excerpt:"El nuevo modelo posee capacidades avanzadas de inferencia lógica en texto, imagen y audio.", body:"En una transmisión mundial sorpresa, OpenAI ha revelado el lanzamiento inmediato de GPT-5. El modelo incorpora una arquitectura nativa de 'cadena de pensamiento' que le permite pausar, planificar y resolver problemas lógicos complejos antes de dar una respuesta. La demostración en vivo incluyó la resolución instantánea de teoremas matemáticos inéditos y la programación guiada de un sistema robótico autónomo.", truth_score:88, truth_label:"Verificado", is_financial:false, image_url:"https://picsum.photos/id/0/800/500", created_at:new Date(Date.now() - 21600000).toISOString() },
-      { id:5, title:"Ley de vivienda en España congela alquileres", category:"mundo", source:"El País", source_url:"https://elpais.com", excerpt:"Aprobación definitiva de límites de renta en zonas de alta demanda residencial.", body:"El Congreso de los Diputados ha dado luz verde definitiva a la Ley de Vivienda en España, una legislación pionera que introduce controles de precios estrictos. Las zonas declaradas como 'tensionadas' no podrán incrementar los alquileres vigentes y los nuevos contratos se regirán por un índice oficial de referencia. La medida ha polarizado al sector inmobiliario y a las asociaciones de inquilinos.", truth_score:93, truth_label:"Verificado", is_financial:false, image_url:"https://picsum.photos/id/104/800/500", created_at:new Date(Date.now() - 86400000).toISOString() },
-      { id:6, title:"Tesla reduce el precio del Model 3 en América Latina", category:"business", source:"Reuters", source_url:"https://www.reuters.com", excerpt:"Ajustes de precio significativos en respuesta a la intensa competencia de BYD.", body:"Tesla anunció un recorte de precios estratégico en su sedán Model 3 para competir de forma directa con los vehículos eléctricos de origen chino que ingresan fuertemente en la región. En el mercado mexicano, la versión base baja de $749,000 MXN a $636,000 MXN. BYD y Volvo también anunciaron planes de financiamiento agresivos para mantener su cuota de mercado en Sudamérica.", truth_score:85, truth_label:"Verificado", is_financial:true, chart_data:{ type:"bar", labels:["Tesla M3","BYD Seal","Volvo EX30"], values:[636,589,799], unit:"k MXN", title:"Comparación de Precios de Entrada" }, image_url:"https://picsum.photos/id/107/800/500", created_at:new Date(Date.now() - 172800000).toISOString() },
-      { id:7, title:"Alerta epidemiológica por brote masivo de dengue en Brasil", category:"salud", source:"Fiocruz", source_url:"https://portal.fiocruz.br", excerpt:"Más de 500 mil casos confirmados e inicio de campaña de vacunación masiva.", body:"El instituto de investigación de salud pública Fiocruz ha declarado estado de emergencia epidemiológica en 5 estados del gigante sudamericano. La presencia y rápida propagación del serotipo DENV-3 del virus del dengue ha colapsado clínicas locales. Por su parte, el Ministerio de Salud inició una campaña de inmunización de emergencia utilizando la vacuna Qdenga para proteger a la población menor de 15 años.", truth_score:90, truth_label:"Verificado", is_financial:false, image_url:"https://picsum.photos/id/116/800/500", created_at:new Date(Date.now() - 259200000).toISOString() }
-    ];
-  }
-
-  // Carga de Noticias de la Base de Datos con Fallback robusto
+  // Carga de Noticias de la Base de Datos con Fallback
   async function loadNews() {
     try {
       const res = await fetch('/api/news');
@@ -495,7 +550,6 @@
       writeApp.style.display = 'none';
       
       if (isClerkActive) {
-        // Si Clerk está activo, ocultamos las pestañas personalizadas y montamos el Clerk SignIn directamente!
         document.getElementById('tabRegister').parentElement.style.display = 'none';
         document.getElementById('subRegisterForm').style.display = 'none';
         document.getElementById('subLoginForm').style.display = 'none';
@@ -513,7 +567,6 @@
         clerkSignInDiv.innerHTML = '';
         Clerk.mountSignIn(clerkSignInDiv);
       } else {
-        // Fallback email normal
         document.getElementById('tabRegister').parentElement.style.display = 'flex';
         toggleSubWallTab('register');
         const clerkSignInDiv = document.getElementById('clerkSignInDiv');
@@ -530,7 +583,6 @@
       planBadge.innerText = subPlan.toUpperCase();
       planBadge.className = 'truth-badge ' + (subPlan === 'premium' ? 'truth-badge-high' : subPlan === 'standard' ? 'truth-badge-mid' : 'truth-badge-low');
       
-      // Ocultar botón de Cerrar sesión personalizado si está Clerk
       const logoutBtn = document.querySelector('#writerProfileBadge button');
       if (logoutBtn) {
         logoutBtn.style.display = isClerkActive ? 'none' : 'block';
@@ -552,7 +604,6 @@
       formReg.style.display = 'block';
       formLog.style.display = 'none';
     } else {
-      btnReg.classList.remove('active');
       btnReg.classList.remove('active');
       btnLog.classList.add('active');
       formReg.style.display = 'none';
@@ -587,7 +638,6 @@
         throw new Error();
       }
     } catch(e) {
-      // Fallback offline
       localStorage.setItem('subscriberEmail', email);
       localStorage.setItem('subscriberName', name);
       localStorage.setItem('subscriberPlan', plan);
@@ -683,10 +733,12 @@
     const main = news[0];
     const subs = news.slice(1, 3);
     
+    const mainImg = (main.image_url && !main.image_url.includes('picsum.photos')) ? main.image_url : getFallbackImage(main.category, main.title);
+    
     const heroHtml = `
       <div class="hero-grid">
         <div class="hero-main" onclick="openArticle(${main.id})">
-          <img class="hero-img" src="${main.image_url || 'https://picsum.photos/id/10/800/400'}" alt="${main.title}" loading="lazy">
+          <img class="hero-img" src="${mainImg}" alt="${main.title}" loading="lazy">
           <div class="hero-content">
             <div class="hero-category">${main.category}</div>
             <div class="hero-title">${main.title}</div>
@@ -700,19 +752,22 @@
         </div>
         <div class="hero-sub">
           ${subs.length === 0 ? '<div style="background:var(--bg-card); padding:20px; border-radius:var(--radius-card); display:flex; align-items:center; justify-content:center; flex:1; border: 1px dashed var(--border-light); font-size:0.9rem; color:var(--text-muted);">Sin noticias secundarias para mostrar</div>' : ''}
-          ${subs.map(s => `
-            <div class="sub-card" onclick="openArticle(${s.id})">
-              <img class="sub-img" src="${s.image_url || 'https://picsum.photos/id/20/150/150'}" alt="${s.title}" loading="lazy">
-              <div class="sub-content">
-                <div class="hero-category" style="font-size:0.65rem; margin-bottom:4px;">${s.category}</div>
-                <h4>${s.title}</h4>
-                <div class="hero-meta" style="font-size:0.75rem;">
-                  <span>${s.source}</span>
-                  ${getTruthBadgeHtml(s.truth_score || 85)}
+          ${subs.map(s => {
+            const subImg = (s.image_url && !s.image_url.includes('picsum.photos')) ? s.image_url : getFallbackImage(s.category, s.title);
+            return `
+              <div class="sub-card" onclick="openArticle(${s.id})">
+                <img class="sub-img" src="${subImg}" alt="${s.title}" loading="lazy">
+                <div class="sub-content">
+                  <div class="hero-category" style="font-size:0.65rem; margin-bottom:4px;">${s.category}</div>
+                  <h4>${s.title}</h4>
+                  <div class="hero-meta" style="font-size:0.75rem;">
+                    <span>${s.source}</span>
+                    ${getTruthBadgeHtml(s.truth_score || 85)}
+                  </div>
                 </div>
               </div>
-            </div>
-          `).join('')}
+            `;
+          }).join('')}
         </div>
       </div>
     `;
@@ -729,9 +784,11 @@
     
     grid.innerHTML = news.map(item => {
       const isBookmarked = bookmarkedNews.some(b => b.id === item.id);
+      const cardImg = (item.image_url && !item.image_url.includes('picsum.photos')) ? item.image_url : getFallbackImage(item.category, item.title);
+      
       return `
         <div class="news-card" data-id="${item.id}">
-          <img class="news-card-img" src="${item.image_url || 'https://picsum.photos/id/100/400/250'}" alt="${item.title}" loading="lazy" onclick="openArticle(${item.id})">
+          <img class="news-card-img" src="${cardImg}" alt="${item.title}" loading="lazy" onclick="openArticle(${item.id})">
           <div class="news-card-body">
             <div class="news-category">${item.category}</div>
             <div class="news-card-title" onclick="openArticle(${item.id})">${item.title}</div>
@@ -756,7 +813,6 @@
       `;
     }).join('');
     
-    // Inicializar los charts con una pequeña pausa para asegurar que los elementos canvas estén en el DOM
     news.forEach(item => {
       if (item.is_financial && item.chart_data) {
         setTimeout(() => initChart(`chart_${item.id}`, item.chart_data), 60);
@@ -940,18 +996,21 @@
       return;
     }
     
-    list.innerHTML = bookmarkedNews.map(item => `
-      <div class="bookmark-item" onclick="openArticleFromBookmark(${item.id})">
-        <img class="bookmark-img" src="${item.image_url || 'https://picsum.photos/id/100/100/100'}" alt="${item.title}">
-        <div class="bookmark-info">
-          <div class="bookmark-title">${item.title}</div>
-          <div class="bookmark-meta">
-            <span>${item.source}</span>
-            <button class="remove-bookmark-btn" onclick="event.stopPropagation(); toggleBookmark(${item.id})">Quitar</button>
+    list.innerHTML = bookmarkedNews.map(item => {
+      const bookmarkImg = (item.image_url && !item.image_url.includes('picsum.photos')) ? item.image_url : getFallbackImage(item.category, item.title);
+      return `
+        <div class="bookmark-item" onclick="openArticleFromBookmark(${item.id})">
+          <img class="bookmark-img" src="${bookmarkImg}" alt="${item.title}">
+          <div class="bookmark-info">
+            <div class="bookmark-title">${item.title}</div>
+            <div class="bookmark-meta">
+              <span>${item.source}</span>
+              <button class="remove-bookmark-btn" onclick="event.stopPropagation(); toggleBookmark(${item.id})">Quitar</button>
+            </div>
           </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   function openArticleFromBookmark(id) {
@@ -967,6 +1026,8 @@
     const modal = document.getElementById('articleModal');
     const modalContent = document.getElementById('modalContent');
     
+    const articleImg = (article.image_url && !article.image_url.includes('picsum.photos')) ? article.image_url : getFallbackImage(article.category, article.title);
+    
     modalContent.innerHTML = `
       <div class="hero-category" style="margin-bottom:8px;">${article.category}</div>
       <h2 class="hero-title" style="font-size:2rem; margin-bottom:16px;">${article.title}</h2>
@@ -978,7 +1039,7 @@
         ${article.source_url ? `<a href="${article.source_url}" target="_blank" style="color:var(--accent-blue); text-decoration:none; font-weight:600;">Ver fuente original ↗</a>` : ''}
       </div>
 
-      <img src="${article.image_url || 'https://picsum.photos/id/1/800/400'}" alt="${article.title}" style="width:100%; max-height:360px; object-fit:cover; border-radius:16px; margin-bottom:24px;">
+      <img src="${articleImg}" alt="${article.title}" style="width:100%; max-height:360px; object-fit:cover; border-radius:16px; margin-bottom:24px;">
 
       <div style="font-size:1.1rem; line-height:1.7; color:var(--text-primary); margin-bottom:24px; white-space:pre-wrap;">${article.body || article.excerpt}</div>
       
@@ -1041,7 +1102,13 @@
     const category = document.getElementById('artCategory').value;
     const source = document.getElementById('artSource').value.trim() || 'Fuente / Redactor';
     const excerpt = document.getElementById('artExcerpt').value.trim() || 'Este es un resumen en tiempo real del artículo que estás redactando.';
-    const imageUrl = document.getElementById('artImageUrl').value.trim() || 'https://picsum.photos/id/24/400/250';
+    
+    // Si no ingresan imagen, usar nuestra función inteligente de fallback Unsplash
+    let imageUrl = document.getElementById('artImageUrl').value.trim();
+    if (!imageUrl || imageUrl.includes('picsum.photos')) {
+      imageUrl = getFallbackImage(category, title);
+    }
+    
     const hasData = document.getElementById('artHasData').value === 'yes';
     
     const previewContainer = document.getElementById('livePreviewCard');
@@ -1116,14 +1183,14 @@
     }
   }
 
-  // Publicar Artículo Real con vinculación de correo del escritor
+  // Publicar Artículo Real
   async function publishArticle() {
     const title = document.getElementById('artTitle').value.trim();
     const category = document.getElementById('artCategory').value;
     const source = document.getElementById('artSource').value.trim();
     const excerpt = document.getElementById('artExcerpt').value.trim();
     const body = document.getElementById('artBody').value.trim();
-    const imageUrl = document.getElementById('artImageUrl').value.trim();
+    const imageUrlInput = document.getElementById('artImageUrl').value.trim();
     const hasData = document.getElementById('artHasData').value === 'yes';
     
     if (!title || !category || !source || !excerpt || !body) {
@@ -1146,6 +1213,7 @@
     }
 
     const subscriberEmail = localStorage.getItem('subscriberEmail');
+    const finalImageUrl = (imageUrlInput && !imageUrlInput.includes('picsum.photos')) ? imageUrlInput : getFallbackImage(category, title);
 
     const payload = {
       title,
@@ -1156,7 +1224,7 @@
       body,
       is_financial: hasData,
       chart_data: chartData,
-      image_url: imageUrl || 'https://picsum.photos/id/24/800/500',
+      image_url: finalImageUrl,
       user_email: subscriberEmail || null
     };
 
