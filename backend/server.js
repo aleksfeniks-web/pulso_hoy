@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { pool, initTables, queryWithAuth } = require('./db');
+const { syncNews } = require('./sync');
 require('dotenv').config();
 
 const app = express();
@@ -45,6 +46,28 @@ app.get('/api/news/:id', async (req, res) => {
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: 'Error' });
+  }
+});
+
+// Sincronizar noticias del feed RSS (Cron Job endpoint)
+app.post('/api/cron/sync-news', async (req, res) => {
+  const cronSecret = process.env.CRON_SECRET;
+  
+  if (cronSecret) {
+    const clientSecret = req.headers['x-cron-secret'] || req.query.secret;
+    if (clientSecret !== cronSecret) {
+      return res.status(401).json({ error: 'No autorizado. Secreto incorrecto.' });
+    }
+  } else {
+    console.warn("⚠️ Advertencia: CRON_SECRET no configurado en el archivo .env del servidor. El endpoint de sincronización está desprotegido en modo desarrollo.");
+  }
+  
+  try {
+    const stats = await syncNews();
+    res.json({ success: true, stats });
+  } catch (err) {
+    console.error("Error en sincronización automática:", err);
+    res.status(500).json({ error: 'Error al sincronizar noticias del feed' });
   }
 });
 
