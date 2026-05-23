@@ -1,0 +1,162 @@
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const { pool, initTables } = require('./db');
+require('dotenv').config();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public'))); // Sirve el frontend
+
+initTables();
+
+// ========== API RUTAS ==========
+
+// Obtener todas las noticias publicadas
+app.get('/api/news', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id, title, category, source, source_url, excerpt, body, 
+             truth_score, truth_label, truth_factors, is_financial, 
+             chart_data, image_url, created_at
+      FROM news WHERE status = 'published' ORDER BY created_at DESC
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al obtener noticias' });
+  }
+});
+
+// Obtener una noticia por ID
+app.get('/api/news/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('SELECT * FROM news WHERE id = $1 AND status = $2', [id, 'published']);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'No encontrada' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Error' });
+  }
+});
+
+// Publicar nueva noticia (desde el frontend)
+app.post('/api/news', async (req, res) => {
+  const { title, category, source, source_url, excerpt, body, is_financial, chart_data, image_url, user_email } = req.body;
+  if (!title || !category || !source || !excerpt || !body) {
+    return res.status(400).json({ error: 'Faltan campos obligatorios' });
+  }
+  try {
+    const result = await pool.query(`
+      INSERT INTO news (title, category, source, source_url, excerpt, body, is_financial, chart_data, image_url, user_email, status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'published')
+      RETURNING *
+    `, [title, category, source, source_url, excerpt, body, is_financial || false, chart_data || null, image_url || null, user_email || null]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al guardar noticia' });
+  }
+});
+
+// Suscripción
+app.post('/api/subscribe', async (req, res) => {
+  const { email, name, plan } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email requerido' });
+  try {
+    await pool.query(`
+      INSERT INTO subscribers (email, name, plan) VALUES ($1, $2, $3)
+      ON CONFLICT (email) DO UPDATE SET plan = EXCLUDED.plan, name = EXCLUDED.name
+    `, [email, name || null, plan || 'gratis']);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Error en suscripción' });
+  }
+});
+
+// Dar like (usuario anónimo con token)
+app.post('/api/like', async (req, res) => {
+  const { news_id, user_token } = req.body;
+  if (!news_id || !user_token) return res.status(400).json({ error: 'Faltan datos' });
+  try {
+    await pool.query(`
+      INSERT INTO likes (news_id, user_token) VALUES ($1, $2)
+      ON CONFLICT (news_id, user_token) DO NOTHING
+    `, [news_id, user_token]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al registrar like' });
+  }
+});
+
+// Contar likes de una noticia
+app.get('/api/likes/:news_id', async (req, res) => {
+  const { news_id } = req.params;
+  const result = await pool.query('SELECT COUNT(*) FROM likes WHERE news_id = $1', [news_id]);
+  res.json({ count: parseInt(result.rows[0].count) });
+});
+
+// Guardar para después
+app.post('/api/readlater', async (req, res) => {
+  const { news_id, user_token } = req.body;
+  if (!news_id || !user_token) return res.status(400).json({ error: 'Faltan datos' });
+  try {
+    await pool.query(`
+      INSERT INTO read_later (news_id, user_token) VALUES ($1, $2)
+      ON CONFLICT (news_id, user_token) DO NOTHING
+    `, [news_id, user_token]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al guardar' });
+  }
+});
+
+// Obtener lista de "leer después"
+app.get('/api/readlater/:user_token', async (req, res) => {
+  const { user_token } = req.params;
+  const result = await pool.query(`
+    SELECT n.* FROM read_later rl JOIN news n ON rl.news_id = n.id
+    WHERE rl.user_token = $1 AND n.status = 'published'
+  `, [user_token]);
+  res.json(result.rows);
+});
+
+// Generar RSS feed
+app.get('/rss.xml', async (req, res) => {
+  const result = await pool.query(`
+    SELECT title, excerpt, created_at, id FROM news WHERE status = 'published' ORDER BY created_at DESC LIMIT 20
+  `);
+  const items = result.rows.map(item => `
+    <item>
+      <title>${escapeXml(item.title)}</title>
+      <link>https://pulsohoy.onrender.com/noticia?id=${item.id}</link>
+      <description>${escapeXml(item.excerpt)}</description>
+      <pubDate>${new Date(item.created_at).toUTCString()}</pubDate>
+      <guid>${item.id}</guid>
+    </item>
+  `).join('');
+  const rss = `<?xml version="1.0" encoding="UTF-8"?>
+  <rss version="2.0">
+    <channel>
+      <title>PulsoHoy</title>
+      <link>https://pulsohoy.onrender.com</link>
+      <description>Noticias verificadas del día</description>
+      ${items}
+    </channel>
+  </rss>`;
+  res.header('Content-Type', 'application/rss+xml');
+  res.send(rss);
+});
+
+function escapeXml(str) {
+  return str.replace(/[<>&]/g, (m) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
+}
+
+// Redirigir todo lo demás al index.html (para SPA)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Servidor corriendo en puerto ${PORT}`));
