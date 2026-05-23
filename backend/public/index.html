@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>PulsoHoy — Portal de Noticias Verificadas</title>
+  <title>UnicoNews — Portal de Noticias Verificadas</title>
   <meta name="description" content="Noticias de última hora calificadas rigurosamente por su veracidad, con gráficas financieras dinámicas y diseño premium.">
   
   <!-- Google AdSense (Manteniendo original) -->
@@ -44,7 +44,27 @@
 
 <header class="header">
   <div class="container header-inner">
-    <div class="logo" onclick="handleLogoClick()">Pulso<span>Hoy</span></div>
+    <div class="logo" onclick="handleLogoClick()" style="display: flex; align-items: center; gap: 8px;">
+      <svg class="logo-svg" viewBox="0 0 100 110" width="34" height="38" style="overflow: visible; flex-shrink: 0;">
+        <defs>
+          <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="var(--accent-red)" />
+            <stop offset="100%" stop-color="var(--accent-blue)" />
+          </linearGradient>
+        </defs>
+        <g fill="url(#logoGradient)">
+          <!-- Hook 1 (Left and middle-right) -->
+          <path d="M 16 32 L 29 32 L 24 40 L 24 66 Q 38 80 52 66 L 52 28 L 60 28 L 60 66 Q 38 88 16 66 Z" />
+          <!-- Hook 2 (Right and middle-left) -->
+          <path d="M 84 75 L 71 75 L 76 67 L 76 41 Q 62 27 48 41 L 48 79 L 40 79 L 40 41 Q 62 19 84 41 Z" />
+          <!-- Top dot -->
+          <circle cx="56" cy="16" r="6" />
+          <!-- Bottom dot -->
+          <circle cx="44" cy="91" r="6" />
+        </g>
+      </svg>
+      Unico<span>News</span>
+    </div>
     <div class="nav-links">
       <button class="nav-btn active" data-section="noticias" onclick="switchSection('noticias')">Noticias</button>
       <button class="nav-btn" data-section="tendencias" onclick="switchSection('tendencias')">🔥 Tendencias</button>
@@ -216,7 +236,7 @@
         <!-- Muro de Suscripción (Subscription Wall) -->
         <div id="subWallContainer" class="write-form" style="max-width: 600px; margin: 40px auto; border-radius: var(--radius-card); box-shadow: var(--shadow-lg); text-align: center; border: 1px solid var(--border-light); padding: 40px 32px;">
           <div style="font-size: 3.5rem; margin-bottom: 16px;">✍️</div>
-          <h2 style="font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 12px;">Comunidad de Redactores PulsoHoy</h2>
+          <h2 style="font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 12px;">Comunidad de Redactores UnicoNews</h2>
           <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 28px;">
             Para publicar artículos verificados, analizar la veracidad de los hechos y mostrar gráficas financieras, necesitas unirte a nuestra red de redactores independientes. La suscripción es gratuita y te permite acceder de manera inmediata.
           </p>
@@ -1407,7 +1427,7 @@
     const chartColor = isDark ? '#ffffff' : '#1f2937';
     const gridColor = isDark ? '#334155' : '#f3f4f6';
     
-    const primaryColor = '#ef4444'; // Rojo PulsoHoy
+    const primaryColor = '#ef4444'; // Rojo UnicoNews
     
     chartInstances[canvasId] = new Chart(canvas, {
       type: cd.type || 'line',
@@ -1967,7 +1987,7 @@
     stopAudioNews();
     
     // Construir el texto a leer de manera refinada
-    const textToRead = `Noticia de PulsoHoy. Título: ${article.title}. Publicado por ${article.source}. Categoría: ${article.category}. Desarrollo del artículo: ${article.body || article.excerpt}`;
+    const textToRead = `Noticia de UnicoNews. Título: ${article.title}. Publicado por ${article.source}. Categoría: ${article.category}. Desarrollo del artículo: ${article.body || article.excerpt}`;
     
     activeSpeechUtterance = new SpeechSynthesisUtterance(textToRead);
     activeSpeechUtterance.lang = 'es-ES'; // Forzar idioma español

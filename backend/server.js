@@ -290,7 +290,7 @@ app.get('/rss.xml', async (req, res) => {
   const items = result.rows.map(item => `
     <item>
       <title>${escapeXml(item.title)}</title>
-      <link>https://pulsohoy.onrender.com/noticia?id=${item.id}</link>
+      <link>https://www.uniconews.com/noticia?id=${item.id}</link>
       <description>${escapeXml(item.excerpt)}</description>
       <pubDate>${new Date(item.created_at).toUTCString()}</pubDate>
       <guid>${item.id}</guid>
@@ -299,8 +299,8 @@ app.get('/rss.xml', async (req, res) => {
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
   <rss version="2.0">
     <channel>
-      <title>PulsoHoy</title>
-      <link>https://pulsohoy.onrender.com</link>
+      <title>UnicoNews</title>
+      <link>https://www.uniconews.com</link>
       <description>Noticias verificadas del día</description>
       ${items}
     </channel>

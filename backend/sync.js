@@ -139,7 +139,7 @@ async function syncNews() {
       const source = "BBC Mundo";
       
       // El body será el excerpt expandido con una estructura premium para la visualización detallada
-      const body = `${excerpt}\n\nEste reporte en vivo ha sido captado de los canales oficiales de prensa mundial. Los analistas de PulsoHoy confirman la coherencia de los hechos reportados, proporcionando una calificación de veracidad respaldada por el cruce sistemático de agencias de noticias.\n\nPara ver más detalles o el reporte ampliado, puedes acceder de manera directa al canal de prensa oficial referenciado en la fuente de este artículo.`;
+      const body = `${excerpt}\n\nEste reporte en vivo ha sido captado de los canales oficiales de prensa mundial. Los analistas de UnicoNews confirman la coherencia de los hechos reportados, proporcionando una calificación de veracidad respaldada por el cruce sistemático de agencias de noticias.\n\nPara ver más detalles o el reporte ampliado, puedes acceder de manera directa al canal de prensa oficial referenciado en la fuente de este artículo.`;
       
       // Insertar en base de datos de Neon
       await client.query(`
@@ -161,7 +161,7 @@ async function syncNews() {
         false, // RSS general no incluye gráficas financieras por defecto
         null,
         null, // El frontend aplicará automáticamente el Unsplash Mapper basado en el título/categoría
-        "system@pulsohoy.com",
+        "system@uniconews.com",
         createdAt
       ]);
       

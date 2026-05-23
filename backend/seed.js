@@ -14,7 +14,7 @@ const sampleNews = [
     is_financial: false,
     chart_data: null,
     image_url: null,
-    user_email: "editor@pulsohoy.com"
+    user_email: "editor@uniconews.com"
   },
   {
     title: "Banco de México mantiene tasa de interés de referencia ante inflación persistente",
@@ -35,7 +35,7 @@ const sampleNews = [
       type: "line"
     },
     image_url: null,
-    user_email: "economia@pulsohoy.com"
+    user_email: "economia@uniconews.com"
   },
   {
     title: "Europa acelera planes de transición energética ante olas de calor extremas",
@@ -50,7 +50,7 @@ const sampleNews = [
     is_financial: false,
     chart_data: null,
     image_url: null,
-    user_email: "planeta@pulsohoy.com"
+    user_email: "planeta@uniconews.com"
   },
   {
     title: "Tesla anuncia su próximo coche autónomo de bajo costo para mercados masivos",
@@ -65,7 +65,7 @@ const sampleNews = [
     is_financial: false,
     chart_data: null,
     image_url: null,
-    user_email: "editor@pulsohoy.com"
+    user_email: "editor@uniconews.com"
   },
   {
     title: "Brote de dengue en América Latina activa alertas epidemiológicas nacionales",
@@ -80,7 +80,7 @@ const sampleNews = [
     is_financial: false,
     chart_data: null,
     image_url: null,
-    user_email: "salud@pulsohoy.com"
+    user_email: "salud@uniconews.com"
   },
   {
     title: "El peso mexicano registra volatilidad y presiones frente al dólar arancelario",
@@ -101,7 +101,7 @@ const sampleNews = [
       type: "line"
     },
     image_url: null,
-    user_email: "economia@pulsohoy.com"
+    user_email: "economia@uniconews.com"
   },
   {
     title: "Congreso debate reformas estructurales al sistema de pensiones y jubilación",
@@ -116,7 +116,7 @@ const sampleNews = [
     is_financial: false,
     chart_data: null,
     image_url: null,
-    user_email: "politica@pulsohoy.com"
+    user_email: "politica@uniconews.com"
   },
   {
     title: "Empresas tecnológicas reportan ingresos récord gracias a la adopción corporativa de IA",
@@ -131,7 +131,7 @@ const sampleNews = [
     is_financial: false,
     chart_data: null,
     image_url: null,
-    user_email: "business@pulsohoy.com"
+    user_email: "business@uniconews.com"
   },
   {
     title: "Nuevas rutas comerciales del Ártico abren debates geopolíticos globales",
@@ -146,7 +146,7 @@ const sampleNews = [
     is_financial: false,
     chart_data: null,
     image_url: null,
-    user_email: "planeta@pulsohoy.com"
+    user_email: "planeta@uniconews.com"
   }
 ];
 
