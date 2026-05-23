@@ -21,6 +21,27 @@
 </head>
 <body>
 
+<!-- MOCKUP ADDITION: TRENDING TICKER & LIVE DATE BAR -->
+<div class="top-bar">
+  <div class="container top-bar-inner">
+    <div class="ticker-container">
+      <span class="ticker-badge">TENDENCIA</span>
+      <div class="ticker-wrap">
+        <div class="ticker-move" id="tickerText">Cargando las últimas primicias verificadas del día...</div>
+      </div>
+    </div>
+    <div class="top-bar-right">
+      <span id="topBarDate">Sábado, 23 de Mayo de 2026</span>
+      <div class="social-icons">
+        <a href="#" aria-label="Facebook">F</a>
+        <a href="#" aria-label="Twitter">T</a>
+        <a href="#" aria-label="LinkedIn">L</a>
+        <a href="#" aria-label="Instagram">I</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <header class="header">
   <div class="container header-inner">
     <div class="logo" onclick="goHome()">Pulso<span>Hoy</span></div>
@@ -49,6 +70,14 @@
 </div>
 
 <div class="container">
+  
+  <!-- MOCKUP ADDITION: DASHBOARD CIRCULAR (HOT TOPICS) -->
+  <div class="hot-topics-bar" id="hotTopicsBar" style="display:none;">
+    <div class="hot-topics-grid" id="hotTopicsGrid">
+      <!-- Los elementos circulares se renderizan dinámicamente -->
+    </div>
+  </div>
+
   <!-- Filtros por Categorías -->
   <div class="filters" id="filterContainer">
     <button class="filter-chip active" data-filter="todos">Todas</button>
@@ -77,6 +106,7 @@
     <div class="main-col">
       <!-- SECCIÓN NOTICIAS -->
       <div id="noticiasSection" class="section active">
+        <!-- Hero Grid original modernizado -->
         <div id="heroContainer"></div>
         
         <div class="section-header">
@@ -84,7 +114,56 @@
           <span id="newsCount">Cargando noticias...</span>
         </div>
         
-        <div id="newsGrid" class="news-grid"></div>
+        <div id="newsGrid" class="news-grid" style="margin-bottom: 56px;"></div>
+        
+        <!-- MOCKUP ADDITION: SECCIÓN NOVEDADES CON PESTAÑAS (What's New) -->
+        <div class="novedades-section">
+          <div class="section-header" style="border-bottom: 2px solid var(--border-light); margin-bottom: 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <h2 style="font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 800;">Novedades del Día</h2>
+            <div class="novedades-tabs" id="novedadesTabs">
+              <button class="filter-chip active" data-tab="todos">Todas</button>
+              <button class="filter-chip" data-tab="economia">Economía</button>
+              <button class="filter-chip" data-tab="politica">Política</button>
+              <button class="filter-chip" data-tab="tecnologia">Tecnología</button>
+              <button class="filter-chip" data-tab="mundo">Mundo</button>
+              <button class="filter-chip" data-tab="salud">Salud</button>
+            </div>
+          </div>
+          
+          <div class="novedades-container">
+            <!-- Columna Izquierda: Artículo Principal Grande -->
+            <div id="novedadesMainCard" class="novedades-main"></div>
+            
+            <!-- Columna Central: Lista de Artículos Numerados -->
+            <div id="novedadesList" class="novedades-sub"></div>
+            
+            <!-- Columna Derecha: STAY CONNECTED Social follows -->
+            <div class="novedades-social">
+              <div class="sidebar-widget" style="margin-bottom:0;">
+                <h3>Síguenos</h3>
+                <div class="social-follow-grid">
+                  <div class="social-follow-item fb">
+                    <span class="social-follow-icon">F</span>
+                    <span class="social-follow-count">24k Fans</span>
+                  </div>
+                  <div class="social-follow-item tw">
+                    <span class="social-follow-icon">T</span>
+                    <span class="social-follow-count">18k Seguidores</span>
+                  </div>
+                  <div class="social-follow-item yt">
+                    <span class="social-follow-icon">Y</span>
+                    <span class="social-follow-count">9k Suscriptores</span>
+                  </div>
+                  <div class="social-follow-item ig">
+                    <span class="social-follow-icon">I</span>
+                    <span class="social-follow-count">32k Seguidores</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- SECCIÓN ESCRIBIR (Bloqueada con pared de suscripción si no está activo) -->
@@ -275,68 +354,68 @@
 
   // Variables del Módulo Clerk & Neon Authorize
   let isClerkActive = false;
+  
+  // Variable global para pestaña de novedades
+  let currentNovedadesTab = 'todos';
 
-  // ---------- ALGORITMO DILIGENTE DE IMÁGENES PREMIUM EN VIVO (UNSPLASH MAPPER) ----------
+  // ---------- ALGORITMO DE IMÁGENES PREMIUM EN VIVO (UNSPLASH MAPPER) ----------
   const categoryImages = {
     economia: [
-      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80", // Trading / Gráficos
+      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80", // Trading
       "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=800&q=80", // Monedas
-      "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=800&q=80"  // Billetes / Banco
+      "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=800&q=80"  // Banco
     ],
     politica: [
-      "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=800&q=80", // Senado / Capitolio
-      "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80", // Edificios de gobierno
-      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80"  // Leyes / Mazo de juez
+      "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=800&q=80", // Capitolio
+      "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80", // Gobiernos
+      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80"  // Leyes
     ],
     tecnologia: [
-      "https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80", // Inteligencia Artificial
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80", // Microchip
+      "https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80", // IA
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80", // Chip
       "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80"  // Cyber Security
     ],
     mundo: [
-      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80", // Red global digital
-      "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80", // Mapa terrestre
-      "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80"  // Noticias Internacionales
+      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80", // Red global
+      "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80", // Mapa
+      "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80"  // Global News
     ],
     salud: [
-      "https://images.unsplash.com/photo-1584036561566-baf241830940?auto=format&fit=crop&w=800&q=80", // Vacunas
+      "https://images.unsplash.com/photo-1584036561566-baf241830940?auto=format&fit=crop&w=800&q=80", // Laboratorio
       "https://images.unsplash.com/photo-1530026405186-ed1ea0ac7a63?auto=format&fit=crop&w=800&q=80", // Estetoscopio
-      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80"  // Médico / Hospital
+      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80"  // Clinica
     ],
     business: [
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80", // Rascacielos / Negocios
-      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80", // Reunión de negocios
-      "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80"  // Finanzas corporativas
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80", // Oficinas
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80", // Reunion
+      "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80"  // Corporativo
     ]
   };
 
   function getFallbackImage(category, title) {
     const lowerTitle = (title || "").toLowerCase();
     
-    // Reglas basadas en palabras clave específicas
     if (lowerTitle.includes("tesla") || lowerTitle.includes("coche") || lowerTitle.includes("auto")) {
-      return "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=800&q=80"; // Tesla
+      return "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=800&q=80";
     }
     if (lowerTitle.includes("dólar") || lowerTitle.includes("peso") || lowerTitle.includes("divisa") || lowerTitle.includes("arancelario")) {
-      return "https://images.unsplash.com/photo-1502920514313-52581002a659?auto=format&fit=crop&w=800&q=80"; // Billetes / Forex
+      return "https://images.unsplash.com/photo-1502920514313-52581002a659?auto=format&fit=crop&w=800&q=80";
     }
     if (lowerTitle.includes("inflación") || lowerTitle.includes("precios")) {
-      return "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=800&q=80"; // Monedas / Inflación
+      return "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=800&q=80";
     }
     if (lowerTitle.includes("pensiones") || lowerTitle.includes("jubilación")) {
-      return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80"; // Jubilación
+      return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80";
     }
     if (lowerTitle.includes("gpt") || lowerTitle.includes("openai") || lowerTitle.includes("inteligencia artificial") || lowerTitle.includes("multimodal")) {
-      return "https://images.unsplash.com/photo-1680814903936-e80b137f7a84?auto=format&fit=crop&w=800&q=80"; // IA / ChatGPT
+      return "https://images.unsplash.com/photo-1680814903936-e80b137f7a84?auto=format&fit=crop&w=800&q=80";
     }
     if (lowerTitle.includes("dengue") || lowerTitle.includes("mosquito") || lowerTitle.includes("brote") || lowerTitle.includes("epidemiológica")) {
-      return "https://images.unsplash.com/photo-1584036561566-baf241830940?auto=format&fit=crop&w=800&q=80"; // Vacuna / Salud
+      return "https://images.unsplash.com/photo-1584036561566-baf241830940?auto=format&fit=crop&w=800&q=80";
     }
 
-    // Fallback por Categoría
     const list = categoryImages[category] || categoryImages['mundo'];
     
-    // Hash del título para retornar siempre la misma imagen para un título específico
     let hash = 0;
     const str = title || "";
     for (let i = 0; i < str.length; i++) {
@@ -355,7 +434,6 @@
       if (config.clerkPublishableKey) {
         console.log("🔑 Clerk Publishable Key detectada. Inicializando Clerk Auth...");
         
-        // Cargar script de Clerk dinámicamente
         const script = document.createElement('script');
         script.src = "https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js";
         script.crossOrigin = "anonymous";
@@ -480,7 +558,14 @@
       allNews = generateMockNews();
     }
     await loadBookmarks();
+    
+    // Iniciar datos y vistas dinámicas adicionales del Ticker y Dashboard
+    initTopBarDate();
+    updateTickerHeadline(allNews);
+    renderHotTopics(allNews);
+    
     filterAndRender();
+    renderNovedadesSection();
   }
 
   // Carga de Marcadores
@@ -682,6 +767,137 @@
     localStorage.removeItem('subscriberName');
     localStorage.removeItem('subscriberPlan');
     checkSubscriptionState();
+  }
+
+  // ---------- MOCKUP ADDITIONS: REVOLUTIONARY DYNAMIC PRESENTATIONS ----------
+  function initTopBarDate() {
+    const dateEl = document.getElementById('topBarDate');
+    if (dateEl) {
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      dateEl.innerText = new Date().toLocaleDateString('es-ES', options);
+    }
+  }
+
+  function updateTickerHeadline(news) {
+    const tickerEl = document.getElementById('tickerText');
+    if (tickerEl && news.length > 0) {
+      const sorted = [...news].sort((a,b) => (b.truth_score || 85) - (a.truth_score || 85));
+      tickerEl.innerText = `🔥 NOTICIA PRINCIPAL: "${sorted[0].title}" verificada por expertos con un índice del ${sorted[0].truth_score || 85}%  ·  💵 Banxico y divisas reportan volatilidad de mercado  ·  🤖 OpenAI sorprende al mundo tecnológico con nuevos modelos de cadena lógica.`;
+    }
+  }
+
+  // Renderizar Dashboard Circular (Hot Topics)
+  function renderHotTopics(news) {
+    const grid = document.getElementById('hotTopicsGrid');
+    if (!grid) return;
+    if (!news.length) {
+      document.getElementById('hotTopicsBar').style.display = 'none';
+      return;
+    }
+    document.getElementById('hotTopicsBar').style.display = 'block';
+    
+    // Extraer los 4 artículos con mayor índice de veracidad para el dashboard
+    const sorted = [...news].sort((a,b) => (b.truth_score || 85) - (a.truth_score || 85));
+    const tops = sorted.slice(0, 4);
+    
+    grid.innerHTML = tops.map((item, index) => {
+      const imgUrl = (item.image_url && !item.image_url.includes('picsum.photos')) ? item.image_url : getFallbackImage(item.category, item.title);
+      return `
+        <div class="hot-circle-card" onclick="openArticle(${item.id})">
+          <div class="hot-img-wrap">
+            <img class="hot-circle-img" src="${imgUrl}" alt="${item.title}" loading="lazy">
+            <span class="hot-badge">0${index + 1}</span>
+          </div>
+          <div class="hot-circle-info">
+            <span class="hot-circle-cat">${item.category}</span>
+            <h4 class="hot-circle-title">${item.title}</h4>
+            <span class="hot-circle-date">${formatDate(item.created_at)}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Muelle de Pestañas de Novedades del Día (What's New)
+  function setupNovedadesFilters() {
+    const container = document.getElementById('novedadesTabs');
+    if (!container) return;
+    container.addEventListener('click', (e) => {
+      const tabBtn = e.target.closest('.filter-chip');
+      if (!tabBtn) return;
+      
+      document.querySelectorAll('#novedadesTabs .filter-chip').forEach(t => t.classList.remove('active'));
+      tabBtn.classList.add('active');
+      currentNovedadesTab = tabBtn.getAttribute('data-tab');
+      renderNovedadesSection();
+    });
+  }
+
+  function renderNovedadesSection() {
+    const mainCard = document.getElementById('novedadesMainCard');
+    const list = document.getElementById('novedadesList');
+    if (!mainCard || !list) return;
+    
+    const filtered = currentNovedadesTab === 'todos' ? allNews : allNews.filter(n => n.category === currentNovedadesTab);
+    
+    if (filtered.length === 0) {
+      mainCard.innerHTML = `
+        <div style="padding: 32px; text-align: center; color: var(--text-muted); background: var(--bg-card); border-radius: var(--radius-card); border: 1px dashed var(--border-light); grid-column: 1/span 2; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 260px;">
+          <div style="font-size:2rem; margin-bottom:12px;">📁</div>
+          Sin novedades de momento en esta categoría.
+        </div>
+      `;
+      list.innerHTML = '';
+      return;
+    }
+    
+    // Artículo Principal Izquierdo
+    const main = filtered[0];
+    const mainImg = (main.image_url && !main.image_url.includes('picsum.photos')) ? main.image_url : getFallbackImage(main.category, main.title);
+    
+    mainCard.innerHTML = `
+      <div class="novedades-main-card" onclick="openArticle(${main.id})">
+        <div class="novedades-main-img-wrap">
+          <img src="${mainImg}" alt="${main.title}">
+          <span class="novedades-main-cat-badge">${main.category}</span>
+        </div>
+        <div class="novedades-main-content">
+          <h3 class="novedades-main-title">${main.title}</h3>
+          <p class="novedades-main-excerpt">${main.excerpt}</p>
+          <div class="novedades-main-meta">
+            <strong>${main.source}</strong> · ${formatDate(main.created_at)}
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Lista central de artículos numerados (1, 2, 3...)
+    const subs = filtered.slice(1, 4);
+    if (subs.length === 0) {
+      list.innerHTML = `
+        <div style="padding: 24px; text-align: center; color: var(--text-muted); background: var(--bg-card); border-radius: var(--radius-card); border: 1px dashed var(--border-light); display: flex; align-items: center; justify-content: center; height: 100%;">
+          Sin novedades secundarias.
+        </div>
+      `;
+      return;
+    }
+    
+    list.innerHTML = subs.map((item, index) => {
+      const imgUrl = (item.image_url && !item.image_url.includes('picsum.photos')) ? item.image_url : getFallbackImage(item.category, item.title);
+      return `
+        <div class="novedades-item-row" onclick="openArticle(${item.id})">
+          <div class="novedades-item-img-wrap">
+            <img src="${imgUrl}" alt="${item.title}">
+            <span class="novedades-item-index">${index + 1}</span>
+          </div>
+          <div class="novedades-item-info">
+            <span class="novedades-item-cat">${item.category}</span>
+            <h4 class="novedades-item-title">${item.title}</h4>
+            <span class="novedades-item-date">${formatDate(item.created_at)}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   // Actualizar slider de veracidad
@@ -1097,20 +1313,19 @@
     updateLivePreview();
   }
 
+  // Previsualizador en tiempo real
   function updateLivePreview() {
     const title = document.getElementById('artTitle').value.trim() || 'Título del artículo en vivo';
     const category = document.getElementById('artCategory').value;
     const source = document.getElementById('artSource').value.trim() || 'Fuente / Redactor';
     const excerpt = document.getElementById('artExcerpt').value.trim() || 'Este es un resumen en tiempo real del artículo que estás redactando.';
     
-    // Si no ingresan imagen, usar nuestra función inteligente de fallback Unsplash
     let imageUrl = document.getElementById('artImageUrl').value.trim();
     if (!imageUrl || imageUrl.includes('picsum.photos')) {
       imageUrl = getFallbackImage(category, title);
     }
     
     const hasData = document.getElementById('artHasData').value === 'yes';
-    
     const previewContainer = document.getElementById('livePreviewCard');
     
     previewContainer.innerHTML = `
@@ -1240,6 +1455,11 @@
         const result = await res.json();
         alert("🚀 ¡Artículo publicado exitosamente en el servidor!");
         allNews.unshift(result);
+        
+        // Refrescar vistas del ticker y dashboard circular
+        updateTickerHeadline(allNews);
+        renderHotTopics(allNews);
+        renderNovedadesSection();
       } else {
         throw new Error();
       }
@@ -1254,6 +1474,10 @@
       };
       allNews.unshift(localArticle);
       alert("💡 Artículo publicado en modo sin conexión (memoria temporal).");
+      
+      updateTickerHeadline(allNews);
+      renderHotTopics(allNews);
+      renderNovedadesSection();
     }
 
     // Resetear formulario
@@ -1276,7 +1500,7 @@
       const chip = e.target.closest('.filter-chip');
       if (!chip) return;
       
-      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('#filterContainer .filter-chip').forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
       currentFilter = chip.getAttribute('data-filter');
       filterAndRender();
@@ -1292,6 +1516,7 @@
     darkToggle.innerText = isDark ? '☀️' : '🌙';
     
     filterAndRender();
+    renderNovedadesSection();
   });
 
   if (localStorage.getItem('darkMode') === 'true') {
@@ -1316,6 +1541,7 @@
   initAuthSystem().then(() => {
     loadNews();
     setupFilters();
+    setupNovedadesFilters();
   });
 </script>
 </body>
