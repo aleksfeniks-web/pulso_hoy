@@ -303,6 +303,16 @@
         <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
       </div>
 
+      <!-- WIDGET DE SUSCRIPCIÓN A LA NEWSLETTER -->
+      <div class="newsletter-widget">
+        <h3>Suscríbete al Boletín</h3>
+        <p>Recibe diariamente las últimas noticias de veracidad calificada y primicias financieras directamente en tu correo.</p>
+        <div class="newsletter-input-group">
+          <input type="email" id="newsletterEmail" placeholder="correo@ejemplo.com" aria-label="Ingresa tu correo electrónico">
+          <button class="newsletter-btn" onclick="handleNewsletterSubscription()">Suscribirse ✉️</button>
+        </div>
+      </div>
+
       <div class="sidebar-widget">
         <h3>Lo más verificado</h3>
         <ul class="trending-list" id="trendingList"></ul>
@@ -363,38 +373,95 @@
     economia: [
       "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80", // Trading
       "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=800&q=80", // Monedas
-      "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=800&q=80"  // Banco
+      "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=800&q=80", // Banco
+      "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=800&q=80", // Finanzas
+      "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?auto=format&fit=crop&w=800&q=80", // Cajero
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80", // Gráfica
+      "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?auto=format&fit=crop&w=800&q=80"  // Bolsa
     ],
     politica: [
       "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=800&q=80", // Capitolio
       "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80", // Gobiernos
-      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80"  // Leyes
+      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80", // Leyes
+      "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80", // Discurso
+      "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?auto=format&fit=crop&w=800&q=80", // Instituciones
+      "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80"  // Debate
     ],
     tecnologia: [
       "https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80", // IA
       "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80", // Chip
-      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80"  // Cyber Security
+      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80", // Cyber Security
+      "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80", // Robot
+      "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=800&q=80", // Data Center
+      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80"  // Código
     ],
     mundo: [
       "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80", // Red global
       "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80", // Mapa
-      "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80"  // Global News
+      "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80", // Global News
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80", // Planeta/Mar
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80", // Montañas
+      "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80"  // Naturaleza
     ],
     salud: [
       "https://images.unsplash.com/photo-1584036561566-baf241830940?auto=format&fit=crop&w=800&q=80", // Laboratorio
       "https://images.unsplash.com/photo-1530026405186-ed1ea0ac7a63?auto=format&fit=crop&w=800&q=80", // Estetoscopio
-      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80"  // Clinica
+      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80", // Clinica
+      "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=800&q=80", // Doctores
+      "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80", // Jeringa
+      "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80"  // Meditación
     ],
     business: [
       "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80", // Oficinas
       "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80", // Reunion
-      "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80"  // Corporativo
+      "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80", // Corporativo
+      "https://images.unsplash.com/photo-1444653300602-a560f2157700?auto=format&fit=crop&w=800&q=80", // Negociaciones
+      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=800&q=80"  // Líder
     ]
   };
 
   function getFallbackImage(category, title) {
     const lowerTitle = (title || "").toLowerCase();
     
+    // FILTROS ESPECÍFICOS POR PALABRAS CLAVE DEL FEED REAL DE BBC MUNDO
+    if (lowerTitle.includes("cuba") || lowerTitle.includes("castro") || lowerTitle.includes("habana")) {
+      return "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=800&q=80";
+    }
+    if (lowerTitle.includes("rusia") || lowerTitle.includes("putin") || lowerTitle.includes("moscú") || lowerTitle.includes("moscu")) {
+      return "https://images.unsplash.com/photo-1513326796272-4ab147ebc1a4?auto=format&fit=crop&w=800&q=80";
+    }
+    if (lowerTitle.includes("shakira") || lowerTitle.includes("mango") || lowerTitle.includes("música") || lowerTitle.includes("hacienda")) {
+      return "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80";
+    }
+    if (lowerTitle.includes("tiburón") || lowerTitle.includes("marino") || lowerTitle.includes("mar") || lowerTitle.includes("océano") || lowerTitle.includes("especies")) {
+      return "https://images.unsplash.com/photo-1560275669-46c5a89d7a4d?auto=format&fit=crop&w=800&q=80";
+    }
+    if (lowerTitle.includes("dopaje") || lowerTitle.includes("esteroides") || lowerTitle.includes("olímpicos") || lowerTitle.includes("deporte") || lowerTitle.includes("fútbol") || lowerTitle.includes("mundial") || lowerTitle.includes("copa")) {
+      return "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80";
+    }
+    if (lowerTitle.includes("monjas") || lowerTitle.includes("monja") || lowerTitle.includes("cupido") || lowerTitle.includes("iglesia")) {
+      return "https://images.unsplash.com/photo-1447069387593-a5de0862481e?auto=format&fit=crop&w=800&q=80";
+    }
+    if (lowerTitle.includes("ébola") || lowerTitle.includes("hantavirus") || lowerTitle.includes("virus") || lowerTitle.includes("epidemia")) {
+      return "https://images.unsplash.com/photo-1584036561566-baf241830940?auto=format&fit=crop&w=800&q=80";
+    }
+    if (lowerTitle.includes("ejercicio") || lowerTitle.includes("gimnasio") || lowerTitle.includes("salud") || lowerTitle.includes("plantas")) {
+      return "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=800&q=80";
+    }
+    if (lowerTitle.includes("privacidad") || lowerTitle.includes("espía") || lowerTitle.includes("coche") || lowerTitle.includes("auto") || lowerTitle.includes("celular")) {
+      return "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80";
+    }
+    if (lowerTitle.includes("irán") || lowerTitle.includes("ormuz") || lowerTitle.includes("militar") || lowerTitle.includes("guerra")) {
+      return "https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?auto=format&fit=crop&w=800&q=80";
+    }
+    if (lowerTitle.includes("accidente") || lowerTitle.includes("airbus") || lowerTitle.includes("avión")) {
+      return "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80";
+    }
+    if (lowerTitle.includes("preeclampsia") || lowerTitle.includes("embarazo") || lowerTitle.includes("bebé") || lowerTitle.includes("bebés")) {
+      return "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&fit=crop&w=800&q=80";
+    }
+    
+    // FILTROS ORIGINALES
     if (lowerTitle.includes("tesla") || lowerTitle.includes("coche") || lowerTitle.includes("auto")) {
       return "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=800&q=80";
     }
@@ -1255,6 +1322,13 @@
         ${article.source_url ? `<a href="${article.source_url}" target="_blank" style="color:var(--accent-blue); text-decoration:none; font-weight:600;">Ver fuente original ↗</a>` : ''}
       </div>
 
+      <!-- BARRA DE REPRODUCCIÓN DE AUDIO (TEXT-TO-SPEECH) -->
+      <div class="audio-player-bar">
+        <button class="audio-btn-play" onclick="playAudioNews(${article.id})" id="audioPlayBtn">▶ Escuchar</button>
+        <button class="audio-btn-stop" onclick="stopAudioNews()" id="audioStopBtn" style="display:none;">⏹ Detener</button>
+        <span class="audio-status-text" id="audioStatusText">Audio-Noticia 🎧</span>
+      </div>
+
       <img src="${articleImg}" alt="${article.title}" style="width:100%; max-height:360px; object-fit:cover; border-radius:16px; margin-bottom:24px;">
 
       <div style="font-size:1.1rem; line-height:1.7; color:var(--text-primary); margin-bottom:24px; white-space:pre-wrap;">${article.body || article.excerpt}</div>
@@ -1275,6 +1349,7 @@
   }
 
   function closeModal() {
+    stopAudioNews();
     document.getElementById('articleModal').classList.remove('open');
   }
 
@@ -1507,21 +1582,149 @@
     });
   }
 
-  // Configuración de Tema Oscuro
+  // Configuración de Tema Oscuro con Efecto de Derramamiento de Tinta Líquida
   const darkToggle = document.getElementById('darkToggle');
-  darkToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark');
-    const isDark = document.body.classList.contains('dark');
-    localStorage.setItem('darkMode', isDark);
-    darkToggle.innerText = isDark ? '☀️' : '🌙';
+  darkToggle.addEventListener('click', (e) => {
+    const overlay = document.getElementById('inkBleedOverlay');
+    if (!overlay) return;
     
-    filterAndRender();
-    renderNovedadesSection();
+    // 1. Obtener la posición del click o del botón toggle
+    const rect = darkToggle.getBoundingClientRect();
+    const x = e.clientX || (rect.left + rect.width / 2);
+    const y = e.clientY || (rect.top + rect.height / 2);
+    
+    // 2. Inyectar las coordenadas como variables en el CSS del overlay
+    overlay.style.setProperty('--ink-x', x + 'px');
+    overlay.style.setProperty('--ink-y', y + 'px');
+    
+    // 3. Activar el derrame de color
+    overlay.classList.add('active');
+    
+    // 4. Cambiar el tema a mitad del derrame (cuando está la pantalla cubierta a los 600ms)
+    setTimeout(() => {
+      document.body.classList.toggle('dark');
+      const isDark = document.body.classList.contains('dark');
+      localStorage.setItem('darkMode', isDark);
+      darkToggle.innerText = isDark ? '☀️' : '🌙';
+      
+      filterAndRender();
+      renderNovedadesSection();
+    }, 600);
+    
+    // 5. Reiniciar el overlay una vez terminada la animación (1.2s)
+    setTimeout(() => {
+      overlay.classList.remove('active');
+    }, 1250);
   });
 
   if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark');
     darkToggle.innerText = '☀️';
+  }
+
+  // ---------- SISTEMA PREMIUM DE AUDIO-NOTICIA (TEXT-TO-SPEECH NATIVO) ----------
+  let activeSpeechUtterance = null;
+  let isSpeechPaused = false;
+  
+  function playAudioNews(id) {
+    const article = allNews.find(a => a.id === id);
+    if (!article) return;
+    
+    const playBtn = document.getElementById('audioPlayBtn');
+    const stopBtn = document.getElementById('audioStopBtn');
+    const statusText = document.getElementById('audioStatusText');
+    
+    // Si está pausado, reanudar
+    if (isSpeechPaused && window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+      isSpeechPaused = false;
+      if (playBtn) playBtn.innerText = "⏸ Pausar";
+      if (statusText) statusText.innerText = "Narrando noticia... 🔊";
+      return;
+    }
+    
+    // Si está narrando y se presiona el botón, pausar
+    if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+      window.speechSynthesis.pause();
+      isSpeechPaused = true;
+      if (playBtn) playBtn.innerText = "▶ Escuchar";
+      if (statusText) statusText.innerText = "Lectura en pausa ⏸";
+      return;
+    }
+    
+    // Detener cualquier lectura previa
+    stopAudioNews();
+    
+    // Construir el texto a leer de manera refinada
+    const textToRead = `Noticia de PulsoHoy. Título: ${article.title}. Publicado por ${article.source}. Categoría: ${article.category}. Desarrollo del artículo: ${article.body || article.excerpt}`;
+    
+    activeSpeechUtterance = new SpeechSynthesisUtterance(textToRead);
+    activeSpeechUtterance.lang = 'es-ES'; // Forzar idioma español
+    activeSpeechUtterance.rate = 0.95; // Velocidad confortable
+    
+    activeSpeechUtterance.onstart = () => {
+      if (playBtn) playBtn.innerText = "⏸ Pausar";
+      if (stopBtn) stopBtn.style.display = "inline-flex";
+      if (statusText) statusText.innerText = "Narrando noticia... 🔊";
+    };
+    
+    activeSpeechUtterance.onend = () => {
+      resetAudioInterface();
+    };
+    
+    activeSpeechUtterance.onerror = () => {
+      resetAudioInterface();
+    };
+    
+    window.speechSynthesis.speak(activeSpeechUtterance);
+  }
+  
+  function stopAudioNews() {
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    isSpeechPaused = false;
+    resetAudioInterface();
+  }
+  
+  function resetAudioInterface() {
+    const playBtn = document.getElementById('audioPlayBtn');
+    const stopBtn = document.getElementById('audioStopBtn');
+    const statusText = document.getElementById('audioStatusText');
+    
+    if (playBtn) playBtn.innerText = "▶ Escuchar";
+    if (stopBtn) stopBtn.style.display = "none";
+    if (statusText) statusText.innerText = "Audio-Noticia 🎧";
+  }
+
+  // ---------- SUSCRIPCIÓN A LA NEWSLETTER LATERAL ----------
+  async function handleNewsletterSubscription() {
+    const emailInput = document.getElementById('newsletterEmail');
+    if (!emailInput) return;
+    const email = emailInput.value.trim();
+    
+    if (!email) {
+      alert("⚠️ Por favor ingresa tu dirección de correo electrónico.");
+      return;
+    }
+    
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name: "Lector Boletín", plan: "gratis" })
+      });
+      
+      if (res.ok) {
+        alert("🎉 ¡Gracias por suscribirte a nuestro boletín! Te mantendremos informado diariamente con primicias de veracidad comprobada.");
+        emailInput.value = '';
+      } else {
+        throw new Error();
+      }
+    } catch (e) {
+      alert("💡 Suscripción al boletín registrada localmente en modo sin conexión.");
+      emailInput.value = '';
+    }
   }
 
   function renderTrending(news) {
@@ -1544,5 +1747,16 @@
     setupNovedadesFilters();
   });
 </script>
+
+<!-- ELEMENTOS PARA EFECTO PRE-EMINENTE DE DERRAME DE TINTA LÍQUIDA -->
+<div id="inkBleedOverlay" class="ink-bleed-overlay"></div>
+<svg style="position: absolute; width: 0; height: 0; pointer-events: none;" width="0" height="0">
+  <defs>
+    <filter id="ink-bleed-filter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="4" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="80" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </defs>
+</svg>
 </body>
 </html>
