@@ -75,6 +75,22 @@ app.post('/api/subscribe', async (req, res) => {
   }
 });
 
+// Verificar suscripción por email
+app.post('/api/subscribe/verify', async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email requerido' });
+  try {
+    const result = await pool.query('SELECT * FROM subscribers WHERE email = $1', [email]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Email no registrado como suscriptor' });
+    }
+    res.json({ success: true, subscriber: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al verificar suscripción' });
+  }
+});
+
 // Dar like (usuario anónimo con token)
 app.post('/api/like', async (req, res) => {
   const { news_id, user_token } = req.body;

@@ -87,11 +87,67 @@
         <div id="newsGrid" class="news-grid"></div>
       </div>
 
-      <!-- SECCIÓN ESCRIBIR -->
+      <!-- SECCIÓN ESCRIBIR (Bloqueada con pared de suscripción si no está activo) -->
       <div id="escribirSection" class="section" style="display:none;">
-        <div class="write-container">
+        
+        <!-- Muro de Suscripción (Subscription Wall) -->
+        <div id="subWallContainer" class="write-form" style="max-width: 600px; margin: 40px auto; border-radius: var(--radius-card); box-shadow: var(--shadow-lg); text-align: center; border: 1px solid var(--border-light); padding: 40px 32px;">
+          <div style="font-size: 3.5rem; margin-bottom: 16px;">✍️</div>
+          <h2 style="font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 12px;">Comunidad de Redactores PulsoHoy</h2>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 28px;">
+            Para publicar artículos verificados, analizar la veracidad de los hechos y mostrar gráficas financieras, necesitas unirte a nuestra red de redactores independientes. La suscripción es gratuita y te permite acceder de manera inmediata.
+          </p>
+          
+          <!-- Formularios Tabs: Suscribirse / Iniciar Sesión -->
+          <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; border-bottom: 1px solid var(--border-light); padding-bottom: 16px;">
+            <button id="tabRegister" class="filter-chip active" onclick="toggleSubWallTab('register')">Registrarse</button>
+            <button id="tabLogin" class="filter-chip" onclick="toggleSubWallTab('login')">Ya tengo cuenta</button>
+          </div>
+          
+          <!-- Formulario de Registro -->
+          <div id="subRegisterForm">
+            <div class="form-group" style="text-align: left;">
+              <label for="subName">Nombre Completo *</label>
+              <input type="text" id="subName" placeholder="Tu nombre para firmar las noticias">
+            </div>
+            <div class="form-group" style="text-align: left;">
+              <label for="subEmail">Email de Suscriptor *</label>
+              <input type="email" id="subEmail" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="form-group" style="text-align: left;">
+              <label for="subPlan">Plan de Redactor *</label>
+              <select id="subPlan">
+                <option value="gratis">Colaborador Inicial (Gratis)</option>
+                <option value="standard">Analista Certificado (Standard)</option>
+                <option value="premium">Editor Senior (Premium)</option>
+              </select>
+            </div>
+            <button class="like-btn" style="background:var(--accent-red); color:white; font-weight:700; width:100%; height:46px; margin-top:8px; font-size:0.95rem; display:block;" onclick="handleSubscription()">Suscribirme y Empezar 🚀</button>
+          </div>
+          
+          <!-- Formulario de Acceso -->
+          <div id="subLoginForm" style="display: none;">
+            <div class="form-group" style="text-align: left;">
+              <label for="loginEmail">Email registrado *</label>
+              <input type="email" id="loginEmail" placeholder="correo@ejemplo.com">
+            </div>
+            <button class="like-btn" style="background:var(--accent-blue); color:white; font-weight:700; width:100%; height:46px; margin-top:8px; font-size:0.95rem; display:block;" onclick="handleSubscriberLogin()">Acceder con mi Cuenta 🔑</button>
+          </div>
+        </div>
+
+        <!-- Editor de Artículos (Oculto si no está suscrito) -->
+        <div id="writeAppContainer" class="write-container" style="display:none;">
           <!-- Formulario de redacción -->
           <div class="write-form">
+            <!-- Perfil de Redactor Activo -->
+            <div id="writerProfileBadge" style="background:var(--bg-body); border:1px solid var(--border-light); border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; font-size:0.85rem;">
+              <div>
+                👤 Redactando como: <strong id="writerNameSpan">Nombre</strong> (<span id="writerEmailSpan">email@correo.com</span>) 
+                <span id="writerPlanBadge" class="truth-badge truth-badge-high" style="margin-left:8px; padding:2px 8px; font-size:0.65rem;">Plan</span>
+              </div>
+              <button onclick="handleWriterLogout()" style="background:transparent; border:none; color:var(--accent-red); font-weight:700; cursor:pointer; text-decoration:underline;">Cerrar sesión</button>
+            </div>
+
             <h3>Publicar nuevo artículo</h3>
             <div class="form-group">
               <label for="artTitle">Título *</label>
@@ -154,6 +210,7 @@
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
@@ -275,7 +332,7 @@
     document.getElementById('sidebarCol').style.display = section === 'noticias' ? 'flex' : 'none';
     
     if (section === 'escribir') {
-      updateLivePreview();
+      checkSubscriptionState();
     }
   }
 
@@ -295,6 +352,126 @@
     });
     
     filterAndRender();
+  }
+
+  // ---------- CONTROL DE SUSCRIPCIONES & REGISTROS ----------
+  function checkSubscriptionState() {
+    const subEmail = localStorage.getItem('subscriberEmail');
+    const subName = localStorage.getItem('subscriberName');
+    const subPlan = localStorage.getItem('subscriberPlan') || 'gratis';
+    
+    const subWall = document.getElementById('subWallContainer');
+    const writeApp = document.getElementById('writeAppContainer');
+    
+    if (!subEmail) {
+      subWall.style.display = 'block';
+      writeApp.style.display = 'none';
+    } else {
+      subWall.style.display = 'none';
+      writeApp.style.display = 'grid';
+      
+      document.getElementById('writerNameSpan').innerText = subName;
+      document.getElementById('writerEmailSpan').innerText = subEmail;
+      
+      const planBadge = document.getElementById('writerPlanBadge');
+      planBadge.innerText = subPlan.toUpperCase();
+      planBadge.className = 'truth-badge ' + (subPlan === 'premium' ? 'truth-badge-high' : subPlan === 'standard' ? 'truth-badge-mid' : 'truth-badge-low');
+      
+      updateLivePreview();
+    }
+  }
+
+  function toggleSubWallTab(tab) {
+    const btnReg = document.getElementById('tabRegister');
+    const btnLog = document.getElementById('tabLogin');
+    const formReg = document.getElementById('subRegisterForm');
+    const formLog = document.getElementById('subLoginForm');
+    
+    if (tab === 'register') {
+      btnReg.classList.add('active');
+      btnLog.classList.remove('active');
+      formReg.style.display = 'block';
+      formLog.style.display = 'none';
+    } else {
+      btnReg.classList.remove('active');
+      btnLog.classList.add('active');
+      formReg.style.display = 'none';
+      formLog.style.display = 'block';
+    }
+  }
+
+  async function handleSubscription() {
+    const name = document.getElementById('subName').value.trim();
+    const email = document.getElementById('subEmail').value.trim();
+    const plan = document.getElementById('subPlan').value;
+    
+    if (!name || !email) {
+      alert("⚠️ Por favor completa tu nombre y correo electrónico.");
+      return;
+    }
+    
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name, plan })
+      });
+      
+      if (res.ok) {
+        localStorage.setItem('subscriberEmail', email);
+        localStorage.setItem('subscriberName', name);
+        localStorage.setItem('subscriberPlan', plan);
+        alert("🎉 ¡Te has registrado como redactor exitosamente!");
+        checkSubscriptionState();
+      } else {
+        throw new Error();
+      }
+    } catch(e) {
+      // Fallback offline
+      localStorage.setItem('subscriberEmail', email);
+      localStorage.setItem('subscriberName', name);
+      localStorage.setItem('subscriberPlan', plan);
+      alert("💡 Suscripción registrada localmente en modo fuera de línea.");
+      checkSubscriptionState();
+    }
+  }
+
+  async function handleSubscriberLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    if (!email) {
+      alert("⚠️ Por favor ingresa tu correo electrónico.");
+      return;
+    }
+    
+    try {
+      const res = await fetch('/api/subscribe/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        const sub = data.subscriber;
+        localStorage.setItem('subscriberEmail', sub.email);
+        localStorage.setItem('subscriberName', sub.name || 'Redactor');
+        localStorage.setItem('subscriberPlan', sub.plan || 'gratis');
+        alert(`👋 ¡Acceso verificado! Bienvenido de vuelta, ${sub.name}.`);
+        checkSubscriptionState();
+      } else {
+        const err = await res.json();
+        alert(`⚠️ ${err.error || 'El email no está registrado como suscriptor.'}`);
+      }
+    } catch(e) {
+      alert("⚠️ Error de red. No es posible conectar al servidor para verificar tu email.");
+    }
+  }
+
+  function handleWriterLogout() {
+    localStorage.removeItem('subscriberEmail');
+    localStorage.removeItem('subscriberName');
+    localStorage.removeItem('subscriberPlan');
+    checkSubscriptionState();
   }
 
   // Actualizar slider de veracidad
@@ -469,9 +646,7 @@
     const chartColor = isDark ? '#ffffff' : '#1f2937';
     const gridColor = isDark ? '#334155' : '#f3f4f6';
     
-    // Colores del dataset
-    const primaryColor = '#ef4444'; // Rojo PulsoHoy HSL(346, 77%, 49%)
-    const hoverColor = '#dc2626';
+    const primaryColor = '#ef4444'; // Rojo PulsoHoy
     
     chartInstances[canvasId] = new Chart(canvas, {
       type: cd.type || 'line',
@@ -541,7 +716,6 @@
         throw new Error();
       }
     } catch(e) {
-      // Fallback local
       const likesEl = document.getElementById(`likes_${id}`);
       if (likesEl) {
         likesEl.innerText = parseInt(likesEl.innerText) + 1;
@@ -569,11 +743,9 @@
     const btn = document.getElementById(`bookmarkBtn_${id}`);
     
     if (isBookmarked) {
-      // Remover
       bookmarkedNews = bookmarkedNews.filter(b => b.id !== id);
       if (btn) btn.classList.remove('active');
     } else {
-      // Agregar
       const item = allNews.find(n => n.id === id);
       if (item) {
         bookmarkedNews.push(item);
@@ -581,7 +753,6 @@
       }
     }
 
-    // Sincronizar
     try {
       const endpoint = isBookmarked ? `/api/readlater/remove` : `/api/readlater`;
       await fetch(endpoint, {
@@ -591,7 +762,6 @@
       });
     } catch(e) {}
     
-    // Persistencia en localStorage
     localStorage.setItem(`bookmarks_${userToken}`, JSON.stringify(bookmarkedNews));
     
     if (document.getElementById('bookmarksDrawer').classList.contains('open')) {
@@ -785,7 +955,7 @@
     }
   }
 
-  // Publicar Artículo Real
+  // Publicar Artículo Real con vinculación de correo del escritor
   async function publishArticle() {
     const title = document.getElementById('artTitle').value.trim();
     const category = document.getElementById('artCategory').value;
@@ -814,6 +984,8 @@
       }
     }
 
+    const subscriberEmail = localStorage.getItem('subscriberEmail');
+
     const payload = {
       title,
       category,
@@ -824,7 +996,7 @@
       is_financial: hasData,
       chart_data: chartData,
       image_url: imageUrl || 'https://picsum.photos/id/24/800/500',
-      user_email: null
+      user_email: subscriberEmail || null
     };
 
     try {
@@ -837,18 +1009,16 @@
       if (res.ok) {
         const result = await res.json();
         alert("🚀 ¡Artículo publicado exitosamente en el servidor!");
-        // Agregar al inicio de los datos locales
         allNews.unshift(result);
       } else {
         throw new Error();
       }
     } catch(e) {
       console.warn("Error de conexión al guardar en la base de datos. Guardando localmente en memoria.");
-      // Fallback local en memoria
       const localArticle = {
         ...payload,
         id: Date.now(),
-        truth_score: Math.floor(Math.random() * 20) + 80, // Score aleatorio 80-99
+        truth_score: Math.floor(Math.random() * 20) + 80,
         truth_label: "Verificado",
         created_at: new Date().toISOString()
       };
@@ -891,7 +1061,6 @@
     localStorage.setItem('darkMode', isDark);
     darkToggle.innerText = isDark ? '☀️' : '🌙';
     
-    // Destruir y volver a inicializar gráficos para actualizar colores
     filterAndRender();
   });
 
@@ -904,7 +1073,6 @@
     const list = document.getElementById('trendingList');
     if (!list) return;
     
-    // Ordenar por score de veracidad descendente y tomar las 5 mejores
     const sorted = [...news].sort((a,b) => (b.truth_score || 85) - (a.truth_score || 85));
     list.innerHTML = sorted.slice(0, 5).map((n, i) => `
       <li onclick="openArticle(${n.id})">
