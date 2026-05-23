@@ -112,6 +112,20 @@ app.post('/api/readlater', async (req, res) => {
   }
 });
 
+// Eliminar de guardar para después
+app.post('/api/readlater/remove', async (req, res) => {
+  const { news_id, user_token } = req.body;
+  if (!news_id || !user_token) return res.status(400).json({ error: 'Faltan datos' });
+  try {
+    await pool.query(`
+      DELETE FROM read_later WHERE news_id = $1 AND user_token = $2
+    `, [news_id, user_token]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al quitar' });
+  }
+});
+
 // Obtener lista de "leer después"
 app.get('/api/readlater/:user_token', async (req, res) => {
   const { user_token } = req.params;

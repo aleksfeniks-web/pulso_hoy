@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>PulsoHoy — Noticias verificadas</title>
-  <meta name="description" content="Noticias del día calificadas por veracidad, con gráficas financieras y diseño moderno.">
+  <title>PulsoHoy — Portal de Noticias Verificadas</title>
+  <meta name="description" content="Noticias de última hora calificadas rigurosamente por su veracidad, con gráficas financieras dinámicas y diseño premium.">
   
-  <!-- Google AdSense -->
+  <!-- Google AdSense (Manteniendo original) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1346198069090338"
      crossorigin="anonymous"></script>
 
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
   
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -23,11 +23,12 @@
 
 <header class="header">
   <div class="container header-inner">
-    <div class="logo">Pulso<span>Hoy</span></div>
+    <div class="logo" onclick="goHome()">Pulso<span>Hoy</span></div>
     <div class="nav-links">
-      <button class="nav-btn active" data-section="noticias">Noticias</button>
-      <button class="nav-btn" data-section="escribir">✍ Escribir</button>
-      <button class="dark-toggle" id="darkToggle">🌙</button>
+      <button class="nav-btn active" data-section="noticias" onclick="switchSection('noticias')">Noticias</button>
+      <button class="nav-btn" data-section="escribir" onclick="switchSection('escribir')">✍ Escribir</button>
+      <button class="nav-btn" onclick="toggleBookmarksDrawer()">🔖 Marcadores</button>
+      <button class="dark-toggle" id="darkToggle" aria-label="Cambiar tema">🌙</button>
     </div>
   </div>
 </header>
@@ -48,6 +49,7 @@
 </div>
 
 <div class="container">
+  <!-- Filtros por Categorías -->
   <div class="filters" id="filterContainer">
     <button class="filter-chip active" data-filter="todos">Todas</button>
     <button class="filter-chip" data-filter="economia">Economía</button>
@@ -55,49 +57,108 @@
     <button class="filter-chip" data-filter="tecnologia">Tecnología</button>
     <button class="filter-chip" data-filter="mundo">Mundo</button>
     <button class="filter-chip" data-filter="salud">Salud</button>
+    <button class="filter-chip" data-filter="business">Negocios</button>
+  </div>
+
+  <!-- Panel de Control Premium (Búsqueda y Veracidad) -->
+  <div class="control-panel" id="controlPanel">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Buscar noticias por título, fuente, resumen..." oninput="filterAndRender()">
+    </div>
+    <div class="truth-filter">
+      <label for="truthRange">Veracidad mín: <span id="truthRangeValue">50</span>%</label>
+      <input type="range" id="truthRange" min="50" max="100" value="50" step="5" oninput="updateTruthRangeLabel(this.value)">
+    </div>
   </div>
 
   <div class="layout">
-    <!-- Columna principal -->
+    <!-- Columna Principal -->
     <div class="main-col">
+      <!-- SECCIÓN NOTICIAS -->
       <div id="noticiasSection" class="section active">
         <div id="heroContainer"></div>
+        
         <div class="section-header">
           <h2>Últimas noticias</h2>
-          <span id="newsCount"></span>
+          <span id="newsCount">Cargando noticias...</span>
         </div>
+        
         <div id="newsGrid" class="news-grid"></div>
       </div>
 
+      <!-- SECCIÓN ESCRIBIR -->
       <div id="escribirSection" class="section" style="display:none;">
-        <div class="write-form">
-          <h3>Publicar nuevo artículo</h3>
-          <div class="form-group"><input type="text" id="artTitle" placeholder="Título *"></div>
-          <div class="form-group">
-            <select id="artCategory">
-              <option value="economia">Economía</option><option value="politica">Política</option>
-              <option value="tecnologia">Tecnología</option><option value="mundo">Mundo</option>
-              <option value="salud">Salud</option><option value="business">Negocios</option>
-            </select>
+        <div class="write-container">
+          <!-- Formulario de redacción -->
+          <div class="write-form">
+            <h3>Publicar nuevo artículo</h3>
+            <div class="form-group">
+              <label for="artTitle">Título *</label>
+              <input type="text" id="artTitle" placeholder="Título atractivo y verídico" oninput="updateLivePreview()">
+            </div>
+            
+            <div class="form-group">
+              <label for="artCategory">Categoría *</label>
+              <select id="artCategory" onchange="updateLivePreview()">
+                <option value="economia">Economía</option>
+                <option value="politica">Política</option>
+                <option value="tecnologia">Tecnología</option>
+                <option value="mundo">Mundo</option>
+                <option value="salud">Salud</option>
+                <option value="business">Negocios</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="artSource">Fuente / Autor *</label>
+              <input type="text" id="artSource" placeholder="Ej. Banco de México, Reuters" oninput="updateLivePreview()">
+            </div>
+            
+            <div class="form-group">
+              <label for="artImageUrl">URL de imagen (opcional)</label>
+              <input type="url" id="artImageUrl" placeholder="https://images.unsplash.com/photo-..." oninput="updateLivePreview()">
+            </div>
+            
+            <div class="form-group">
+              <label for="artExcerpt">Resumen del artículo *</label>
+              <input type="text" id="artExcerpt" placeholder="Breve introducción de 1 a 2 oraciones" oninput="updateLivePreview()">
+            </div>
+            
+            <div class="form-group">
+              <label for="artBody">Cuerpo del artículo *</label>
+              <textarea id="artBody" rows="7" placeholder="Escribe los hechos y el desarrollo completo aquí..." oninput="updateLivePreview()"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label for="artHasData">¿Incluye gráfico financiero?</label>
+              <select id="artHasData" onchange="toggleFinDataInput(this.value)">
+                <option value="no">No</option>
+                <option value="yes">Sí, contiene datos financieros</option>
+              </select>
+            </div>
+            
+            <div id="finDataSection" style="display:none;" class="form-group">
+              <label for="artFinData">Datos en formato JSON *</label>
+              <textarea id="artFinData" rows="3" placeholder='{"labels":["Ene","Feb","Mar"],"values":[100,120,150],"title":"Ventas","unit":"MXN"}' oninput="updateLivePreview()"></textarea>
+            </div>
+            
+            <button class="like-btn" style="background:var(--accent-red); color:white; font-weight:700; width:100%; height:46px; margin-top:12px; font-size:0.95rem; display:block;" onclick="publishArticle()">🚀 Publicar Artículo</button>
           </div>
-          <div class="form-group"><input type="text" id="artSource" placeholder="Fuente / Autor *"></div>
-          <div class="form-group"><input type="url" id="artImageUrl" placeholder="URL de imagen (opcional)"></div>
-          <div class="form-group"><input type="text" id="artExcerpt" placeholder="Resumen *"></div>
-          <div class="form-group"><textarea id="artBody" rows="6" placeholder="Cuerpo del artículo *"></textarea></div>
-          <div class="form-group">
-            <label>¿Datos financieros?</label>
-            <select id="artHasData"><option value="no">No</option><option value="yes">Sí</option></select>
+          
+          <!-- Previsualizador dinámico -->
+          <div class="write-preview">
+            <h3>Vista Previa en Vivo</h3>
+            <div id="livePreviewCard">
+              <!-- Renderizado en tiempo real -->
+            </div>
           </div>
-          <div id="finDataSection" style="display:none;">
-            <textarea id="artFinData" placeholder='{"labels":["Ene","Feb"],"values":[100,150],"title":"Ventas","unit":"MXN"}'></textarea>
-          </div>
-          <button class="like-btn" style="background:var(--accent-red); color:white; margin-top:12px;" onclick="publishArticle()">Publicar</button>
         </div>
       </div>
     </div>
 
-    <!-- Barra lateral -->
-    <aside class="sidebar-col">
+    <!-- Barra Lateral -->
+    <aside class="sidebar-col" id="sidebarCol">
       <div class="sidebar-widget sidebar-ad">
         <ins class="adsbygoogle"
              style="display:inline-block;width:300px;height:250px"
@@ -107,7 +168,7 @@
       </div>
 
       <div class="sidebar-widget">
-        <h3>Lo más leído</h3>
+        <h3>Lo más verificado</h3>
         <ul class="trending-list" id="trendingList"></ul>
       </div>
 
@@ -122,224 +183,740 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="articleModal">
+<!-- Modal Detalle Noticia -->
+<div class="modal-overlay" id="articleModal" onclick="handleOverlayClick(event)">
   <div class="modal">
+    <button class="close-modal-btn" onclick="closeModal()" aria-label="Cerrar modal">✕</button>
     <div id="modalContent"></div>
-    <button onclick="closeModal()" style="margin-top:16px;">Cerrar</button>
+  </div>
+</div>
+
+<!-- Drawer de Marcadores (Slide-out) -->
+<div class="drawer-overlay" id="bookmarksDrawer" onclick="handleDrawerOverlayClick(event)">
+  <div class="drawer">
+    <div class="drawer-header">
+      <h3>🔖 Mis Marcadores</h3>
+      <button class="close-drawer-btn" onclick="toggleBookmarksDrawer()" aria-label="Cerrar marcadores">✕</button>
+    </div>
+    <div class="drawer-body" id="bookmarksList">
+      <!-- Los marcadores se insertarán aquí dinámicamente -->
+    </div>
   </div>
 </div>
 
 <script>
-  // ---------- MOCK NEWS (fallback si no hay backend) ----------
   let allNews = [];
+  let bookmarkedNews = [];
   let currentFilter = 'todos';
-  let userToken = localStorage.getItem('userToken') || 'user_' + Math.random().toString(36).substr(2);
+  let currentSearch = '';
+  let currentMinTruth = 50;
+  let userToken = localStorage.getItem('userToken') || 'user_' + Math.random().toString(36).substr(2, 9);
+  localStorage.setItem('userToken', userToken);
+  
   let chartInstances = {};
+  let previewChartInstance = null;
 
   function generateMockNews() {
     return [
-      { id:1, title:"Inflación en México baja al 4.2% en enero", category:"economia", source:"Banxico", excerpt:"Mejor dato en 18 meses, por debajo de expectativas.", body:"El INEGI reportó una disminución...", truth_score:94, truth_label:"Verificado", is_financial:true, chart_data:{ type:"line", labels:["Sep","Oct","Nov","Dic","Ene"], values:[4.45,4.26,4.32,4.66,4.20], unit:"%" }, image_url:"https://picsum.photos/id/20/400/250", created_at:new Date().toISOString() },
-      { id:2, title:"Senado aprueba reforma de pensiones", category:"politica", source:"El Universal", excerpt:"Aumento gradual de cuotas patronales.", body:"La reforma fue aprobada...", truth_score:82, truth_label:"Verificado", is_financial:true, chart_data:{ type:"bar", labels:["2025","2026","2027"], values:[5.15,8.2,11.9], unit:"%" }, image_url:"https://picsum.photos/id/26/400/250", created_at:new Date().toISOString() },
-      { id:3, title:"Dólar alcanza $18.50 pesos", category:"economia", source:"Bloomberg", excerpt:"Volatilidad por anuncios arancelarios.", body:"El peso se depreció 2.1%...", truth_score:76, truth_label:"Probable", is_financial:true, chart_data:{ type:"line", labels:["Lun","Mar","Mié","Jue","Vie"], values:[17.92,17.85,18.10,18.35,18.50], unit:"MXN" }, image_url:"https://picsum.photos/id/30/400/250", created_at:new Date().toISOString() },
-      { id:4, title:"OpenAI presenta GPT-5 multimodal", category:"tecnologia", source:"TechCrunch", excerpt:"Razonamiento avanzado en texto e imagen.", body:"Nuevo modelo con cadena de pensamiento...", truth_score:88, truth_label:"Verificado", is_financial:false, image_url:"https://picsum.photos/id/0/400/250", created_at:new Date().toISOString() },
-      { id:5, title:"Ley de vivienda en España", category:"politica", source:"El País", excerpt:"Congelación de alquileres en zonas tensionadas.", body:"El Consejo de Ministros aprobó...", truth_score:93, truth_label:"Verificado", is_financial:false, image_url:"https://picsum.photos/id/104/400/250", created_at:new Date().toISOString() },
-      { id:6, title:"Tesla reduce precio del Model 3", category:"business", source:"Reuters", excerpt:"Baja de $749k a $636k MXN.", body:"Estrategia frente a BYD...", truth_score:85, truth_label:"Verificado", is_financial:true, chart_data:{ type:"bar", labels:["Tesla","BYD","Volvo"], values:[636,589,799], unit:"k MXN" }, image_url:"https://picsum.photos/id/107/400/250", created_at:new Date().toISOString() },
-      { id:7, title:"Brote de dengue en Brasil", category:"salud", source:"Fiocruz", excerpt:"500 mil casos, emergencia en 5 estados.", body:"Serotipo DENV-3 circula...", truth_score:90, truth_label:"Verificado", is_financial:false, image_url:"https://picsum.photos/id/116/400/250", created_at:new Date().toISOString() }
+      { id:1, title:"Inflación en México baja al 4.2% en enero", category:"economia", source:"Banxico", source_url:"https://www.banxico.org.mx", excerpt:"Mejor dato en 18 meses, por debajo de expectativas del mercado.", body:"El INEGI reportó una disminución de la inflación general a 4.2% en tasa anual durante el primer mes del año. Esta cifra representa el mejor desempeño inflacionario en un año y medio, impulsado principalmente por una baja en los precios agropecuarios y una estabilidad en el tipo de cambio. Analistas esperan que el Banco de México evalúe una reducción en la tasa de interés de referencia en su próxima junta de política monetaria.", truth_score:94, truth_label:"Verificado", is_financial:true, chart_data:{ type:"line", labels:["Sep","Oct","Nov","Dic","Ene"], values:[4.45,4.26,4.32,4.66,4.20], unit:"%", title:"Inflación Anualizada" }, image_url:"https://picsum.photos/id/20/800/500", created_at:new Date(Date.now() - 3600000).toISOString() },
+      { id:2, title:"Senado aprueba reforma integral de pensiones", category:"politica", source:"El Universal", source_url:"https://www.eluniversal.com.mx", excerpt:"Aumento gradual de cuotas patronales y nuevas reglas de jubilación.", body:"La reforma de pensiones ha sido aprobada por el pleno del Senado con una amplia mayoría. La nueva ley estipula un incremento gradual en las aportaciones patronales del 5.15% al 11.9% en un periodo de ocho años. Asimismo, se reduce el número mínimo de semanas cotizadas para acceder a una pensión garantizada, lo que beneficiará a miles de trabajadores que anteriormente no cumplían con los requisitos.", truth_score:82, truth_label:"Verificado", is_financial:true, chart_data:{ type:"bar", labels:["2025","2026","2027","2028"], values:[5.15,7.4,9.6,11.9], unit:"%", title:"Proyección Aporte Patronal" }, image_url:"https://picsum.photos/id/26/800/500", created_at:new Date(Date.now() - 7200000).toISOString() },
+      { id:3, title:"Dólar alcanza $18.50 pesos ante tensiones arancelarias", category:"economia", source:"Bloomberg", source_url:"https://www.bloomberg.com", excerpt:"Alta volatilidad en mercados financieros tras anuncios arancelarios de EE. UU.", body:"El peso mexicano experimentó una depreciación de 2.1% frente al dólar estadounidense, cerrando la jornada de hoy en $18.50 unidades. La volatilidad financiera se desató luego de declaraciones gubernamentales en Washington relativas a la imposición de nuevos aranceles sobre bienes de consumo clave. Bancos comerciales registran alta demanda del billete verde en ventanillas de divisas.", truth_score:76, truth_label:"Probable", is_financial:true, chart_data:{ type:"line", labels:["Lun","Mar","Mié","Jue","Vie"], values:[17.92,17.85,18.10,18.35,18.50], unit:"MXN", title:"Tipo de Cambio" }, image_url:"https://picsum.photos/id/30/800/500", created_at:new Date(Date.now() - 14400000).toISOString() },
+      { id:4, title:"OpenAI presenta GPT-5 con razonamiento multimodal", category:"tecnologia", source:"TechCrunch", source_url:"https://techcrunch.com", excerpt:"El nuevo modelo posee capacidades avanzadas de inferencia lógica en texto, imagen y audio.", body:"En una transmisión mundial sorpresa, OpenAI ha revelado el lanzamiento inmediato de GPT-5. El modelo incorpora una arquitectura nativa de 'cadena de pensamiento' que le permite pausar, planificar y resolver problemas lógicos complejos antes de dar una respuesta. La demostración en vivo incluyó la resolución instantánea de teoremas matemáticos inéditos y la programación guiada de un sistema robótico autónomo.", truth_score:88, truth_label:"Verificado", is_financial:false, image_url:"https://picsum.photos/id/0/800/500", created_at:new Date(Date.now() - 21600000).toISOString() },
+      { id:5, title:"Ley de vivienda en España congela alquileres", category:"mundo", source:"El País", source_url:"https://elpais.com", excerpt:"Aprobación definitiva de límites de renta en zonas de alta demanda residencial.", body:"El Congreso de los Diputados ha dado luz verde definitiva a la Ley de Vivienda en España, una legislación pionera que introduce controles de precios estrictos. Las zonas declaradas como 'tensionadas' no podrán incrementar los alquileres vigentes y los nuevos contratos se regirán por un índice oficial de referencia. La medida ha polarizado al sector inmobiliario y a las asociaciones de inquilinos.", truth_score:93, truth_label:"Verificado", is_financial:false, image_url:"https://picsum.photos/id/104/800/500", created_at:new Date(Date.now() - 86400000).toISOString() },
+      { id:6, title:"Tesla reduce el precio del Model 3 en América Latina", category:"business", source:"Reuters", source_url:"https://www.reuters.com", excerpt:"Ajustes de precio significativos en respuesta a la intensa competencia de BYD.", body:"Tesla anunció un recorte de precios estratégico en su sedán Model 3 para competir de forma directa con los vehículos eléctricos de origen chino que ingresan fuertemente en la región. En el mercado mexicano, la versión base baja de $749,000 MXN a $636,000 MXN. BYD y Volvo también anunciaron planes de financiamiento agresivos para mantener su cuota de mercado en Sudamérica.", truth_score:85, truth_label:"Verificado", is_financial:true, chart_data:{ type:"bar", labels:["Tesla M3","BYD Seal","Volvo EX30"], values:[636,589,799], unit:"k MXN", title:"Comparación de Precios de Entrada" }, image_url:"https://picsum.photos/id/107/800/500", created_at:new Date(Date.now() - 172800000).toISOString() },
+      { id:7, title:"Alerta epidemiológica por brote masivo de dengue en Brasil", category:"salud", source:"Fiocruz", source_url:"https://portal.fiocruz.br", excerpt:"Más de 500 mil casos confirmados e inicio de campaña de vacunación masiva.", body:"El instituto de investigación de salud pública Fiocruz ha declarado estado de emergencia epidemiológica en 5 estados del gigante sudamericano. La presencia y rápida propagación del serotipo DENV-3 del virus del dengue ha colapsado clínicas locales. Por su parte, el Ministerio de Salud inició una campaña de inmunización de emergencia utilizando la vacuna Qdenga para proteger a la población menor de 15 años.", truth_score:90, truth_label:"Verificado", is_financial:false, image_url:"https://picsum.photos/id/116/800/500", created_at:new Date(Date.now() - 259200000).toISOString() }
     ];
   }
 
+  // Carga de Noticias de la Base de Datos con Fallback robusto
   async function loadNews() {
     try {
       const res = await fetch('/api/news');
       if (res.ok) {
         allNews = await res.json();
-      } else throw new Error();
+      } else {
+        throw new Error("Respuesta de API inválida");
+      }
     } catch(e) {
-      console.warn("Usando noticias de ejemplo (mock)");
+      console.warn("Conexión con base de datos fallida. Cargando noticias de ejemplo local.");
       allNews = generateMockNews();
     }
-    renderAll();
+    await loadBookmarks();
+    filterAndRender();
   }
 
-  function renderAll() {
-    renderHero(allNews);
-    renderNewsGrid(allNews);
+  // Carga de Marcadores
+  async function loadBookmarks() {
+    try {
+      const res = await fetch(`/api/readlater/${userToken}`);
+      if (res.ok) {
+        bookmarkedNews = await res.json();
+      } else {
+        throw new Error();
+      }
+    } catch(e) {
+      const local = localStorage.getItem(`bookmarks_${userToken}`);
+      bookmarkedNews = local ? JSON.parse(local) : [];
+    }
+  }
+
+  // Cambiar pestaña del Header
+  function switchSection(section) {
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      if (btn.getAttribute('data-section') === section) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+    
+    document.getElementById('noticiasSection').style.display = section === 'noticias' ? 'block' : 'none';
+    document.getElementById('escribirSection').style.display = section === 'escribir' ? 'block' : 'none';
+    
+    // Ocultar o mostrar panel de control
+    document.getElementById('controlPanel').style.display = section === 'noticias' ? 'flex' : 'none';
+    document.getElementById('sidebarCol').style.display = section === 'noticias' ? 'flex' : 'none';
+    
+    if (section === 'escribir') {
+      updateLivePreview();
+    }
+  }
+
+  function goHome() {
+    switchSection('noticias');
+    currentFilter = 'todos';
+    currentSearch = '';
+    currentMinTruth = 50;
+    
+    document.getElementById('searchInput').value = '';
+    document.getElementById('truthRange').value = 50;
+    document.getElementById('truthRangeValue').innerText = '50';
+    
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      if (chip.getAttribute('data-filter') === 'todos') chip.classList.add('active');
+      else chip.classList.remove('active');
+    });
+    
+    filterAndRender();
+  }
+
+  // Actualizar slider de veracidad
+  function updateTruthRangeLabel(val) {
+    document.getElementById('truthRangeValue').innerText = val;
+    currentMinTruth = parseInt(val);
+    filterAndRender();
+  }
+
+  // Filtrado y Renderizado Reactivo
+  function filterAndRender() {
+    currentSearch = document.getElementById('searchInput').value.trim().toLowerCase();
+    
+    let filtered = allNews;
+    
+    // 1. Filtrar por categoría
+    if (currentFilter !== 'todos') {
+      filtered = filtered.filter(n => n.category === currentFilter);
+    }
+    
+    // 2. Filtrar por buscador
+    if (currentSearch) {
+      filtered = filtered.filter(n => 
+        n.title.toLowerCase().includes(currentSearch) ||
+        n.excerpt.toLowerCase().includes(currentSearch) ||
+        n.source.toLowerCase().includes(currentSearch) ||
+        (n.body && n.body.toLowerCase().includes(currentSearch))
+      );
+    }
+    
+    // 3. Filtrar por puntuación de veracidad
+    filtered = filtered.filter(n => (n.truth_score || 85) >= currentMinTruth);
+
+    renderHero(filtered);
+    renderNewsGrid(filtered);
     renderTrending(allNews);
-    document.getElementById('newsCount').innerText = `${allNews.length} noticias`;
+    
+    document.getElementById('newsCount').innerText = `${filtered.length} noticias encontradas`;
   }
 
+  // Renderizar Hero (Noticia destacada)
   function renderHero(news) {
-    if (!news.length) return;
+    const heroContainer = document.getElementById('heroContainer');
+    if (!news.length) {
+      heroContainer.innerHTML = '';
+      return;
+    }
+    
     const main = news[0];
-    const subs = news.slice(1,3);
+    const subs = news.slice(1, 3);
+    
     const heroHtml = `
       <div class="hero-grid">
         <div class="hero-main" onclick="openArticle(${main.id})">
-          <img class="hero-img" src="${main.image_url || 'https://picsum.photos/id/1/800/400'}" loading="lazy">
+          <img class="hero-img" src="${main.image_url || 'https://picsum.photos/id/10/800/400'}" alt="${main.title}" loading="lazy">
           <div class="hero-content">
-            <div class="hero-category">${main.category.toUpperCase()}</div>
+            <div class="hero-category">${main.category}</div>
             <div class="hero-title">${main.title}</div>
             <div class="hero-excerpt">${main.excerpt}</div>
             <div class="hero-meta">
-              <span>${main.source}</span>
-              <span class="truth-badge">${main.truth_label} ${main.truth_score}%</span>
+              <span class="source-name">${main.source}</span>
+              ${getTruthBadgeHtml(main.truth_score || 85)}
+              <span>${formatDate(main.created_at)}</span>
             </div>
           </div>
         </div>
         <div class="hero-sub">
+          ${subs.length === 0 ? '<div style="background:var(--bg-card); padding:20px; border-radius:var(--radius-card); display:flex; align-items:center; justify-content:center; flex:1; border: 1px dashed var(--border-light); font-size:0.9rem; color:var(--text-muted);">Sin noticias secundarias para mostrar</div>' : ''}
           ${subs.map(s => `
             <div class="sub-card" onclick="openArticle(${s.id})">
-              <img class="sub-img" src="${s.image_url || 'https://picsum.photos/id/20/200/200'}" loading="lazy">
-              <div class="sub-content"><h4>${s.title}</h4><div class="hero-meta">${s.source}</div></div>
+              <img class="sub-img" src="${s.image_url || 'https://picsum.photos/id/20/150/150'}" alt="${s.title}" loading="lazy">
+              <div class="sub-content">
+                <div class="hero-category" style="font-size:0.65rem; margin-bottom:4px;">${s.category}</div>
+                <h4>${s.title}</h4>
+                <div class="hero-meta" style="font-size:0.75rem;">
+                  <span>${s.source}</span>
+                  ${getTruthBadgeHtml(s.truth_score || 85)}
+                </div>
+              </div>
             </div>
           `).join('')}
         </div>
       </div>
     `;
-    document.getElementById('heroContainer').innerHTML = heroHtml;
+    heroContainer.innerHTML = heroHtml;
   }
 
+  // Renderizar Grilla de Tarjetas
   function renderNewsGrid(news) {
-    const filtered = currentFilter === 'todos' ? news : news.filter(n => n.category === currentFilter);
     const grid = document.getElementById('newsGrid');
-    if (!filtered.length) { grid.innerHTML = '<p>No hay noticias en esta categoría.</p>'; return; }
-    grid.innerHTML = filtered.map(item => `
-      <div class="news-card" data-cat="${item.category}">
-        <img class="news-card-img" src="${item.image_url || 'https://picsum.photos/id/100/400/250'}" loading="lazy" onclick="openArticle(${item.id})">
-        <div class="news-card-body">
-          <div class="news-category">${item.category}</div>
-          <div class="news-card-title" onclick="openArticle(${item.id})">${item.title}</div>
-          <div class="news-excerpt">${item.excerpt.substring(0,100)}...</div>
-          ${item.is_financial ? `<div style="height:140px; margin:12px 0;"><canvas id="chart_${item.id}"></canvas></div>` : ''}
-          <div class="card-footer">
-            <span>${item.source}</span>
-            <span class="truth-badge" style="background:#e6f7ec;">${item.truth_label} ${item.truth_score}%</span>
-            <button class="like-btn" onclick="event.stopPropagation(); likeArticle(${item.id})">👍 <span id="likes_${item.id}">0</span></button>
-            <button class="later-btn" onclick="event.stopPropagation(); saveLater(${item.id})">🔖</button>
-            <button class="share-btn" onclick="event.stopPropagation(); shareArticle(${item.id})">📤</button>
+    if (!news.length) {
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 48px; background:var(--bg-card); border-radius:var(--radius-card); border: 1px solid var(--border-light); color:var(--text-muted); font-size:1.1rem;">Ninguna noticia coincide con los criterios de búsqueda.</div>';
+      return;
+    }
+    
+    grid.innerHTML = news.map(item => {
+      const isBookmarked = bookmarkedNews.some(b => b.id === item.id);
+      return `
+        <div class="news-card" data-id="${item.id}">
+          <img class="news-card-img" src="${item.image_url || 'https://picsum.photos/id/100/400/250'}" alt="${item.title}" loading="lazy" onclick="openArticle(${item.id})">
+          <div class="news-card-body">
+            <div class="news-category">${item.category}</div>
+            <div class="news-card-title" onclick="openArticle(${item.id})">${item.title}</div>
+            <div class="news-excerpt">${item.excerpt}</div>
+            
+            ${item.is_financial ? `<div style="height:140px; margin:8px 0 16px;"><canvas id="chart_${item.id}"></canvas></div>` : ''}
+            
+            <div class="card-footer">
+              <div class="footer-meta">
+                <span class="source-name">${item.source}</span>
+                <span>${formatDate(item.created_at)}</span>
+              </div>
+              <div class="card-actions">
+                ${getTruthBadgeHtml(item.truth_score || 85)}
+                <button class="like-btn" onclick="event.stopPropagation(); likeArticle(${item.id})" aria-label="Me gusta">👍 <span id="likes_${item.id}">0</span></button>
+                <button class="later-btn ${isBookmarked ? 'active' : ''}" onclick="event.stopPropagation(); toggleBookmark(${item.id})" aria-label="Guardar marcadores" id="bookmarkBtn_${item.id}">🔖</button>
+                <button class="share-btn" onclick="event.stopPropagation(); shareArticle(${item.id})" aria-label="Compartir">📤</button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    `).join('');
-    filtered.forEach(item => {
+      `;
+    }).join('');
+    
+    // Inicializar los charts con una pequeña pausa para asegurar que los elementos canvas estén en el DOM
+    news.forEach(item => {
       if (item.is_financial && item.chart_data) {
-        setTimeout(() => initChart(item), 50);
+        setTimeout(() => initChart(`chart_${item.id}`, item.chart_data), 60);
       }
       fetchLikes(item.id);
     });
   }
 
-  function initChart(item) {
-    const canvas = document.getElementById(`chart_${item.id}`);
-    if (!canvas || chartInstances[canvas.id]) return;
-    const cd = item.chart_data;
-    chartInstances[canvas.id] = new Chart(canvas, {
-      type: cd.type === 'line' ? 'line' : 'bar',
-      data: { labels: cd.labels, datasets: [{ label: cd.unit, data: cd.values, backgroundColor: '#dc2626' }] },
-      options: { responsive: true, maintainAspectRatio: true }
+  // Generador dinámico de insignias de veracidad
+  function getTruthBadgeHtml(score) {
+    let label = 'Verificado';
+    let badgeClass = 'truth-badge-high';
+    
+    if (score < 75) {
+      label = 'Dudoso';
+      badgeClass = 'truth-badge-low';
+    } else if (score < 90) {
+      label = 'Probable';
+      badgeClass = 'truth-badge-mid';
+    }
+    
+    return `<span class="truth-badge ${badgeClass}">${label} ${score}%</span>`;
+  }
+
+  // Formato de Fechas amigable
+  function formatDate(isoString) {
+    try {
+      const date = new Date(isoString);
+      const options = { day: 'numeric', month: 'short' };
+      return date.toLocaleDateString('es-ES', options);
+    } catch(e) {
+      return 'Hoy';
+    }
+  }
+
+  // Inicializar Gráficos de Chart.js
+  function initChart(canvasId, cd) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    
+    // Destruir instancia anterior si existe
+    if (chartInstances[canvasId]) {
+      chartInstances[canvasId].destroy();
+    }
+    
+    const isDark = document.body.classList.contains('dark');
+    const chartColor = isDark ? '#ffffff' : '#1f2937';
+    const gridColor = isDark ? '#334155' : '#f3f4f6';
+    
+    // Colores del dataset
+    const primaryColor = '#ef4444'; // Rojo PulsoHoy HSL(346, 77%, 49%)
+    const hoverColor = '#dc2626';
+    
+    chartInstances[canvasId] = new Chart(canvas, {
+      type: cd.type || 'line',
+      data: {
+        labels: cd.labels || [],
+        datasets: [{
+          label: `${cd.title || 'Datos'} (${cd.unit || ''})`,
+          data: cd.values || [],
+          backgroundColor: cd.type === 'bar' ? primaryColor : 'rgba(239, 68, 68, 0.1)',
+          borderColor: primaryColor,
+          borderWidth: 2.5,
+          tension: 0.35,
+          pointRadius: 4,
+          pointBackgroundColor: primaryColor,
+          pointBorderWidth: 1,
+          pointHoverRadius: 6,
+          fill: cd.type === 'line'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            padding: 8,
+            titleFont: { size: 12, weight: 'bold' },
+            bodyFont: { size: 12 }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: chartColor, font: { size: 9, weight: '600' } }
+          },
+          y: {
+            grid: { color: gridColor },
+            ticks: { color: chartColor, font: { size: 9 } }
+          }
+        }
+      }
     });
   }
 
+  // ---------- ME GUSTA (LIKES) ----------
   async function fetchLikes(id) {
     try {
       const res = await fetch(`/api/likes/${id}`);
-      const data = await res.json();
-      document.getElementById(`likes_${id}`).innerText = data.count;
+      if (res.ok) {
+        const data = await res.json();
+        const el = document.getElementById(`likes_${id}`);
+        if (el) el.innerText = data.count;
+      }
     } catch(e) {}
   }
-  async function likeArticle(id) {
-    await fetch('/api/like', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ news_id:id, user_token:userToken }) });
-    fetchLikes(id);
-  }
-  function saveLater(id) { alert("Guardado localmente (demo)"); }
-  function shareArticle(item) { navigator.share ? navigator.share({title:item.title}) : alert("Copia el enlace"); }
 
+  async function likeArticle(id) {
+    try {
+      const res = await fetch('/api/like', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ news_id: id, user_token: userToken })
+      });
+      if (res.ok) {
+        fetchLikes(id);
+      } else {
+        throw new Error();
+      }
+    } catch(e) {
+      // Fallback local
+      const likesEl = document.getElementById(`likes_${id}`);
+      if (likesEl) {
+        likesEl.innerText = parseInt(likesEl.innerText) + 1;
+      }
+    }
+  }
+
+  // ---------- MARCADORES (LEER DESPUÉS) ----------
+  function toggleBookmarksDrawer() {
+    const drawer = document.getElementById('bookmarksDrawer');
+    drawer.classList.toggle('open');
+    if (drawer.classList.contains('open')) {
+      renderBookmarks();
+    }
+  }
+
+  function handleDrawerOverlayClick(e) {
+    if (e.target.id === 'bookmarksDrawer') {
+      toggleBookmarksDrawer();
+    }
+  }
+
+  async function toggleBookmark(id) {
+    const isBookmarked = bookmarkedNews.some(b => b.id === id);
+    const btn = document.getElementById(`bookmarkBtn_${id}`);
+    
+    if (isBookmarked) {
+      // Remover
+      bookmarkedNews = bookmarkedNews.filter(b => b.id !== id);
+      if (btn) btn.classList.remove('active');
+    } else {
+      // Agregar
+      const item = allNews.find(n => n.id === id);
+      if (item) {
+        bookmarkedNews.push(item);
+        if (btn) btn.classList.add('active');
+      }
+    }
+
+    // Sincronizar
+    try {
+      const endpoint = isBookmarked ? `/api/readlater/remove` : `/api/readlater`;
+      await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ news_id: id, user_token: userToken })
+      });
+    } catch(e) {}
+    
+    // Persistencia en localStorage
+    localStorage.setItem(`bookmarks_${userToken}`, JSON.stringify(bookmarkedNews));
+    
+    if (document.getElementById('bookmarksDrawer').classList.contains('open')) {
+      renderBookmarks();
+    }
+  }
+
+  function renderBookmarks() {
+    const list = document.getElementById('bookmarksList');
+    if (bookmarkedNews.length === 0) {
+      list.innerHTML = `<div style="text-align:center; padding:40px 10px; color:var(--text-muted); font-size:0.95rem;">
+        <div style="font-size:2.5rem; margin-bottom:12px;">🔖</div>
+        No tienes marcadores guardados aún.
+      </div>`;
+      return;
+    }
+    
+    list.innerHTML = bookmarkedNews.map(item => `
+      <div class="bookmark-item" onclick="openArticleFromBookmark(${item.id})">
+        <img class="bookmark-img" src="${item.image_url || 'https://picsum.photos/id/100/100/100'}" alt="${item.title}">
+        <div class="bookmark-info">
+          <div class="bookmark-title">${item.title}</div>
+          <div class="bookmark-meta">
+            <span>${item.source}</span>
+            <button class="remove-bookmark-btn" onclick="event.stopPropagation(); toggleBookmark(${item.id})">Quitar</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openArticleFromBookmark(id) {
+    toggleBookmarksDrawer();
+    openArticle(id);
+  }
+
+  // ---------- DETALLE ARTÍCULO (MODAL) ----------
   function openArticle(id) {
     const article = allNews.find(a => a.id === id);
     if (!article) return;
+    
     const modal = document.getElementById('articleModal');
-    document.getElementById('modalContent').innerHTML = `
-      <img src="${article.image_url}" style="width:100%; border-radius:12px; margin-bottom:16px;">
-      <h2>${article.title}</h2>
-      <p><strong>${article.source}</strong> · Veracidad: ${article.truth_label} ${article.truth_score}%</p>
-      <div>${article.body || article.excerpt}</div>
-      ${article.is_financial && article.chart_data ? `<canvas id="modalChart" style="height:200px; margin:16px 0;"></canvas>` : ''}
+    const modalContent = document.getElementById('modalContent');
+    
+    modalContent.innerHTML = `
+      <div class="hero-category" style="margin-bottom:8px;">${article.category}</div>
+      <h2 class="hero-title" style="font-size:2rem; margin-bottom:16px;">${article.title}</h2>
+      
+      <div class="hero-meta" style="margin-bottom:20px; border-bottom:1px solid var(--border-light); padding-bottom:16px;">
+        <span class="source-name">${article.source}</span>
+        ${getTruthBadgeHtml(article.truth_score || 85)}
+        <span>${formatDate(article.created_at)}</span>
+        ${article.source_url ? `<a href="${article.source_url}" target="_blank" style="color:var(--accent-blue); text-decoration:none; font-weight:600;">Ver fuente original ↗</a>` : ''}
+      </div>
+
+      <img src="${article.image_url || 'https://picsum.photos/id/1/800/400'}" alt="${article.title}" style="width:100%; max-height:360px; object-fit:cover; border-radius:16px; margin-bottom:24px;">
+
+      <div style="font-size:1.1rem; line-height:1.7; color:var(--text-primary); margin-bottom:24px; white-space:pre-wrap;">${article.body || article.excerpt}</div>
+      
+      ${article.is_financial && article.chart_data ? `
+        <div style="background:var(--bg-body); border:1px solid var(--border-light); border-radius:16px; padding:20px; margin:24px 0 16px;">
+          <h4 style="margin-bottom:12px; font-family:'Playfair Display', serif; font-size:1.1rem;">Datos Financieros Asociados</h4>
+          <div style="height:220px;"><canvas id="modalChart"></canvas></div>
+        </div>
+      ` : ''}
     `;
-    if (article.is_financial && article.chart_data) {
-      setTimeout(() => {
-        const canvas = document.getElementById('modalChart');
-        if(canvas) new Chart(canvas, { type: article.chart_data.type, data: { labels: article.chart_data.labels, datasets: [{ data: article.chart_data.values, backgroundColor:'#dc2626' }] } });
-      }, 100);
-    }
+    
     modal.classList.add('open');
+    
+    if (article.is_financial && article.chart_data) {
+      setTimeout(() => initChart('modalChart', article.chart_data), 100);
+    }
   }
-  function closeModal() { document.getElementById('articleModal').classList.remove('open'); }
 
-  function setupFilters() {
-    const filterBtns = document.querySelectorAll('.filter-chip');
-    filterBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        filterBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentFilter = btn.getAttribute('data-filter');
-        renderNewsGrid(allNews);
+  function closeModal() {
+    document.getElementById('articleModal').classList.remove('open');
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target.id === 'articleModal') {
+      closeModal();
+    }
+  }
+
+  // ---------- COMPARTIR ARTÍCULO ----------
+  function shareArticle(id) {
+    const article = allNews.find(a => a.id === id);
+    if (!article) return;
+    
+    const url = `${window.location.origin}/noticia?id=${id}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: article.title,
+        text: article.excerpt,
+        url: url
+      }).catch(console.error);
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        alert("¡Enlace de la noticia copiado al portapapeles!");
+      }).catch(() => {
+        alert("Enlace: " + url);
       });
-    });
+    }
   }
 
-  window.publishArticle = function() {
-    const title = document.getElementById('artTitle').value;
-    if(!title) return alert("Completa título");
-    const newArticle = {
-      id: Date.now(),
-      title: title,
-      category: document.getElementById('artCategory').value,
-      source: document.getElementById('artSource').value,
-      excerpt: document.getElementById('artExcerpt').value,
-      body: document.getElementById('artBody').value,
-      image_url: document.getElementById('artImageUrl').value || 'https://picsum.photos/id/42/400/250',
-      is_financial: document.getElementById('artHasData').value === 'yes',
-      chart_data: document.getElementById('artHasData').value === 'yes' ? JSON.parse(document.getElementById('artFinData').value || '{}') : null,
-      truth_score: 85,
-      truth_label: "Verificado",
-      created_at: new Date().toISOString()
+  // ---------- PUBLICACIÓN EN TIEMPO REAL & PREVISUALIZACIÓN ----------
+  function toggleFinDataInput(val) {
+    const section = document.getElementById('finDataSection');
+    section.style.display = val === 'yes' ? 'block' : 'none';
+    updateLivePreview();
+  }
+
+  function updateLivePreview() {
+    const title = document.getElementById('artTitle').value.trim() || 'Título del artículo en vivo';
+    const category = document.getElementById('artCategory').value;
+    const source = document.getElementById('artSource').value.trim() || 'Fuente / Redactor';
+    const excerpt = document.getElementById('artExcerpt').value.trim() || 'Este es un resumen en tiempo real del artículo que estás redactando.';
+    const imageUrl = document.getElementById('artImageUrl').value.trim() || 'https://picsum.photos/id/24/400/250';
+    const hasData = document.getElementById('artHasData').value === 'yes';
+    
+    const previewContainer = document.getElementById('livePreviewCard');
+    
+    previewContainer.innerHTML = `
+      <div class="news-card" style="box-shadow:var(--shadow-md);">
+        <img class="news-card-img" src="${imageUrl}" alt="Preview image">
+        <div class="news-card-body">
+          <div class="news-category">${category}</div>
+          <div class="news-card-title">${title}</div>
+          <div class="news-excerpt">${excerpt}</div>
+          
+          ${hasData ? `<div style="height:140px; margin:8px 0 16px;"><canvas id="previewChart"></canvas></div>` : ''}
+          
+          <div class="card-footer">
+            <div class="footer-meta">
+              <span class="source-name">${source}</span>
+              <span>Hoy</span>
+            </div>
+            <div class="card-actions">
+              <span class="truth-badge truth-badge-high">Verificando 85%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    if (hasData) {
+      try {
+        const rawJson = document.getElementById('artFinData').value.trim();
+        if (rawJson) {
+          const chartData = JSON.parse(rawJson);
+          if (chartData.labels && chartData.values) {
+            setTimeout(() => {
+              const canvas = document.getElementById('previewChart');
+              if (canvas) {
+                if (previewChartInstance) previewChartInstance.destroy();
+                
+                const isDark = document.body.classList.contains('dark');
+                const chartColor = isDark ? '#ffffff' : '#1f2937';
+                
+                previewChartInstance = new Chart(canvas, {
+                  type: chartData.type || 'line',
+                  data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                      data: chartData.values,
+                      backgroundColor: '#ef4444',
+                      borderColor: '#ef4444',
+                      borderWidth: 2,
+                      tension: 0.3,
+                      fill: chartData.type === 'line'
+                    }]
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                      x: { ticks: { color: chartColor, font: { size: 8 } } },
+                      y: { ticks: { color: chartColor, font: { size: 8 } } }
+                    }
+                  }
+                });
+              }
+            }, 60);
+          }
+        }
+      } catch(e) {
+        // Ignorar errores JSON en tiempo real para no interrumpir la escritura
+      }
+    }
+  }
+
+  // Publicar Artículo Real
+  async function publishArticle() {
+    const title = document.getElementById('artTitle').value.trim();
+    const category = document.getElementById('artCategory').value;
+    const source = document.getElementById('artSource').value.trim();
+    const excerpt = document.getElementById('artExcerpt').value.trim();
+    const body = document.getElementById('artBody').value.trim();
+    const imageUrl = document.getElementById('artImageUrl').value.trim();
+    const hasData = document.getElementById('artHasData').value === 'yes';
+    
+    if (!title || !category || !source || !excerpt || !body) {
+      alert("⚠️ Por favor completa todos los campos requeridos con asterisco (*).");
+      return;
+    }
+    
+    let chartData = null;
+    if (hasData) {
+      try {
+        const rawJson = document.getElementById('artFinData').value.trim();
+        chartData = rawJson ? JSON.parse(rawJson) : null;
+        if (chartData && (!chartData.labels || !chartData.values)) {
+          throw new Error();
+        }
+      } catch(e) {
+        alert("⚠️ El formato JSON de los datos financieros es inválido o faltan campos obligatorios ('labels' y 'values').");
+        return;
+      }
+    }
+
+    const payload = {
+      title,
+      category,
+      source,
+      source_url: null,
+      excerpt,
+      body,
+      is_financial: hasData,
+      chart_data: chartData,
+      image_url: imageUrl || 'https://picsum.photos/id/24/800/500',
+      user_email: null
     };
-    allNews.unshift(newArticle);
-    renderAll();
-    alert("Artículo publicado (demo local)");
-  };
 
-  function initNavigation() {
-    const navBtns = document.querySelectorAll('.nav-btn');
-    navBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const section = btn.getAttribute('data-section');
-        document.getElementById('noticiasSection').style.display = section === 'noticias' ? 'block' : 'none';
-        document.getElementById('escribirSection').style.display = section === 'escribir' ? 'block' : 'none';
-        navBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        if(section === 'escribir') document.getElementById('escribirSection').style.display = 'block';
+    try {
+      const res = await fetch('/api/news', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
+      
+      if (res.ok) {
+        const result = await res.json();
+        alert("🚀 ¡Artículo publicado exitosamente en el servidor!");
+        // Agregar al inicio de los datos locales
+        allNews.unshift(result);
+      } else {
+        throw new Error();
+      }
+    } catch(e) {
+      console.warn("Error de conexión al guardar en la base de datos. Guardando localmente en memoria.");
+      // Fallback local en memoria
+      const localArticle = {
+        ...payload,
+        id: Date.now(),
+        truth_score: Math.floor(Math.random() * 20) + 80, // Score aleatorio 80-99
+        truth_label: "Verificado",
+        created_at: new Date().toISOString()
+      };
+      allNews.unshift(localArticle);
+      alert("💡 Artículo publicado en modo sin conexión (memoria temporal).");
+    }
+
+    // Resetear formulario
+    document.getElementById('artTitle').value = '';
+    document.getElementById('artSource').value = '';
+    document.getElementById('artExcerpt').value = '';
+    document.getElementById('artBody').value = '';
+    document.getElementById('artImageUrl').value = '';
+    document.getElementById('artHasData').value = 'no';
+    document.getElementById('artFinData').value = '';
+    document.getElementById('finDataSection').style.display = 'none';
+
+    goHome();
+  }
+
+  // ---------- CONFIGURACIONES & INICIALIZACIONES ----------
+  function setupFilters() {
+    const container = document.getElementById('filterContainer');
+    container.addEventListener('click', (e) => {
+      const chip = e.target.closest('.filter-chip');
+      if (!chip) return;
+      
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentFilter = chip.getAttribute('data-filter');
+      filterAndRender();
     });
   }
 
-  // Modo oscuro
-  document.getElementById('darkToggle').addEventListener('click', () => {
+  // Configuración de Tema Oscuro
+  const darkToggle = document.getElementById('darkToggle');
+  darkToggle.addEventListener('click', () => {
     document.body.classList.toggle('dark');
-    localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+    const isDark = document.body.classList.contains('dark');
+    localStorage.setItem('darkMode', isDark);
+    darkToggle.innerText = isDark ? '☀️' : '🌙';
+    
+    // Destruir y volver a inicializar gráficos para actualizar colores
+    filterAndRender();
   });
-  if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark');
+
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark');
+    darkToggle.innerText = '☀️';
+  }
 
   function renderTrending(news) {
-    const trendingList = document.getElementById('trendingList');
-    if(trendingList) {
-      trendingList.innerHTML = news.slice(0,5).map((n,i)=>`<li onclick="openArticle(${n.id})"><div class="trend-num">${i+1}</div><div>${n.title}</div></li>`).join('');
-    }
+    const list = document.getElementById('trendingList');
+    if (!list) return;
+    
+    // Ordenar por score de veracidad descendente y tomar las 5 mejores
+    const sorted = [...news].sort((a,b) => (b.truth_score || 85) - (a.truth_score || 85));
+    list.innerHTML = sorted.slice(0, 5).map((n, i) => `
+      <li onclick="openArticle(${n.id})">
+        <div class="trend-num">0${i + 1}</div>
+        <div class="trend-title">${n.title}</div>
+      </li>
+    `).join('');
   }
 
+  // Carga Inicial
   loadNews();
   setupFilters();
-  initNavigation();
 </script>
 </body>
 </html>
