@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PulsoHoy — Noticias del Día con Imágenes</title>
+<meta name="description" content="Noticias verificadas con imágenes automáticas o generadas por IA.">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  /* ========== ESTILOS (mismos de antes, con añadidos para imágenes) ========== */
+  :root {
+    --ink: #1a1208;
+    --ink-2: #3d3324;
+    --ink-3: #6b5d4a;
+    --ink-4: #a8987e;
+    --paper: #faf7f2;
+    --paper-2: #f2ede3;
+    --paper-3: #e8e0d0;
+    --accent: #c0392b;
+    --accent-2: #e74c3c;
+    --gold: #b8860b;
+    --success: #1a6b3a;
+    --success-bg: #e8f5ee;
+    --warn: #8a6200;
+    --warn-bg: #fff8e1;
+    --danger: #8b1a1a;
+    --danger-bg: #fdecea;
+    --border: #d4c9b0;
+    --border-2: #e8e0d0;
+    --sidebar-w: 300px;
+    --header-h: 72px;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  /* ========== HEADER (igual) ========== */
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 3px solid var(--accent);
+  }
+  .header-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--accent-2); }
+  .date-strip {
+    font-size: 11px;
+    color: var(--ink-4);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding-left: 24px;
+    border-left: 1px solid rgba(255,255,255,0.15);
+  }
+  .nav-tabs {
+    display: flex;
+    gap: 2px;
+    margin-left: auto;
+  }
+  .nav-tab {
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--paper-3);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+  .nav-tab:hover { background: rgba(255,255,255,0.1); color: white; }
+  .nav-tab.active { background: var(--accent); color: white; }
+  /* ========== ADS ========== */
+  .ad-leaderboard {
+    background: var(--paper-2);
+    border-bottom: 1px solid var(--border-2);
+    text-align: center;
+    padding: 10px;
+  }
+  .ad-placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--paper-3);
+    border: 1px dashed var(--border);
+    color: var(--ink-4);
+    font-size: 11px;
+    text-transform: uppercase;
+    border-radius: var(--radius);
+  }
+  .ad-728x90 { width: 728px; max-width: 100%; height: 90px; }
+  .ad-300x250 { width: 300px; height: 250px; }
+  .ad-300x600 { width: 300px; height: 600px; }
+  .ad-320x50 { width: 320px; max-width: 100%; height: 50px; display: none; }
+  /* ========== TICKER ========== */
+  .ticker-bar {
+    background: var(--accent);
+    color: white;
+    padding: 8px 0;
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .ticker-inner {
+    display: flex;
+    white-space: nowrap;
+    animation: ticker 40s linear infinite;
+  }
+  .ticker-label {
+    background: var(--ink);
+    padding: 0 16px;
+    margin-right: 24px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 11px;
+  }
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  /* ========== LAYOUT ========== */
+  .layout {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px 24px 48px;
+    display: grid;
+    grid-template-columns: 1fr var(--sidebar-w);
+    gap: 32px;
+  }
+  .main-col { min-width: 0; }
+  .side-col { min-width: 0; }
+  .section { display: none; }
+  .section.active { display: block; }
+  /* ========== HERO con imagen ========== */
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  .hero-card {
+    background: var(--paper);
+    padding: 24px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .hero-card:hover { background: var(--paper-2); }
+  .hero-main { grid-row: 1 / 3; }
+  .hero-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+  }
+  .hero-sub .hero-img {
+    height: 100px;
+    margin-bottom: 12px;
+  }
+  .hero-tag {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 12px;
+  }
+  .hero-sub .hero-title { font-size: 17px; }
+  .hero-excerpt {
+    font-family: 'Source Serif 4', serif;
+    font-size: 15px;
+    color: var(--ink-2);
+    line-height: 1.65;
+    margin-bottom: 16px;
+  }
+  /* ========== NEWS LIST con imagen ========== */
+  .news-item {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border-2);
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 20px;
+  }
+  .news-img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+  .news-cat {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+  .cat-economy { color: var(--gold); }
+  .cat-politics { color: var(--accent); }
+  .cat-tech { color: #1565c0; }
+  .cat-world { color: #1b5e20; }
+  .cat-health { color: #6a1b9a; }
+  .cat-business { color: #e65100; }
+  .news-title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .news-title:hover { color: var(--accent); }
+  .news-excerpt { font-size: 13px; color: var(--ink-3); margin-bottom: 10px; }
+  .news-footer { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  /* ========== TRUTH SCORE (igual) ========== */
+  .truth-score {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 2px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .ts-verified { background: var(--success-bg); color: var(--success); }
+  .ts-likely { background: #e8f0fe; color: #1a56b0; }
+  .ts-mixed { background: var(--warn-bg); color: var(--warn); }
+  .ts-disputed { background: var(--danger-bg); color: var(--danger); }
+  .ts-bar {
+    height: 3px;
+    background: var(--border-2);
+    border-radius: 2px;
+    margin-top: 6px;
+    overflow: hidden;
+    width: 120px;
+  }
+  .ts-fill { height: 100%; border-radius: 2px; }
+  /* ========== MODAL con imagen grande ========== */
+  .modal-img {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+  }
+  /* ========== FORMULARIO (con campo imagen) ========== */
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .form-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--ink-3); }
+  .form-input, .form-select, .form-textarea {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-family: inherit;
+    background: var(--paper);
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .btn-draft, .btn-publish, .btn-ai {
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 600;
+    border: none;
+  }
+  .btn-draft { background: transparent; border: 1px solid var(--border); }
+  .btn-publish { background: var(--accent); color: white; }
+  .btn-ai { background: #2c3e50; color: white; margin-left: 10px; }
+  /* ========== RESTO (sidebar, trending, etc.) ========== */
+  .sidebar-widget { margin-bottom: 28px; }
+  .widget-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .subscribe-box {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 24px;
+    border-radius: var(--radius);
+  }
+  .sub-plans {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .sub-plan {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius);
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .sub-plan.selected { border-color: var(--accent-2); background: rgba(231,76,60,0.15); }
+  .trending-list { list-style: none; }
+  .trending-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-2);
+    display: flex;
+    gap: 12px;
+    cursor: pointer;
+  }
+  .trend-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--border);
+  }
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26,18,8,0.6);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--paper);
+    border-radius: var(--radius);
+    max-width: 680px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--ink);
+    color: white;
+    padding: 12px 20px;
+    border-radius: var(--radius);
+    z-index: 300;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .filter-chip {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-size: 12px;
+    cursor: pointer;
+    background: var(--paper);
+  }
+  .filter-chip.active {
+    background: var(--ink);
+    color: white;
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .side-col { display: none; }
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-main { grid-row: auto; }
+    .news-item { grid-template-columns: 80px 1fr; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">Pulso<span>Hoy</span></div>
+    <div class="date-strip" id="dateStrip"></div>
+    <nav class="nav-tabs">
+      <button class="nav-tab active" onclick="showSection('noticias')">Noticias</button>
+      <button class="nav-tab" onclick="showSection('escribir')">✍ Escribir</button>
+    </nav>
+  </div>
+</header>
+
+<div class="ad-leaderboard">
+  <div class="ad-placeholder ad-728x90">📢 Anuncio 728×90</div>
+  <div class="ad-placeholder ad-320x50">📢 Anuncio 320×50</div>
+</div>
+
+<div class="ticker-bar">
+  <div class="ticker-inner" id="tickerText">
+    <span class="ticker-label">EN VIVO</span>
+    <span id="tickerContent">Cargando...</span>
+  </div>
+</div>
+
+<div class="layout">
+  <main class="main-col">
+    <section class="section active" id="sec-noticias">
+      <div id="newsContent">
+        <div class="hero-grid" id="heroGrid"></div>
+        <div class="filter-bar">
+          <button class="filter-chip active" onclick="filterNews('todos',this)">Todas</button>
+          <button class="filter-chip" onclick="filterNews('economia',this)">Economía</button>
+          <button class="filter-chip" onclick="filterNews('politica',this)">Política</button>
+          <button class="filter-chip" onclick="filterNews('tecnologia',this)">Tecnología</button>
+          <button class="filter-chip" onclick="filterNews('mundo',this)">Mundo</button>
+          <button class="filter-chip" onclick="filterNews('salud',this)">Salud</button>
+        </div>
+        <div class="section-header">
+          <h2 class="section-title">Noticias del Día</h2>
+          <span class="section-count" id="newsCount"></span>
+        </div>
+        <div class="news-list" id="newsList"></div>
+      </div>
+    </section>
+
+    <section class="section" id="sec-escribir">
+      <div class="section-header">
+        <h2 class="section-title">Publicar Artículo</h2>
+      </div>
+      <div class="write-container">
+        <div class="write-toolbar" style="background:var(--paper-2); padding:12px 20px;">
+          <strong>Formato:</strong>
+          <button onclick="insertFormat('**','**')"><b>B</b></button>
+          <button onclick="insertFormat('*','*')"><i>I</i></button>
+          <button onclick="insertFormat('\n## ','')">H2</button>
+          <button onclick="insertFormat('\n- ','')">Lista</button>
+          <button class="btn-ai" onclick="generateImageWithAI()">🎨 Generar imagen con IA</button>
+          <div style="margin-left:auto;"><span id="charCount">0</span> caracteres</div>
+        </div>
+        <div class="write-form" style="padding:24px;">
+          <div class="form-group">
+            <label class="form-label">Titular *</label>
+            <input type="text" class="form-input" id="artTitle" maxlength="150">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Categoría *</label>
+              <select class="form-select" id="artCategory">
+                <option value="economia">Economía</option>
+                <option value="politica">Política</option>
+                <option value="tecnologia">Tecnología</option>
+                <option value="mundo">Mundo</option>
+                <option value="salud">Salud</option>
+                <option value="business">Negocios</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fuente / Autor *</label>
+              <input type="text" class="form-input" id="artSource">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">URL de la imagen (déjalo en blanco para automática)</label>
+            <input type="url" class="form-input" id="artImageUrl" placeholder="https://ejemplo.com/imagen.jpg">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Resumen *</label>
+            <input type="text" class="form-input" id="artExcerpt" maxlength="280">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cuerpo *</label>
+            <textarea class="form-textarea" id="artBody" rows="8"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">URL fuente</label>
+              <input type="url" class="form-input" id="artUrl">
+            </div>
+            <div class="form-group">
+              <label class="form-label">¿Datos financieros?</label>
+              <select class="form-select" id="artHasData">
+                <option value="no">No</option>
+                <option value="yes">Sí</option>
+              </select>
+            </div>
+          </div>
+          <div id="finDataSection" style="display:none;">
+            <div class="form-group">
+              <label class="form-label">Datos financieros (JSON)</label>
+              <textarea class="form-textarea" id="artFinData" style="min-height:100px;" placeholder='{"labels":["Ene","Feb","Mar"],"values":[1200,1350,1100],"title":"Gráfica","unit":"USD"}'></textarea>
+            </div>
+          </div>
+          <div class="write-actions">
+            <button class="btn-draft" onclick="saveArticle('draft')">💾 Guardar borrador</button>
+            <button class="btn-publish" onclick="saveArticle('published')">📤 Publicar artículo</button>
+          </div>
+        </div>
+      </div>
+      <div class="my-articles">
+        <div class="section-header" style="margin-top:32px;">
+          <h2 class="section-title">Mis Artículos</h2>
+        </div>
+        <div id="myArticlesList"><p>No has escrito artículos aún.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="side-col">
+    <div class="sidebar-widget">
+      <div class="subscribe-box">
+        <h3>Suscríbete</h3>
+        <p>Recibe noticias verificadas con imágenes exclusivas.</p>
+        <div class="sub-plans">
+          <div class="sub-plan" onclick="selectPlan(this,'gratis')">
+            <div class="plan-name">Gratis</div>
+            <div class="plan-price">$0</div>
+          </div>
+          <div class="sub-plan selected" onclick="selectPlan(this,'pro')">
+            <div class="plan-name">Pro ★</div>
+            <div class="plan-price">$4.99</div>
+          </div>
+        </div>
+        <div class="sub-form">
+          <input type="text" id="subName" placeholder="Nombre">
+          <input type="email" id="subEmail" placeholder="Email">
+          <button class="btn-subscribe" onclick="doSubscribe()">Suscribirme →</button>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-widget">
+      <div class="ad-placeholder ad-300x250">📢 Anuncio 300×250</div>
+    </div>
+    <div class="sidebar-widget">
+      <h3 class="widget-title">Lo Más Leído</h3>
+      <ul class="trending-list" id="trendingList"><li>Cargando...</li></ul>
+    </div>
+    <div class="sidebar-widget">
+      <div class="ad-placeholder ad-300x600">📢 Anuncio 300×600</div>
+    </div>
+  </aside>
+</div>
+
+<div class="modal-overlay" id="articleModal" onclick="closeModalIfBg(event)">
+  <div class="modal">
+    <div class="modal-header" style="padding:20px 24px 0;">
+      <div><div class="hero-tag" id="modalCat"></div><h2 id="modalTitle" style="font-family:'Playfair Display'"></h2></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ======================== FUNCIONES AUXILIARES ========================
+function scoreColor(score) {
+  if (score >= 80) return '#1a6b3a';
+  if (score >= 65) return '#1a56b0';
+  if (score >= 45) return '#daa520';
+  return '#8b1a1a';
+}
+function getTruthClass(score) {
+  if (score >= 80) return { cls: 'ts-verified', label: 'Verificado' };
+  if (score >= 65) return { cls: 'ts-likely', label: 'Probable' };
+  if (score >= 45) return { cls: 'ts-mixed', label: 'Mixto' };
+  return { cls: 'ts-disputed', label: 'Disputado' };
+}
+function getCatClass(cat) {
+  const map = { economia:'cat-economy', politica:'cat-politics', tecnologia:'cat-tech', mundo:'cat-world', salud:'cat-health', business:'cat-business' };
+  return map[cat] || 'cat-world';
+}
+function getCatLabel(cat) {
+  const map = { economia:'Economía', politica:'Política', tecnologia:'Tecnología', mundo:'Mundo', salud:'Salud', business:'Negocios' };
+  return map[cat] || cat;
+}
+function timeAgo() {
+  const mins = Math.floor(Math.random() * 180) + 5;
+  if (mins < 60) return `Hace ${mins} min`;
+  return `Hace ${Math.floor(mins/60)}h ${mins%60}min`;
+}
+// ======================== IMÁGENES AUTOMÁTICAS POR CATEGORÍA ========================
+function getImageForCategory(category, keyword = '') {
+  const base = 'https://source.unsplash.com/featured/';
+  const maps = {
+    economia: 'finance,money,stock-market',
+    politica: 'government,parliament,vote',
+    tecnologia: 'technology,ai,computer',
+    mundo: 'world,global,earth',
+    salud: 'health,medical,hospital',
+    business: 'business,office,meeting'
+  };
+  const query = maps[category] || 'news';
+  // Unsplash random pero con tema. También puede ser placeholder si no carga
+  return `${base}?${query}&${Math.random()}`;
+}
+// ======================== NOTICIAS SIMULADAS CON IMAGEN ========================
+function generateMockNews() {
+  const hoy = new Date();
+  const dia = hoy.toLocaleDateString('es-MX', { day:'numeric', month:'long' });
+  return [
+    { id:1, title:`Inflación en México baja a 4.2% en ${dia}`, category:"economia", source:"Banxico", sourceUrl:"https://www.banxico.org.mx", excerpt:"El INPC bajó a 4.2%, mejor dato en 18 meses.", body:"El INEGI reportó una desaceleración...", truthScore:94, truthLabel:"Verificado", truthFactors:["Datos oficiales"], isFinancial:true, chartData:{ type:"line", title:"Inflación anual (%)", labels:["Jul","Ago","Sep","Oct","Nov","Dic","Ene"], values:[5.06,4.99,4.45,4.26,4.32,4.66,4.20], unit:"%" }, imageUrl: getImageForCategory('economia','inflation') },
+    { id:2, title:"Senado aprueba reforma de pensiones", category:"politica", source:"El Universal", sourceUrl:"https://www.eluniversal.com.mx", excerpt:"Aumento de cuotas patronales hasta 13.87% en 2030.", body:"La reforma fue aprobada con 78 votos...", truthScore:82, truthLabel:"Verificado", truthFactors:["Votación oficial"], isFinancial:true, chartData:{ type:"bar", title:"Cuota patronal (%)", labels:["2025","2026","2027","2028","2029","2030"], values:[5.15,6.5,8.2,10.0,11.9,13.87], unit:"%" }, imageUrl: getImageForCategory('politica','senado') },
+    { id:3, title:"Dólar alcanza $18.50 pesos", category:"economia", source:"Bloomberg", sourceUrl:"https://www.bloomberg.com", excerpt:"Volatilidad por anuncio de aranceles.", body:"El peso se depreció 2.1%...", truthScore:76, truthLabel:"Probable", truthFactors:["Datos de Banxico"], isFinancial:true, chartData:{ type:"line", title:"Tipo de cambio", labels:["Lun","Mar","Mié","Jue","Vie"], values:[17.92,17.85,18.10,18.35,18.50], unit:"MXN" }, imageUrl: getImageForCategory('economia','dollar') },
+    { id:4, title:"OpenAI presenta GPT-5 multimodal", category:"tecnologia", source:"TechCrunch", sourceUrl:"https://techcrunch.com", excerpt:"Razonamiento avanzado en texto, imagen y audio.", body:"OpenAI lanzó GPT-5 con cadena de pensamiento...", truthScore:88, truthLabel:"Verificado", truthFactors:["Anuncio oficial"], isFinancial:false, imageUrl: getImageForCategory('tecnologia','ai') },
+    { id:5, title:"Ley de vivienda en España", category:"politica", source:"El País", sourceUrl:"https://elpais.com", excerpt:"Congelación de alquileres en zonas tensionadas.", body:"El Consejo de Ministros aprobó...", truthScore:93, truthLabel:"Verificado", truthFactors:["BOE"], isFinancial:false, imageUrl: getImageForCategory('politica','vivienda') },
+    { id:6, title:"Tesla reduce precio del Model 3", category:"business", source:"Reuters", sourceUrl:"https://www.reuters.com", excerpt:"Baja de $749k a $636k MXN.", body:"Estrategia para competir con chinos...", truthScore:85, truthLabel:"Verificado", truthFactors:["Comunicado Tesla"], isFinancial:true, chartData:{ type:"bar", title:"Precios eléctricos (MXN)", labels:["Tesla M3","BYD Seal","Volvo EX30"], values:[636000,589000,799000], unit:"MXN" }, imageUrl: getImageForCategory('business','tesla') },
+    { id:7, title:"Brote de dengue en Brasil", category:"salud", source:"Fiocruz", sourceUrl:"https://portal.fiocruz.br", excerpt:"500 mil casos, emergencia en 5 estados.", body:"Serotipo DENV-3 reaparece...", truthScore:90, truthLabel:"Verificado", truthFactors:["Boletines"], isFinancial:false, imageUrl: getImageForCategory('salud','dengue') },
+    { id:8, title:"Japón aluniza con éxito", category:"tecnologia", source:"NHK", sourceUrl:"https://www.nhk.or.jp", excerpt:"Módulo SLIM precisión de 50 metros.", body:"Japón quinto país en llegar a la Luna.", truthScore:96, truthLabel:"Verificado", truthFactors:["JAXA"], isFinancial:false, imageUrl: getImageForCategory('tecnologia','moon') },
+    { id:9, title:"Unicef alerta desnutrición en Gaza", category:"mundo", source:"UN News", sourceUrl:"https://news.un.org", excerpt:"13% de niños menores de 2 años afectados.", body:"Crisis humanitaria por conflicto.", truthScore:95, truthLabel:"Verificado", truthFactors:["Informe ONU"], isFinancial:false, imageUrl: getImageForCategory('mundo','gaza') }
+  ];
+}
+
+// ======================== RENDERIZADO CON IMÁGENES ========================
+let allNews = [], myArticles = [], chartInstances = {}, selectedPlan = 'pro';
+function renderHero(news) {
+  const heroGrid = document.getElementById('heroGrid');
+  if (!news.length) return;
+  const main = news[0];
+  const subs = news.slice(1,3);
+  const tt = getTruthClass(main.truthScore);
+  heroGrid.innerHTML = `
+    <div class="hero-card hero-main" onclick="openArticle(${main.id})">
+      <img class="hero-img" src="${main.imageUrl}" alt="${main.title}" onerror="this.src='https://picsum.photos/400/200?random=${main.id}'">
+      <div class="hero-tag">${getCatLabel(main.category)}</div>
+      <h1 class="hero-title">${main.title}</h1>
+      <p class="hero-excerpt">${main.excerpt.substring(0,140)}...</p>
+      <div class="meta-row"><span class="source-badge">${main.source}</span><span class="time-ago">${timeAgo()}</span><span class="truth-score ${tt.cls}">${tt.label} ${main.truthScore}%</span></div>
+      <div class="ts-bar"><div class="ts-fill" style="width:${main.truthScore}%; background:${scoreColor(main.truthScore)};"></div></div>
+    </div>
+    ${subs.map(n => `<div class="hero-card hero-sub" onclick="openArticle(${n.id})">
+      <img class="hero-img" src="${n.imageUrl}" alt="${n.title}" onerror="this.src='https://picsum.photos/200/100?random=${n.id}'">
+      <div class="hero-tag">${getCatLabel(n.category)}</div>
+      <h2 class="hero-title">${n.title}</h2>
+      <p class="hero-excerpt">${n.excerpt.substring(0,90)}...</p>
+      <div class="meta-row"><span class="source-badge">${n.source}</span><span class="truth-score ${getTruthClass(n.truthScore).cls}">${getTruthClass(n.truthScore).label} ${n.truthScore}%</span></div>
+    </div>`).join('')}
+  `;
+}
+function renderNewsList(news) {
+  const list = document.getElementById('newsList');
+  const rest = news.slice(3);
+  document.getElementById('newsCount').textContent = `${news.length} noticias`;
+  if (!rest.length) { list.innerHTML = '<p>No hay más noticias</p>'; return; }
+  list.innerHTML = rest.map(item => `
+    <div class="news-item" data-cat="${item.category}">
+      <img class="news-img" src="${item.imageUrl}" alt="${item.title}" onerror="this.src='https://picsum.photos/100/80?random=${item.id}'">
+      <div>
+        <div class="news-cat ${getCatClass(item.category)}">${getCatLabel(item.category)}</div>
+        <h3 class="news-title" onclick="openArticle(${item.id})">${item.title}</h3>
+        <p class="news-excerpt">${item.excerpt}</p>
+        ${item.isFinancial ? `<div class="chart-card" style="margin:10px 0;"><div style="height:180px;"><canvas id="chart_list_${item.id}"></canvas></div></div>` : ''}
+        <div class="news-footer"><span class="source-badge">${item.source}</span><span class="truth-score ${getTruthClass(item.truthScore).cls}">${getTruthClass(item.truthScore).label} ${item.truthScore}%</span><div class="ts-bar"><div class="ts-fill" style="width:${item.truthScore}%; background:${scoreColor(item.truthScore)};"></div></div></div>
+      </div>
+    </div>`).join('');
+  setTimeout(() => { rest.forEach(item => { if(item.isFinancial) initChart(item,'list'); }); }, 100);
+}
+function initChart(item, prefix) {
+  if(!item.chartData) return;
+  const canvas = document.getElementById(`chart_${prefix}_${item.id}`);
+  if(!canvas) return;
+  if(chartInstances[canvas.id]) chartInstances[canvas.id].destroy();
+  const cd = item.chartData;
+  chartInstances[canvas.id] = new Chart(canvas, {
+    type: cd.type==='line'?'line':'bar',
+    data: { labels: cd.labels, datasets: [{ label: cd.unit, data: cd.values, backgroundColor: '#c0392b', borderColor: '#c0392b' }] },
+    options: { responsive: true, maintainAspectRatio: true }
+  });
+}
+function openArticle(id) {
+  const item = allNews.find(n => n.id == id);
+  if(!item) return;
+  const tt = getTruthClass(item.truthScore);
+  document.getElementById('modalCat').textContent = getCatLabel(item.category);
+  document.getElementById('modalTitle').textContent = item.title;
+  let chartHtml = '';
+  if(item.isFinancial && item.chartData) {
+    chartHtml = `<div class="chart-card"><canvas id="modal_chart_${item.id}" style="height:200px;"></canvas></div>`;
+  }
+  document.getElementById('modalBody').innerHTML = `
+    <img class="modal-img" src="${item.imageUrl}" alt="${item.title}" onerror="this.src='https://picsum.photos/600/300?random=${item.id}'">
+    <div class="truth-detail"><div class="truth-detail-title">Veracidad</div><span class="truth-score ${tt.cls}">${tt.label} ${item.truthScore}%</span><div class="ts-bar" style="width:100%"><div class="ts-fill" style="width:${item.truthScore}%; background:${scoreColor(item.truthScore)};"></div></div><ul>${(item.truthFactors||['Fuente fiable']).map(f=>`<li>✓ ${f}</li>`).join('')}</ul></div>
+    ${(item.body||item.excerpt).split('\n').map(p=>`<p>${p}</p>`).join('')}
+    ${chartHtml}
+    <p><a href="${item.sourceUrl||'#'}" target="_blank">${item.source} ↗</a></p>
+  `;
+  document.getElementById('articleModal').classList.add('open');
+  if(item.isFinancial && item.chartData) {
+    setTimeout(() => {
+      const canvas = document.getElementById(`modal_chart_${item.id}`);
+      if(canvas) new Chart(canvas, { type: item.chartData.type==='line'?'line':'bar', data: { labels: item.chartData.labels, datasets: [{ data: item.chartData.values, backgroundColor: '#c0392b' }] } });
+    }, 100);
+  }
+}
+function renderTrending(news) {
+  const trending = document.getElementById('trendingList');
+  trending.innerHTML = news.slice(0,5).map((n,i)=>`<li onclick="openArticle(${n.id})"><div class="trend-num">${i+1}</div><div><div class="trend-title">${n.title}</div><div class="trend-source">${n.source}</div></div></li>`).join('');
+}
+function renderTicker(news) {
+  document.getElementById('tickerContent').innerHTML = news.map(n=>n.title).slice(0,6).join(' &nbsp;&nbsp;—&nbsp;&nbsp; ') + ' &nbsp;&nbsp;—&nbsp;&nbsp; ' + news.map(n=>n.title).slice(0,6).join(' &nbsp;&nbsp;—&nbsp;&nbsp; ');
+}
+function filterNews(cat, btn) {
+  document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.news-item').forEach(el=>{ el.style.display = (cat==='todos' || el.dataset.cat===cat) ? 'grid' : 'none'; });
+}
+function selectPlan(el, plan) { document.querySelectorAll('.sub-plan').forEach(p=>p.classList.remove('selected')); el.classList.add('selected'); selectedPlan=plan; }
+function doSubscribe() { showToast(`✅ Suscrito al plan ${selectedPlan==='pro'?'Pro':'Gratuito'}`); }
+function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
+function closeModal() { document.getElementById('articleModal').classList.remove('open'); }
+function closeModalIfBg(e) { if(e.target===document.getElementById('articleModal')) closeModal(); }
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+// ======================== ESCRIBIR ARTÍCULO CON IMAGEN ========================
+document.getElementById('artBody').addEventListener('input', function(){ document.getElementById('charCount').textContent = this.value.length; });
+document.getElementById('artHasData').addEventListener('change', function(){ document.getElementById('finDataSection').style.display = this.value==='yes' ? 'block' : 'none'; });
+function insertFormat(before, after) {
+  const ta = document.getElementById('artBody');
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  const sel = ta.value.substring(s, e);
+  ta.value = ta.value.substring(0, s) + before + sel + after + ta.value.substring(e);
+  ta.focus();
+}
+// Función para generar imagen con IA (esqueleto - reemplazar con API real)
+function generateImageWithAI() {
+  const prompt = document.getElementById('artTitle').value.trim() || "noticia";
+  showToast("🔮 Simulando generación de imagen con IA... (Integra DALL-E o Stable Diffusion)");
+  // Ejemplo de llamada a API (descomentar y poner tu clave):
+  /*
+  fetch('https://api.openai.com/v1/images/generations', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer TU_API_KEY', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt: prompt, n: 1, size: '1024x1024' })
+  }).then(r=>r.json()).then(data=>{
+    document.getElementById('artImageUrl').value = data.data[0].url;
+    showToast("✅ Imagen generada, revisa el campo URL");
+  }).catch(err=>showToast("Error al generar imagen"));
+  */
+}
+function saveArticle(status) {
+  const title = document.getElementById('artTitle').value.trim();
+  const body = document.getElementById('artBody').value.trim();
+  const category = document.getElementById('artCategory').value;
+  const source = document.getElementById('artSource').value.trim();
+  const excerpt = document.getElementById('artExcerpt').value.trim();
+  let imageUrl = document.getElementById('artImageUrl').value.trim();
+  if(!imageUrl) imageUrl = getImageForCategory(category);
+  if(!title || !body || !category || !source) { showToast('Completa todos los campos obligatorios (*)'); return; }
+  let chartData = null;
+  if(document.getElementById('artHasData').value === 'yes') {
+    try { chartData = JSON.parse(document.getElementById('artFinData').value.trim()); } catch(e){ showToast('JSON inválido'); return; }
+  }
+  const newArticle = {
+    id: Date.now(), title, body, category, source, excerpt, imageUrl,
+    sourceUrl: document.getElementById('artUrl').value.trim() || '#',
+    status, truthScore: 85, truthLabel: 'Verificado', truthFactors: ['Autor identificado', 'Fuente declarada'],
+    isFinancial: !!chartData, chartData, createdAt: new Date().toISOString()
+  };
+  myArticles.unshift(newArticle);
+  localStorage.setItem('myArticles', JSON.stringify(myArticles));
+  if(status === 'published') {
+    allNews.unshift(newArticle);
+    renderHero(allNews);
+    renderNewsList(allNews);
+    renderTrending(allNews);
+    renderTicker(allNews);
+    showToast('✅ Artículo publicado con imagen.');
+  } else showToast('💾 Borrador guardado.');
+  // Limpiar
+  ['artTitle','artBody','artCategory','artSource','artExcerpt','artUrl','artImageUrl','artFinData'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('artHasData').value = 'no';
+  document.getElementById('finDataSection').style.display = 'none';
+  renderMyArticles();
+}
+function renderMyArticles() {
+  const container = document.getElementById('myArticlesList');
+  if(!myArticles.length) { container.innerHTML = '<p>No has escrito artículos aún.</p>'; return; }
+  container.innerHTML = myArticles.map((a,i)=>`
+    <div class="draft-card"><span class="draft-status ${a.status==='published'?'status-published':'status-draft'}">${a.status==='published'?'Publicado':'Borrador'}</span>
+    <div><div class="draft-title">${a.title}</div><div class="draft-meta">${getCatLabel(a.category)} · ${new Date(a.createdAt).toLocaleDateString()}</div></div>
+    <div><button class="btn-sm" onclick="editArticle(${i})">Editar</button><button class="btn-sm danger" onclick="deleteArticle(${i})">Eliminar</button></div></div>`).join('');
+}
+function editArticle(i) {
+  const a = myArticles[i];
+  document.getElementById('artTitle').value = a.title;
+  document.getElementById('artCategory').value = a.category;
+  document.getElementById('artSource').value = a.source;
+  document.getElementById('artExcerpt').value = a.excerpt;
+  document.getElementById('artBody').value = a.body;
+  document.getElementById('artUrl').value = a.sourceUrl || '';
+  document.getElementById('artImageUrl').value = a.imageUrl || '';
+  if(a.chartData) {
+    document.getElementById('artHasData').value = 'yes';
+    document.getElementById('finDataSection').style.display = 'block';
+    document.getElementById('artFinData').value = JSON.stringify(a.chartData, null, 2);
+  }
+  showToast('Artículo cargado para edición.');
+}
+function deleteArticle(i) {
+  myArticles.splice(i,1);
+  localStorage.setItem('myArticles', JSON.stringify(myArticles));
+  const publishedIds = myArticles.filter(a=>a.status==='published').map(a=>a.id);
+  allNews = allNews.filter(n=> !publishedIds.includes(n.id) || n.id<=9);
+  renderHero(allNews); renderNewsList(allNews); renderTrending(allNews); renderTicker(allNews); renderMyArticles();
+  showToast('Artículo eliminado.');
+}
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(`sec-${name}`).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t=>{ if(t.textContent.includes(name==='noticias'?'Notici':'Escrib')) t.classList.add('active'); });
+  if(name==='escribir') renderMyArticles();
+}
+function init() {
+  document.getElementById('dateStrip').textContent = new Date().toLocaleDateString('es-MX', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  allNews = generateMockNews();
+  const stored = localStorage.getItem('myArticles');
+  if(stored) {
+    myArticles = JSON.parse(stored);
+    const published = myArticles.filter(a=>a.status==='published');
+    if(published.length) allNews = [...published, ...allNews];
+    allNews = allNews.map((item,idx)=>({...item, id: item.id || idx+1}));
+  }
+  renderHero(allNews); renderNewsList(allNews); renderTrending(allNews); renderTicker(allNews); renderMyArticles();
+}
+init();
+</script>
+</body>
+</html>
