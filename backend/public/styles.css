@@ -1006,13 +1006,40 @@ input:focus, textarea:focus, select:focus {
     grid-template-columns: 1fr !important;
     gap: 20px !important;
   }
+  .hot-topics-bar {
+    padding: 14px 16px !important;
+    margin: 16px 0 !important;
+  }
   .hot-topics-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    gap: 16px !important;
+    padding-bottom: 6px !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .hot-topics-grid::-webkit-scrollbar {
+    display: none !important;
   }
   .hot-circle-card {
     flex-direction: column !important;
-    text-align: center;
+    text-align: center !important;
+    flex-shrink: 0 !important;
+    width: 105px !important;
+    gap: 8px !important;
+  }
+  .hot-img-wrap {
+    width: 60px !important;
+    height: 60px !important;
+  }
+  .hot-circle-title {
+    font-size: 0.78rem !important;
+    -webkit-line-clamp: 2 !important;
+    margin-top: 2px !important;
+  }
+  .hot-circle-info {
+    width: 100% !important;
   }
 }
 
@@ -1113,6 +1140,8 @@ input:focus, textarea:focus, select:focus {
   width: 70px;
   height: 70px;
   flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
 }
 .hot-circle-img {
   width: 100%;

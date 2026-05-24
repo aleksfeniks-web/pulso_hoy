@@ -1620,6 +1620,29 @@
     return list[index];
   }
 
+  // Manejador premium para errores de imágenes que genera un fallback SVG temático fuera de línea
+  function handleImgError(img, category) {
+    img.onerror = null; // Previene bucles infinitos en caso de errores extremos
+    
+    const colors = {
+      tecnologia: 'linear-gradient(135deg, #1e3a8a, #3b82f6)',
+      economia: 'linear-gradient(135deg, #064e3b, #10b981)',
+      salud: 'linear-gradient(135deg, #7f1d1d, #ef4444)',
+      politica: 'linear-gradient(135deg, #78350f, #f59e0b)',
+      deportes: 'linear-gradient(135deg, #4c1d95, #8b5cf6)',
+      mundo: 'linear-gradient(135deg, #881337, #ec4899)',
+      local: 'linear-gradient(135deg, #581c87, #a855f7)'
+    };
+    
+    const cat = (category || 'mundo').toLowerCase();
+    const bg = colors[cat] || 'linear-gradient(135deg, #ef446f, #3b82f6)';
+    
+    // SVG minimalista y premium de periódico que se renderiza localmente
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' style='background:${bg};'><path d='M25 30h50M25 45h50M25 60h30' stroke='rgba(255,255,255,0.85)' stroke-width='6' stroke-linecap='round'/><circle cx='68' cy='60' r='7' fill='white'/></svg>`;
+    
+    img.src = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+  }
+
   // Inicialización de Autenticación (Clerk + Fallback)
   async function initAuthSystem() {
     try {
@@ -2401,7 +2424,7 @@
       return `
         <div class="hot-circle-card" onclick="openArticle(${item.id})">
           <div class="hot-img-wrap">
-            <img class="hot-circle-img" src="${imgUrl}" alt="${item.title}" loading="lazy">
+            <img class="hot-circle-img" src="${imgUrl}" alt="${item.title}" loading="lazy" onerror="handleImgError(this, '${item.category}')">
             <span class="hot-badge">0${index + 1}</span>
           </div>
           <div class="hot-circle-info">
@@ -2454,7 +2477,7 @@
     mainCard.innerHTML = `
       <div class="novedades-main-card" onclick="openArticle(${main.id})">
         <div class="novedades-main-img-wrap">
-          <img src="${mainImg}" alt="${main.title}">
+          <img src="${mainImg}" alt="${main.title}" onerror="handleImgError(this, '${main.category}')">
           <span class="novedades-main-cat-badge">${main.category}</span>
         </div>
         <div class="novedades-main-content">
@@ -2483,7 +2506,7 @@
       return `
         <div class="novedades-item-row" onclick="openArticle(${item.id})">
           <div class="novedades-item-img-wrap">
-            <img src="${imgUrl}" alt="${item.title}">
+            <img src="${imgUrl}" alt="${item.title}" onerror="handleImgError(this, '${item.category}')">
             <span class="novedades-item-index">${index + 1}</span>
           </div>
           <div class="novedades-item-info">
@@ -2591,7 +2614,7 @@
     const heroHtml = `
       <div class="hero-grid">
         <div class="hero-main" onclick="openArticle(${main.id})" style="width: 100%;">
-          <img class="hero-img" src="${mainImg}" alt="${main.title}" loading="lazy" style="height: 440px; width: 100%;">
+          <img class="hero-img" src="${mainImg}" alt="${main.title}" loading="lazy" style="height: 440px; width: 100%;" onerror="handleImgError(this, '${main.category}')">
           <div class="hero-content">
             <div class="hero-category">${main.category}</div>
             <div class="hero-title" style="font-size: 2.3rem; line-height: 1.2; margin-bottom: 12px;">${main.title}</div>
@@ -2641,7 +2664,7 @@
       
       return `
         <div class="news-card" data-id="${item.id}">
-          <img class="news-card-img" src="${cardImg}" alt="${item.title}" loading="lazy" onclick="openArticle(${item.id})">
+          <img class="news-card-img" src="${cardImg}" alt="${item.title}" loading="lazy" onclick="openArticle(${item.id})" onerror="handleImgError(this, '${item.category}')">
           <div class="news-card-body">
             <div class="news-category">${item.category}</div>
             <div class="news-card-title" onclick="openArticle(${item.id})">${item.title}</div>
@@ -2874,7 +2897,7 @@
       const bookmarkImg = (item.image_url && !item.image_url.includes('picsum.photos')) ? item.image_url : getFallbackImage(item.category, item.title);
       return `
         <div class="bookmark-item" onclick="openArticleFromBookmark(${item.id})">
-          <img class="bookmark-img" src="${bookmarkImg}" alt="${item.title}">
+          <img class="bookmark-img" src="${bookmarkImg}" alt="${item.title}" onerror="handleImgError(this, '${item.category}')">
           <div class="bookmark-info">
             <div class="bookmark-title">${item.title}</div>
             <div class="bookmark-meta">
@@ -2934,7 +2957,7 @@
         <button class="audio-btn-stop" onclick="window.print()" style="background:var(--accent-green-light); color:var(--accent-green); border-color:var(--accent-green); margin-left: auto; height: 32px; font-size: 0.8rem; font-weight: 700;">🖨 Imprimir</button>
       </div>
 
-      <img src="${articleImg}" alt="${article.title}" style="width:100%; max-height:360px; object-fit:cover; border-radius:16px; margin-bottom:24px;">
+      <img src="${articleImg}" alt="${article.title}" style="width:100%; max-height:360px; object-fit:cover; border-radius:16px; margin-bottom:24px;" onerror="handleImgError(this, '${article.category}')">
 
       <div style="font-size:1.1rem; line-height:1.7; color:var(--text-primary); margin-bottom:24px; white-space:pre-wrap;">${article.body || article.excerpt}</div>
       
