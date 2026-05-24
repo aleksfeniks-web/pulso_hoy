@@ -796,6 +796,7 @@
   <!-- Filtros por Categorías -->
   <div class="filters" id="filterContainer">
     <button class="filter-chip active" data-filter="todos">Todas</button>
+    <button class="filter-chip" data-filter="local">📍 Local</button>
     <button class="filter-chip" data-filter="economia">Economía</button>
     <button class="filter-chip" data-filter="politica">Política</button>
     <button class="filter-chip" data-filter="tecnologia">Tecnología</button>
@@ -824,9 +825,13 @@
         <!-- Hero Grid original modernizado -->
         <div id="heroContainer"></div>
         
-        <div class="section-header">
-          <h2>Últimas noticias</h2>
-          <span id="newsCount">Cargando noticias...</span>
+        <div class="section-header" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <h2 id="newsSectionTitle">Últimas noticias</h2>
+          <div id="locationBadgeContainer" style="display: none; align-items: center; gap: 6px; background: rgba(59, 130, 246, 0.12); border: 1.5px solid rgba(59, 130, 246, 0.3); color: var(--accent-blue); padding: 6px 14px; border-radius: var(--radius-pill); font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;" onclick="changeLocationManual()">
+            <span id="locationBadgeText">📍 Buscando ubicación...</span>
+            <span style="font-size:0.65rem; opacity:0.8;">✏️</span>
+          </div>
+          <span id="newsCount" style="margin-left: auto;">Cargando noticias...</span>
         </div>
         
         <div id="newsGrid" class="news-grid" style="margin-bottom: 56px;"></div>
@@ -1177,6 +1182,11 @@
               <label for="artSource">Fuente / Autor *</label>
               <input type="text" id="artSource" placeholder="Ej. Banco de México, Reuters" oninput="updateLivePreview()">
             </div>
+
+            <div class="form-group">
+              <label for="artLocalLocation">Ubicación Geográfica (opcional, ej. CDMX, Madrid, Buenos Aires)</label>
+              <input type="text" id="artLocalLocation" placeholder="Ingresa la ciudad o región de la noticia" oninput="updateLivePreview()">
+            </div>
             
             <div class="form-group">
               <label for="artImageUrl">URL de imagen (opcional)</label>
@@ -1410,6 +1420,11 @@
         <label for="editSource">Fuente *</label>
         <input type="text" id="editSource" placeholder="Fuente de la noticia">
       </div>
+
+      <div class="form-group">
+        <label for="editLocalLocation">Ubicación Geográfica (ej. CDMX, Madrid, Buenos Aires)</label>
+        <input type="text" id="editLocalLocation" placeholder="Ubicación local del artículo">
+      </div>
       
       <div class="form-group">
         <label for="editImageUrl">URL de la Imagen (Cambiar libremente) *</label>
@@ -1461,6 +1476,12 @@
   let currentMinTruth = 50;
   let userToken = localStorage.getItem('userToken') || 'user_' + Math.random().toString(36).substr(2, 9);
   localStorage.setItem('userToken', userToken);
+  
+  // Variables de ubicación del usuario (Detección en cascada)
+  let userCity = localStorage.getItem('userCity') || '';
+  let userRegion = localStorage.getItem('userRegion') || '';
+  let userCountry = localStorage.getItem('userCountry') || '';
+  let aiGeneratedLocalNews = []; // Noticias locales personalizadas generadas por IA en vivo
   
   let chartInstances = {};
   let previewChartInstance = null;
@@ -2484,8 +2505,35 @@
     
     let filtered = allNews;
     
-    // 1. Filtrar por categoría
-    if (currentFilter !== 'todos') {
+    // Actualizar título y badge de ubicación
+    const titleEl = document.getElementById('newsSectionTitle');
+    if (titleEl) {
+      titleEl.innerText = currentFilter === 'local' ? 'Noticias locales' : 'Últimas noticias';
+    }
+    updateLocationBadge();
+    
+    // 1. Filtrar por categoría (Con lógica especial para Local en cascada)
+    if (currentFilter === 'local') {
+      const matchLocation = (n) => {
+        if (!n.local_location) return false;
+        const loc = n.local_location.toLowerCase();
+        const city = userCity.toLowerCase();
+        const region = userRegion.toLowerCase();
+        const country = userCountry.toLowerCase();
+        
+        if (city && (loc.includes(city) || city.includes(loc))) return 1;
+        if (region && (loc.includes(region) || region.includes(loc))) return 2;
+        if (country && (loc.includes(country) || country.includes(loc))) return 3;
+        return false;
+      };
+
+      const localMatches = allNews.map(n => ({ item: n, matchLevel: matchLocation(n) }))
+                                   .filter(x => x.matchLevel !== false)
+                                   .sort((a, b) => a.matchLevel - b.matchLevel)
+                                   .map(x => x.item);
+                                   
+      filtered = [...aiGeneratedLocalNews, ...localMatches];
+    } else if (currentFilter !== 'todos') {
       filtered = filtered.filter(n => n.category === currentFilter);
     }
     
@@ -2559,12 +2607,31 @@
   // Renderizar Grilla de Tarjetas
   function renderNewsGrid(news) {
     const grid = document.getElementById('newsGrid');
+    
+    // Si estamos en la categoría local y no hay noticias cargadas en base de datos ni por la IA
+    if (currentFilter === 'local' && !news.length) {
+      const locName = [userCity, userRegion, userCountry].filter(Boolean).slice(0, 2).join(', ');
+      grid.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 56px 32px; background: rgba(59, 130, 246, 0.04); border-radius: var(--radius-card); border: 2px dashed rgba(59, 130, 246, 0.2); max-width: 680px; margin: 24px auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; animation: slideUp 0.4s ease; box-sizing: border-box;">
+          <div style="font-size: 3.5rem; animation: float 3s ease-in-out infinite;">📍</div>
+          <h3 style="font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--text-primary); margin: 0; font-weight: 800;">Sin noticias locales publicadas en ${locName || 'tu zona'}</h3>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; max-width: 480px; margin: 0;">
+            No hay corresponsales publicando noticias locales en este momento cerca de ti. Sin embargo, nuestro reportero premium de IA puede redactar un boletín local veraz al instante.
+          </p>
+          <button class="ai-action-btn" id="generateAiLocalNewsBtn" onclick="generateLocalNewsWithAI()" style="margin-top: 12px; font-size: 0.95rem; padding: 14px 36px; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);">
+            ✨ Generar Noticias Locales con IA
+          </button>
+        </div>
+      `;
+      return;
+    }
+    
     if (!news.length) {
       grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 48px; background:var(--bg-card); border-radius:var(--radius-card); border: 1px solid var(--border-light); color:var(--text-muted); font-size:1.1rem;">Ninguna noticia coincide con los criterios de búsqueda.</div>';
       return;
     }
     
-    grid.innerHTML = news.map(item => {
+    const newsCardsHtml = news.map(item => {
       const isBookmarked = bookmarkedNews.some(b => b.id === item.id);
       const cardImg = (item.image_url && !item.image_url.includes('picsum.photos')) ? item.image_url : getFallbackImage(item.category, item.title);
       
@@ -2594,6 +2661,27 @@
         </div>
       `;
     }).join('');
+    
+    if (currentFilter === 'local') {
+      const locName = [userCity, userRegion, userCountry].filter(Boolean).slice(0, 2).join(', ');
+      const bannerHtml = `
+        <div class="local-ai-banner" style="grid-column: 1/-1; display: flex; justify-content: space-between; align-items: center; gap: 16px; background: linear-gradient(135deg, rgba(239, 68, 111, 0.08), rgba(59, 130, 246, 0.08)); border: 1px solid var(--border-light); border-radius: var(--radius-card); padding: 16px 24px; margin-bottom: 12px; flex-wrap: wrap; animation: slideUp 0.3s ease; box-sizing: border-box;">
+          <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
+            <span style="font-size: 1.8rem;">🤖</span>
+            <div>
+              <h4 style="margin: 0; font-weight: 800; font-size: 0.95rem; color: var(--text-primary);">¿Quieres reportajes personalizados para ${locName}?</h4>
+              <p style="margin: 3px 0 0; font-size: 0.8rem; color: var(--text-secondary);">Nuestro redactor inteligente escribe crónicas locales en vivo.</p>
+            </div>
+          </div>
+          <button class="ai-action-btn" id="generateAiLocalNewsBtn" onclick="generateLocalNewsWithAI()" style="padding: 8px 18px; font-size: 0.8rem; height: 38px; box-shadow: none;">
+            ✨ Generar con IA
+          </button>
+        </div>
+      `;
+      grid.innerHTML = bannerHtml + newsCardsHtml;
+    } else {
+      grid.innerHTML = newsCardsHtml;
+    }
     
     news.forEach(item => {
       if (item.is_financial && item.chart_data) {
@@ -2941,6 +3029,8 @@
     const category = document.getElementById('artCategory').value;
     const source = document.getElementById('artSource').value.trim() || 'Fuente / Redactor';
     const excerpt = document.getElementById('artExcerpt').value.trim() || 'Este es un resumen en tiempo real del artículo que estás redactando.';
+    const localLocationInput = document.getElementById('artLocalLocation');
+    const local_location = localLocationInput ? localLocationInput.value.trim() : '';
     
     let imageUrl = document.getElementById('artImageUrl').value.trim();
     if (!imageUrl || imageUrl.includes('picsum.photos')) {
@@ -2964,6 +3054,7 @@
             <div class="footer-meta">
               <span class="source-name">${source}</span>
               <span>Hoy</span>
+              ${local_location ? `<span class="source-name" style="background:rgba(59,130,246,0.1); color:var(--accent-blue); padding:1px 6px; border-radius:4px;">📍 ${local_location}</span>` : ''}
             </div>
             <div class="card-actions">
               <span class="truth-badge truth-badge-high">Verificando 85%</span>
@@ -3029,6 +3120,7 @@
     const body = document.getElementById('artBody').value.trim();
     const imageUrlInput = document.getElementById('artImageUrl').value.trim();
     const hasData = document.getElementById('artHasData').value === 'yes';
+    const local_location = document.getElementById('artLocalLocation').value.trim();
     
     if (!title || !category || !source || !excerpt || !body) {
       alert("⚠️ Por favor completa todos los campos requeridos con asterisco (*).");
@@ -3062,7 +3154,8 @@
       is_financial: hasData,
       chart_data: chartData,
       image_url: finalImageUrl,
-      user_email: subscriberEmail || null
+      user_email: subscriberEmail || null,
+      local_location: local_location || null
     };
 
     try {
@@ -3105,6 +3198,7 @@
     // Resetear formulario
     document.getElementById('artTitle').value = '';
     document.getElementById('artSource').value = '';
+    document.getElementById('artLocalLocation').value = '';
     document.getElementById('artExcerpt').value = '';
     document.getElementById('artBody').value = '';
     document.getElementById('artImageUrl').value = '';
@@ -3389,6 +3483,78 @@
     }
   }
 
+  // ---------- FUNCIONES PARA NOTICIAS LOCALES & GEOLOCALIZACIÓN ----------
+  function updateLocationBadge() {
+    const badgeText = document.getElementById('locationBadgeText');
+    const badgeContainer = document.getElementById('locationBadgeContainer');
+    if (!badgeText || !badgeContainer) return;
+
+    const displayLoc = [userCity, userRegion, userCountry].filter(Boolean).slice(0, 2).join(', ');
+    badgeText.innerText = `📍 ${displayLoc || 'Buscar Ubicación'}`;
+    badgeContainer.style.display = currentFilter === 'local' ? 'inline-flex' : 'none';
+  }
+
+  function changeLocationManual() {
+    const newLoc = prompt("Ingresa tu ciudad o ubicación (ej. Madrid, CDMX, Buenos Aires):", userCity || userRegion || "CDMX");
+    if (newLoc && newLoc.trim() !== "") {
+      const parts = newLoc.split(",");
+      userCity = parts[0].trim();
+      userRegion = parts[1] ? parts[1].trim() : parts[0].trim();
+      userCountry = parts[2] ? parts[2].trim() : "";
+
+      localStorage.setItem('userCity', userCity);
+      localStorage.setItem('userRegion', userRegion);
+      localStorage.setItem('userCountry', userCountry);
+
+      // Limpiar caché de noticias locales de la IA generadas anteriormente
+      aiGeneratedLocalNews = [];
+
+      updateLocationBadge();
+      filterAndRender();
+
+      // Actualizar el widget del clima también
+      const cityEl = document.querySelector('.weather-city');
+      if (cityEl) cityEl.innerText = `${userCity}${userRegion ? ', ' + userRegion : ''}`;
+    }
+  }
+
+  async function generateLocalNewsWithAI() {
+    const btn = document.getElementById('generateAiLocalNewsBtn');
+    const originalText = btn ? btn.innerText : '✨ Generar con IA';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerText = '⏳ Redactando noticias locales...';
+    }
+
+    const locName = [userCity, userRegion, userCountry].filter(Boolean).slice(0, 2).join(', ');
+
+    try {
+      const res = await fetch('/api/ai/local-news', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ location: locName || "CDMX" })
+      });
+
+      if (!res.ok) throw new Error("Error en API");
+      const data = await res.json();
+
+      if (data.ok && Array.isArray(data.news)) {
+        aiGeneratedLocalNews = data.news;
+        alert(`✨ ¡Novedades redactadas! Se han generado 3 crónicas locales para ${locName}.`);
+        filterAndRender();
+      } else {
+        throw new Error();
+      }
+    } catch(e) {
+      alert("❌ Ocurrió un error al conectar con el redactor de IA. Por favor intenta más tarde.");
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = originalText;
+      }
+    }
+  }
+
   // ---------- WIDGET DEL CLIMA INTERACTIVO CON GEOLOCALIZACIÓN Y RELOJ ----------
   function initWeatherWidget() {
     // 1. Iniciar reloj digital premium
@@ -3415,9 +3581,25 @@
           // Obtener ciudad real del usuario
           const geoRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`);
           const geoData = await geoRes.json();
-          const city = geoData.city || geoData.locality || "Tu Ciudad";
-          const principalSubdivision = geoData.principalSubdivision ? `, ${geoData.principalSubdivision}` : "";
-          if (cityEl) cityEl.innerText = `${city}${principalSubdivision}`;
+          
+          const city = geoData.city || geoData.locality || "";
+          const region = geoData.principalSubdivision || "";
+          const country = geoData.countryName || "";
+          
+          if (!userCity) {
+            userCity = city || "Ciudad de México";
+            userRegion = region || "CDMX";
+            userCountry = country || "México";
+            localStorage.setItem('userCity', userCity);
+            localStorage.setItem('userRegion', userRegion);
+            localStorage.setItem('userCountry', userCountry);
+          }
+          
+          const displayCity = userCity;
+          const principalSubdivision = userRegion ? `, ${userRegion}` : "";
+          if (cityEl) cityEl.innerText = `${displayCity}${principalSubdivision}`;
+          
+          updateLocationBadge();
           
           // Obtener clima en vivo real de Open-Meteo
           const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&relative_humidity_2m=true&wind_speed_10m=true`);
@@ -3464,6 +3646,19 @@
     const iconEl = document.getElementById('weatherIcon');
     const humidityEl = document.getElementById('weatherHumidity');
     const windEl = document.getElementById('weatherWind');
+    
+    if (!userCity) {
+      userCity = "Ciudad de México";
+      userRegion = "CDMX";
+      userCountry = "México";
+      localStorage.setItem('userCity', userCity);
+      localStorage.setItem('userRegion', userRegion);
+      localStorage.setItem('userCountry', userCountry);
+    }
+    updateLocationBadge();
+    
+    const cityEl = document.querySelector('.weather-city');
+    if (cityEl) cityEl.innerText = `${userCity}, ${userRegion}`;
     
     if (!tempEl || !iconEl) return;
     
@@ -3629,6 +3824,7 @@
     document.getElementById('editTitle').value = article.title;
     document.getElementById('editCategory').value = article.category;
     document.getElementById('editSource').value = article.source;
+    document.getElementById('editLocalLocation').value = article.local_location || '';
     document.getElementById('editImageUrl').value = article.image_url || '';
     document.getElementById('editExcerpt').value = article.excerpt;
     document.getElementById('editBody').value = article.body || '';
@@ -3646,6 +3842,7 @@
     const title = document.getElementById('editTitle').value.trim();
     const category = document.getElementById('editCategory').value;
     const source = document.getElementById('editSource').value.trim();
+    const local_location = document.getElementById('editLocalLocation').value.trim();
     const image_url = document.getElementById('editImageUrl').value.trim();
     const excerpt = document.getElementById('editExcerpt').value.trim();
     const body = document.getElementById('editBody').value.trim();
@@ -3661,7 +3858,8 @@
       source,
       image_url: image_url || null,
       excerpt,
-      body
+      body,
+      local_location: local_location || null
     };
     
     try {

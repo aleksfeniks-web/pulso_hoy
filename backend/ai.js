@@ -308,4 +308,65 @@ Responde SOLO con el JSON válido, en español, sin texto adicional.`;
   }
 }
 
-module.exports = { summarize, chat, analyzeBias, explain, quiz, briefing };
+/**
+ * POST /api/ai/local-news
+ * Body: { location: string }
+ * Devuelve: { news: [newsItems] }
+ */
+async function localNews(req, res) {
+  try {
+    const { location } = req.body;
+    if (!location?.trim()) {
+      return res.status(400).json({ error: 'Ubicación requerida' });
+    }
+
+    const prompt = `Eres un reportero local de noticias verídicas y relevantes de UnicoNews.
+Genera 3 noticias locales realistas y de actualidad para la ubicación: "${location}".
+Las noticias deben ser interesantes, cubrir diferentes categorías (como economía local, obras públicas, transporte, tecnología regional, salud o comunidad) y redactarse con un tono periodístico formal y veraz.
+Asegúrate de que las noticias parezcan de actualidad (año 2026) y tengan fuentes locales realistas del lugar.
+
+Responde ÚNICAMENTE con este JSON con esta estructura exacta (sin texto adicional, sin markdown y sin backticks):
+{
+  "news": [
+    {
+      "id": 10000,
+      "title": "Título llamativo e informativo de la noticia local en ${location}",
+      "category": "economia|politica|tecnologia|mundo|salud|business",
+      "source": "Nombre de una fuente de noticias o diario local creíble de ${location}",
+      "excerpt": "Un resumen de 1 o 2 oraciones atractivas sobre la noticia local.",
+      "body": "El cuerpo completo del artículo local. Desarrolla los hechos detalladamente en 2 a 3 párrafos, especificando nombres de avenidas, calles, zonas, alcaldes o regulaciones de la ubicación ${location}.",
+      "truth_score": 95,
+      "truth_label": "Verificado",
+      "truth_factors": ["Hechos confirmados por boletín oficial local", "Declaración directa del ayuntamiento o delegación"],
+      "is_financial": false,
+      "chart_data": null,
+      "image_url": null,
+      "local_location": "${location}",
+      "created_at": "${new Date().toISOString()}"
+    }
+  ]
+}
+
+Responde SOLO con el JSON válido, en español, sin texto adicional y sin formateo markdown de código.`;
+
+    const raw = await askGemini(prompt, 0.75);
+    const jsonStr = raw.replace(/```json?/g, '').replace(/```/g, '').trim();
+    const result = JSON.parse(jsonStr);
+    
+    // Asignar IDs secuenciales únicos temporales a partir de un timestamp
+    const now = Date.now();
+    if (result.news && Array.isArray(result.news)) {
+      result.news.forEach((item, index) => {
+        item.id = now + index;
+        item.local_location = location;
+      });
+    }
+    
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    console.error('[AI local-news]', err.message);
+    res.status(500).json({ error: 'Error al generar noticias locales', detail: err.message });
+  }
+}
+
+module.exports = { summarize, chat, analyzeBias, explain, quiz, briefing, localNews };

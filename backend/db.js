@@ -26,6 +26,7 @@ async function initTables() {
         image_url TEXT,
         user_email TEXT,
         status TEXT DEFAULT 'published',
+        local_location TEXT,
         created_at TIMESTAMP DEFAULT NOW()
       );
       
@@ -61,6 +62,15 @@ async function initTables() {
         created_at TIMESTAMP DEFAULT NOW()
       );
     `);
+    
+    // Migración segura: agregar columna local_location si no existe en base de datos ya creada
+    try {
+      await client.query("ALTER TABLE news ADD COLUMN IF NOT EXISTS local_location TEXT");
+      console.log('✅ Columna local_location verificada/agregada');
+    } catch (migErr) {
+      console.warn('⚠️ Advertencia en migración de columna local_location:', migErr.message);
+    }
+    
     console.log('✅ Tablas listas');
   } catch (err) {
     console.error('❌ Error en tablas', err);

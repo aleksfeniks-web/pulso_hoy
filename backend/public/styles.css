@@ -861,6 +861,7 @@ input:focus, textarea:focus, select:focus {
   }
   .layout {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
   .write-container {
     grid-template-columns: 1fr;
@@ -870,7 +871,52 @@ input:focus, textarea:focus, select:focus {
   .header-inner {
     flex-direction: column;
     gap: 12px;
+    align-items: center;
   }
+  .logo {
+    justify-content: center;
+    width: 100%;
+  }
+  .nav-links {
+    display: flex;
+    overflow-x: auto;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 6px;
+    padding-bottom: 8px;
+    scrollbar-width: none; /* Firefox */
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav-links::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+  .nav-btn {
+    white-space: nowrap;
+    padding: 8px 12px !important;
+    font-size: 0.8rem !important;
+  }
+  .dark-toggle {
+    margin-left: 4px !important;
+  }
+  
+  .filters {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filters::-webkit-scrollbar {
+    display: none;
+  }
+  .filter-chip {
+    white-space: nowrap;
+    padding: 8px 14px !important;
+    font-size: 0.78rem !important;
+  }
+
   .control-panel {
     flex-direction: column;
     align-items: stretch;
@@ -888,7 +934,22 @@ input:focus, textarea:focus, select:focus {
     padding: 0 16px;
   }
   .hero-title {
-    font-size: 1.7rem;
+    font-size: 1.6rem !important;
+  }
+  .hero-content {
+    padding: 20px !important;
+  }
+  .news-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  .hot-topics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  .hot-circle-card {
+    flex-direction: column !important;
+    text-align: center;
   }
 }
 

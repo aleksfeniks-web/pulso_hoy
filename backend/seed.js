@@ -1,4 +1,4 @@
-const { pool } = require('./db');
+const { pool, initTables } = require('./db');
 
 const sampleNews = [
   {
@@ -14,7 +14,8 @@ const sampleNews = [
     is_financial: false,
     chart_data: null,
     image_url: null,
-    user_email: "editor@uniconews.com"
+    user_email: "editor@uniconews.com",
+    local_location: null
   },
   {
     title: "Banco de México mantiene tasa de interés de referencia ante inflación persistente",
@@ -35,7 +36,8 @@ const sampleNews = [
       type: "line"
     },
     image_url: null,
-    user_email: "economia@uniconews.com"
+    user_email: "economia@uniconews.com",
+    local_location: "CDMX"
   },
   {
     title: "Europa acelera planes de transición energética ante olas de calor extremas",
@@ -50,7 +52,8 @@ const sampleNews = [
     is_financial: false,
     chart_data: null,
     image_url: null,
-    user_email: "planeta@uniconews.com"
+    user_email: "planeta@uniconews.com",
+    local_location: "Madrid"
   },
   {
     title: "Tesla anuncia su próximo coche autónomo de bajo costo para mercados masivos",
@@ -65,7 +68,8 @@ const sampleNews = [
     is_financial: false,
     chart_data: null,
     image_url: null,
-    user_email: "editor@uniconews.com"
+    user_email: "editor@uniconews.com",
+    local_location: null
   },
   {
     title: "Brote de dengue en América Latina activa alertas epidemiológicas nacionales",
@@ -80,7 +84,8 @@ const sampleNews = [
     is_financial: false,
     chart_data: null,
     image_url: null,
-    user_email: "salud@uniconews.com"
+    user_email: "salud@uniconews.com",
+    local_location: "Buenos Aires"
   },
   {
     title: "El peso mexicano registra volatilidad y presiones frente al dólar arancelario",
@@ -101,7 +106,8 @@ const sampleNews = [
       type: "line"
     },
     image_url: null,
-    user_email: "economia@uniconews.com"
+    user_email: "economia@uniconews.com",
+    local_location: "CDMX"
   },
   {
     title: "Congreso debate reformas estructurales al sistema de pensiones y jubilación",
@@ -116,7 +122,8 @@ const sampleNews = [
     is_financial: false,
     chart_data: null,
     image_url: null,
-    user_email: "politica@uniconews.com"
+    user_email: "politica@uniconews.com",
+    local_location: "CDMX"
   },
   {
     title: "Empresas tecnológicas reportan ingresos récord gracias a la adopción corporativa de IA",
@@ -131,7 +138,8 @@ const sampleNews = [
     is_financial: false,
     chart_data: null,
     image_url: null,
-    user_email: "business@uniconews.com"
+    user_email: "business@uniconews.com",
+    local_location: null
   },
   {
     title: "Nuevas rutas comerciales del Ártico abren debates geopolíticos globales",
@@ -146,12 +154,18 @@ const sampleNews = [
     is_financial: false,
     chart_data: null,
     image_url: null,
-    user_email: "planeta@uniconews.com"
+    user_email: "planeta@uniconews.com",
+    local_location: null
   }
 ];
 
 async function seed() {
   console.log("🌱 Iniciando sembrado de noticias en Neon PostgreSQL...");
+  try {
+    await initTables();
+  } catch (err) {
+    console.error("Error al inicializar tablas en seed:", err);
+  }
   const client = await pool.connect();
   
   try {
@@ -164,8 +178,8 @@ async function seed() {
     // 2. Insertar noticias de ejemplo
     for (const item of sampleNews) {
       await client.query(`
-        INSERT INTO news (title, category, source, source_url, excerpt, body, truth_score, truth_label, truth_factors, is_financial, chart_data, image_url, user_email, status)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'published')
+        INSERT INTO news (title, category, source, source_url, excerpt, body, truth_score, truth_label, truth_factors, is_financial, chart_data, image_url, user_email, status, local_location)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'published', $14)
       `, [
         item.title,
         item.category,
@@ -179,7 +193,8 @@ async function seed() {
         item.is_financial,
         item.chart_data ? JSON.stringify(item.chart_data) : null,
         item.image_url,
-        item.user_email
+        item.user_email,
+        item.local_location || null
       ]);
       console.log(`✨ Noticia insertada: "${item.title}"`);
     }

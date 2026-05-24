@@ -28,7 +28,7 @@ app.get('/api/news', async (req, res) => {
     const result = await pool.query(`
       SELECT id, title, category, source, source_url, excerpt, body, 
              truth_score, truth_label, truth_factors, is_financial, 
-             chart_data, image_url, created_at
+             chart_data, image_url, local_location, created_at
       FROM news WHERE status = 'published' ORDER BY created_at DESC
     `);
     res.json(result.rows);
@@ -74,7 +74,7 @@ app.post('/api/cron/sync-news', async (req, res) => {
 
 // Publicar nueva noticia (desde el frontend)
 app.post('/api/news', async (req, res) => {
-  const { title, category, source, source_url, excerpt, body, is_financial, chart_data, image_url, user_email } = req.body;
+  const { title, category, source, source_url, excerpt, body, is_financial, chart_data, image_url, user_email, local_location } = req.body;
   if (!title || !category || !source || !excerpt || !body) {
     return res.status(400).json({ error: 'Faltan campos obligatorios' });
   }
@@ -84,10 +84,10 @@ app.post('/api/news', async (req, res) => {
 
   try {
     const result = await queryWithAuth(token, `
-      INSERT INTO news (title, category, source, source_url, excerpt, body, is_financial, chart_data, image_url, user_email, status)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'published')
+      INSERT INTO news (title, category, source, source_url, excerpt, body, is_financial, chart_data, image_url, user_email, status, local_location)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'published', $11)
       RETURNING *
-    `, [title, category, source, source_url, excerpt, body, is_financial || false, chart_data || null, image_url || null, user_email || null]);
+    `, [title, category, source, source_url, excerpt, body, is_financial || false, chart_data || null, image_url || null, user_email || null, local_location || null]);
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error(err);
@@ -258,7 +258,7 @@ app.delete('/api/news/:id', async (req, res) => {
 // EDITAR NOTICIA (Superusuario)
 app.put('/api/news/:id', async (req, res) => {
   const { id } = req.params;
-  const { title, category, source, excerpt, body, image_url } = req.body;
+  const { title, category, source, excerpt, body, image_url, local_location } = req.body;
   
   if (!title || !category || !source || !excerpt || !body) {
     return res.status(400).json({ error: 'Faltan campos obligatorios' });
@@ -267,10 +267,10 @@ app.put('/api/news/:id', async (req, res) => {
   try {
     const result = await pool.query(`
       UPDATE news
-      SET title = $1, category = $2, source = $3, excerpt = $4, body = $5, image_url = $6
-      WHERE id = $7
+      SET title = $1, category = $2, source = $3, excerpt = $4, body = $5, image_url = $6, local_location = $7
+      WHERE id = $8
       RETURNING *
-    `, [title, category, source, excerpt, body, image_url || null, id]);
+    `, [title, category, source, excerpt, body, image_url || null, local_location || null, id]);
     
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Noticia no encontrada' });
@@ -322,6 +322,7 @@ app.post('/api/ai/analyze-bias',   ai.analyzeBias);
 app.post('/api/ai/explain',        ai.explain);
 app.get('/api/ai/quiz',            ai.quiz);
 app.post('/api/ai/briefing',       ai.briefing);
+app.post('/api/ai/local-news',     ai.localNews);
 
 // Redirigir todo lo demás al index.html (para SPA)
 app.get('*', (req, res) => {
