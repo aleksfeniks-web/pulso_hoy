@@ -18,6 +18,217 @@
   
   <!-- Estilos externos -->
   <link rel="stylesheet" href="styles.css">
+  
+  <!-- Estilos inlined del agente de IA para evitar problemas de caché del navegador -->
+  <style>
+    /* ===== FLOATING AI WIDGET STYLES (INLINED TO BYPASS CACHE) ===== */
+    .ai-floating-agent {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      pointer-events: none;
+    }
+    .ai-agent-bubble-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    .ai-agent-label {
+      background: rgba(20, 26, 42, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      opacity: 0.85;
+      animation: labelFloat 3s ease-in-out infinite;
+    }
+    @keyframes labelFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .ai-agent-bubble-container:hover .ai-agent-label {
+      opacity: 1;
+      border-color: var(--accent-blue);
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+    }
+    .ai-agent-bubble {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-red), var(--accent-blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 32px rgba(239, 68, 111, 0.4);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+    }
+    .ai-agent-bubble:hover {
+      transform: scale(1.12) rotate(8deg);
+      box-shadow: 0 12px 40px rgba(239, 68, 111, 0.55);
+    }
+    .ai-bubble-icon {
+      font-size: 2rem;
+      line-height: 1;
+      z-index: 2;
+      transition: all 0.3s ease;
+    }
+    .ai-bubble-pulse {
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-red);
+      z-index: 1;
+      animation: bubblePulse 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+      pointer-events: none;
+    }
+    @keyframes bubblePulse {
+      0% { transform: scale(1); opacity: 0.8; border-color: var(--accent-red); }
+      50% { border-color: var(--accent-blue); }
+      100% { transform: scale(1.55); opacity: 0; }
+    }
+
+    /* Floating Menu styling */
+    .ai-agent-menu {
+      position: absolute;
+      bottom: 80px;
+      right: 0;
+      width: 300px;
+      background: rgba(var(--bg-card-rgb), 0.9);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px) scale(0.92);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+      overflow: hidden;
+    }
+    .ai-agent-menu.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+    .ai-menu-header {
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(239, 68, 111, 0.08), rgba(59, 130, 246, 0.08));
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .ai-menu-title-icon { font-size: 1.6rem; }
+    .ai-menu-header h4 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.1rem;
+      margin: 0;
+      color: var(--text-primary);
+      font-weight: 800;
+    }
+    .ai-menu-header p {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin: 3px 0 0;
+    }
+    .ai-menu-items {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .ai-menu-item {
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      background: transparent;
+      text-align: left;
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s ease;
+      font-family: 'Inter', sans-serif;
+    }
+    .ai-menu-item:hover {
+      background: var(--border-light);
+      border-color: var(--border-light);
+      color: var(--accent-blue);
+      transform: translateX(6px);
+    }
+    .ai-menu-item-icon {
+      font-size: 1.25rem;
+      display: inline-block;
+      transition: transform 0.2s ease;
+    }
+    .ai-menu-item:hover .ai-menu-item-icon {
+      transform: scale(1.2);
+    }
+
+    /* Modal dialog styling */
+    .ai-popup-window {
+      transform: scale(0.92) translateY(35px);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-lg);
+    }
+    .modal-overlay.open .ai-popup-window {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+    .ai-popup-header {
+      background: linear-gradient(135deg, var(--accent-red), var(--accent-blue));
+      padding: 22px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .ai-popup-title {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .ai-popup-title-icon {
+      font-size: 2rem;
+      line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+    }
+    .ai-popup-content {
+      background: var(--bg-card);
+    }
+    .ai-popup-content .ai-tool-card {
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      background: transparent !important;
+    }
+    .ai-popup-content .ai-panel {
+      display: block !important;
+    }
+  </style>
 </head>
 <body>
 
@@ -3587,9 +3798,12 @@
 
 <!-- FLOATING AI AGENT FAB & WIDGET -->
 <div id="aiFloatingAgent" class="ai-floating-agent">
-  <div class="ai-agent-bubble" onclick="toggleAiAgentMenu()" title="UnicoNews IA 🤖">
-    <span class="ai-bubble-pulse"></span>
-    <span class="ai-bubble-icon">🤖</span>
+  <div class="ai-agent-bubble-container" onclick="toggleAiAgentMenu()">
+    <span class="ai-agent-label">Pregúntale a UnicoNews IA 🤖</span>
+    <div class="ai-agent-bubble" title="UnicoNews IA 🤖">
+      <span class="ai-bubble-pulse"></span>
+      <span class="ai-bubble-icon">🤖</span>
+    </div>
   </div>
   <div class="ai-agent-menu" id="aiAgentMenu">
     <div class="ai-menu-header">
