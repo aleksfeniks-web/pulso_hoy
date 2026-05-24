@@ -68,7 +68,6 @@
     <div class="nav-links">
       <button class="nav-btn active" data-section="noticias" onclick="switchSection('noticias')">Noticias</button>
       <button class="nav-btn" data-section="tendencias" onclick="switchSection('tendencias')">🔥 Tendencias</button>
-      <button class="nav-btn" data-section="ia" onclick="switchSection('ia')">🤖 IA</button>
       <button class="nav-btn" data-section="escribir" onclick="switchSection('escribir')">✍ Escribir</button>
       <button class="nav-btn" onclick="toggleBookmarksDrawer()">🔖 Marcadores</button>
       <button class="dark-toggle" id="darkToggle" aria-label="Cambiar tema">🌙</button>
@@ -3490,7 +3489,142 @@
     localStorage.setItem(`custom_links_${userToken}`, JSON.stringify(links));
     loadUserLinks();
   }
+
+  // ---------- WIDGET FLOTANTE DE IA ----------
+  function toggleAiAgentMenu() {
+    const menu = document.getElementById('aiAgentMenu');
+    if (menu) menu.classList.toggle('open');
+  }
+
+  // Cerrar el menú flotante al hacer clic fuera de él
+  document.addEventListener('click', (e) => {
+    const agentContainer = document.getElementById('aiFloatingAgent');
+    const menu = document.getElementById('aiAgentMenu');
+    if (agentContainer && !agentContainer.contains(e.target) && menu && menu.classList.contains('open')) {
+      menu.classList.remove('open');
+    }
+  });
+
+  async function openAiPopup(tool) {
+    // 1. Limpiar y restaurar cualquier panel de IA que esté actualmente abierto en el popup
+    closeAiPopup();
+
+    const storageSection = document.getElementById('iaSection');
+    const popupContent = document.getElementById('aiPopupContent');
+    const targetPanel = document.getElementById(`ai-panel-${tool}`);
+
+    if (!targetPanel || !popupContent) return;
+
+    // 2. Mover el elemento del panel de IA al popup content
+    popupContent.appendChild(targetPanel);
+
+    // 3. Configurar el título y el ícono en base al panel seleccionado
+    const titleText = document.getElementById('aiPopupTitleText');
+    const titleIcon = document.getElementById('aiPopupTitleIcon');
+
+    const titles = {
+      chat: { text: 'Asistente Conversacional (NewsBot)', icon: '💬' },
+      summarize: { text: 'Resumidor de Noticias Inteligente', icon: '🗞️' },
+      bias: { text: 'Detector de Sesgo y Sentimiento', icon: '🔍' },
+      explain: { text: 'Explicador de Conceptos', icon: '🎓' },
+      quiz: { text: 'Quiz Diario de Noticias', icon: '🎯' },
+      briefing: { text: 'Briefing Personalizado del Día', icon: '📋' }
+    };
+
+    const info = titles[tool] || { text: 'Asistente UnicoNews IA', icon: '🤖' };
+    if (titleText) titleText.innerText = info.text;
+    if (titleIcon) titleIcon.innerText = info.icon;
+
+    // 4. Mostrar el modal de la herramienta
+    document.getElementById('aiPopupModal').classList.add('open');
+
+    // 5. Cerrar el menú del agente flotante
+    document.getElementById('aiAgentMenu').classList.remove('open');
+
+    // 6. Inicialización especial en caso de ser necesario
+    if (tool === 'quiz') {
+      const quizContainer = document.getElementById('quizContainer');
+      // Iniciar el quiz si la UI está vacía
+      if (quizContainer && (quizContainer.innerHTML.trim() === '' || quizContainer.innerHTML.includes('Comenzar Quiz'))) {
+        loadQuiz(false);
+      }
+    } else if (tool === 'chat') {
+      setTimeout(() => {
+        const chatInput = document.getElementById('aiChatInput');
+        if (chatInput) chatInput.focus();
+        scrollChatToBottom();
+      }, 200);
+    }
+  }
+
+  function closeAiPopup() {
+    const popupContent = document.getElementById('aiPopupContent');
+    const storageSection = document.getElementById('iaSection');
+    const modal = document.getElementById('aiPopupModal');
+
+    if (popupContent && storageSection && popupContent.firstElementChild) {
+      const activePanel = popupContent.firstElementChild;
+      
+      // Detener la lectura por voz si el panel de briefing o explicador se cierra
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+
+      // Devolver el panel a su almacenamiento oculto en iaSection
+      storageSection.appendChild(activePanel);
+    }
+
+    if (modal) modal.classList.remove('open');
+  }
+
+  function handleAiPopupOverlayClick(e) {
+    if (e.target.id === 'aiPopupModal') {
+      closeAiPopup();
+    }
+  }
 </script>
+
+
+<!-- FLOATING AI AGENT FAB & WIDGET -->
+<div id="aiFloatingAgent" class="ai-floating-agent">
+  <div class="ai-agent-bubble" onclick="toggleAiAgentMenu()" title="UnicoNews IA 🤖">
+    <span class="ai-bubble-pulse"></span>
+    <span class="ai-bubble-icon">🤖</span>
+  </div>
+  <div class="ai-agent-menu" id="aiAgentMenu">
+    <div class="ai-menu-header">
+      <span class="ai-menu-title-icon">🤖</span>
+      <div>
+        <h4>Asistente IA UnicoNews</h4>
+        <p>Selecciona una herramienta inteligente</p>
+      </div>
+    </div>
+    <div class="ai-menu-items">
+      <button onclick="openAiPopup('chat')" class="ai-menu-item"><span class="ai-menu-item-icon">💬</span> Asistente ChatBot</button>
+      <button onclick="openAiPopup('summarize')" class="ai-menu-item"><span class="ai-menu-item-icon">🗞️</span> Resumidor de Textos</button>
+      <button onclick="openAiPopup('bias')" class="ai-menu-item"><span class="ai-menu-item-icon">🔍</span> Detector de Sesgo</button>
+      <button onclick="openAiPopup('explain')" class="ai-menu-item"><span class="ai-menu-item-icon">🎓</span> Explicador de Conceptos</button>
+      <button onclick="openAiPopup('quiz')" class="ai-menu-item"><span class="ai-menu-item-icon">🎯</span> Quiz del Día</button>
+      <button onclick="openAiPopup('briefing')" class="ai-menu-item"><span class="ai-menu-item-icon">📋</span> Briefing Personalizado</button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP MODAL PARA HERRAMIENTAS DE IA -->
+<div class="modal-overlay" id="aiPopupModal" onclick="handleAiPopupOverlayClick(event)">
+  <div class="modal ai-popup-window" style="max-width: 800px; padding: 0; overflow: hidden; border-radius: var(--radius-card);">
+    <div class="ai-popup-header">
+      <div class="ai-popup-title" id="aiPopupTitle">
+        <span class="ai-popup-title-icon" id="aiPopupTitleIcon">🤖</span>
+        <h3 id="aiPopupTitleText" style="font-family:'Playfair Display', serif; margin:0; font-size:1.5rem; color:#fff;">Asistente de IA</h3>
+      </div>
+      <button class="close-modal-btn" onclick="closeAiPopup()" style="color:#fff; top: 16px; right: 16px;">✕</button>
+    </div>
+    <div class="ai-popup-content" id="aiPopupContent" style="padding: 28px; max-height: 80vh; overflow-y: auto;">
+      <!-- El panel de IA se mueve aquí dinámicamente -->
+    </div>
+  </div>
+</div>
 
 <!-- ELEMENTOS PARA EFECTO PRE-EMINENTE DE DERRAME DE TINTA LÍQUIDA -->
 <div id="inkBleedOverlay" class="ink-bleed-overlay"></div>

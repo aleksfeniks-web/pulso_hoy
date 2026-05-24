@@ -2813,3 +2813,181 @@ input:focus, textarea:focus, select:focus {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ===== FLOATING AI AGENT WIDGET ===== */
+.ai-floating-agent {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-family: 'Inter', sans-serif;
+}
+.ai-agent-bubble {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-red), var(--accent-blue));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 30px rgba(239, 68, 111, 0.35);
+  transition: var(--transition);
+  position: relative;
+}
+.ai-agent-bubble:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 12px 35px rgba(239, 68, 111, 0.5);
+}
+.ai-bubble-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+  z-index: 2;
+  transition: var(--transition);
+}
+.ai-agent-bubble:hover .ai-bubble-icon {
+  transform: scale(1.08);
+}
+.ai-bubble-pulse {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 50%;
+  background: inherit;
+  z-index: 1;
+  animation: bubblePulse 2s infinite;
+}
+@keyframes bubblePulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.47); opacity: 0; }
+}
+
+/* Glassmorphism Dropdown Menu above bubble */
+.ai-agent-menu {
+  position: absolute;
+  bottom: 76px;
+  right: 0;
+  width: 290px;
+  background: rgba(var(--bg-card-rgb), 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.92);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  overflow: hidden;
+}
+.ai-agent-menu.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.ai-menu-header {
+  padding: 18px 20px;
+  background: linear-gradient(135deg, rgba(239, 68, 111, 0.06), rgba(59, 130, 246, 0.06));
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ai-menu-title-icon { font-size: 1.5rem; }
+.ai-menu-header h4 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.05rem;
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 800;
+}
+.ai-menu-header p {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  margin: 2px 0 0;
+}
+.ai-menu-items {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ai-menu-item {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  text-align: left;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: var(--transition-fast);
+}
+.ai-menu-item:hover {
+  background: var(--border-light);
+  color: var(--accent-blue);
+  transform: translateX(6px);
+}
+.ai-menu-item-icon {
+  font-size: 1.15rem;
+  display: inline-block;
+  transition: var(--transition-fast);
+}
+.ai-menu-item:hover .ai-menu-item-icon {
+  transform: scale(1.2);
+}
+
+/* Highly Interactive Popup Dialog Window */
+.ai-popup-window {
+  transform: scale(0.92) translateY(35px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-lg);
+}
+.modal-overlay.open .ai-popup-window {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+.ai-popup-header {
+  background: linear-gradient(135deg, var(--accent-red), var(--accent-blue));
+  padding: 22px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.ai-popup-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ai-popup-title-icon {
+  font-size: 1.9rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+.ai-popup-content {
+  background: var(--bg-card);
+}
+/* Estilo interno para que el panel de IA dentro del popup tenga borde transparente */
+.ai-popup-content .ai-tool-card {
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  background: transparent;
+}
+.ai-popup-content .ai-panel {
+  display: block !important; /* Forzar visualización de panel dentro de popup */
+}
+
+
