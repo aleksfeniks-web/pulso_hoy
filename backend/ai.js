@@ -3,9 +3,8 @@
  * Powered by Google Gemini 1.5 Flash (gratis hasta 1M tokens/mes)
  */
 
-const fetch = (...args) => import('node-fetch').then(({ default: f }) => f(...args));
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
 // Cache simple en memoria para el quiz y briefing del día
 const dailyCache = { quiz: null, briefing: null, date: null };
@@ -22,7 +21,11 @@ async function askGemini(prompt, temperature = 0.7) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature, maxOutputTokens: 1500 }
+      generationConfig: { 
+        temperature, 
+        maxOutputTokens: 8192,
+        thinkingConfig: { thinkingBudget: 0 }
+      }
     })
   });
 
