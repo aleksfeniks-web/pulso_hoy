@@ -769,21 +769,15 @@
   </div>
 </header>
 
-<!-- Banner superior de Patrocinios -->
-<div class="ad-top">
-  <div class="adsbygoogle-placeholder desktop-ad" style="width:728px;height:90px;margin:0 auto 12px auto;">
-    <div class="patrocinio-content">
-      <span class="patrocinio-icon">📢</span>
-      <span>Espacio Patrocinado UnicoNews</span>
-    </div>
-  </div>
-  
-  <div class="adsbygoogle-placeholder mobile-ad" style="width:320px;height:50px;margin:0 auto 12px auto;">
-    <div class="patrocinio-content">
-      <span class="patrocinio-icon">📢</span>
-      <span>Espacio Patrocinado</span>
-    </div>
-  </div>
+<!-- Banner superior AdSense Real (unicodocsup) -->
+<div class="ad-top" style="text-align: center; margin: 16px 0;">
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-1346198069090338"
+       data-ad-slot="5908743898"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </div>
 
 <div class="container">
@@ -1235,13 +1229,14 @@
 
     <!-- Barra Lateral -->
     <aside class="sidebar-col" id="sidebarCol">
-      <div class="sidebar-widget sidebar-ad">
-        <div class="adsbygoogle-placeholder" style="width:300px;height:250px;margin:0;border:none;background:transparent;">
-          <div class="patrocinio-content">
-            <span class="patrocinio-icon">📢</span>
-            <span>Espacio Patrocinado</span>
-          </div>
-        </div>
+      <div class="sidebar-widget sidebar-ad" style="border:none; background:transparent; padding:0; box-shadow:none;">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-1346198069090338"
+             data-ad-slot="5908743898"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
       </div>
 
       <!-- WIDGET DE SUSCRIPCIÓN A LA NEWSLETTER -->
@@ -1316,13 +1311,14 @@
         </div>
       </div>
 
-      <div class="sidebar-widget sidebar-ad">
-        <div class="adsbygoogle-placeholder" style="width:300px;height:600px;margin:0;border:none;background:transparent;">
-          <div class="patrocinio-content">
-            <span class="patrocinio-icon">📢</span>
-            <span>Espacio Patrocinado</span>
-          </div>
-        </div>
+      <div class="sidebar-widget sidebar-ad" style="border:none; background:transparent; padding:0; box-shadow:none;">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-1346198069090338"
+             data-ad-slot="5908743898"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
       </div>
     </aside>
   </div>
@@ -2960,6 +2956,16 @@
       <img src="${articleImg}" alt="${article.title}" style="width:100%; max-height:360px; object-fit:cover; border-radius:16px; margin-bottom:24px;" onerror="handleImgError(this, '${article.category}')">
 
       <div style="font-size:1.1rem; line-height:1.7; color:var(--text-primary); margin-bottom:24px; white-space:pre-wrap;">${article.body || article.excerpt}</div>
+
+      <!-- Anuncio In-Article de AdSense Real -->
+      <div style="margin: 28px 0; padding: 12px 0; border-top: 1px dashed var(--border-light); border-bottom: 1px dashed var(--border-light); text-align: center;">
+        <ins class="adsbygoogle"
+             style="display:block; text-align:center;"
+             data-ad-layout="in-article"
+             data-ad-format="fluid"
+             data-ad-client="ca-pub-1346198069090338"
+             data-ad-slot="4076787475"></ins>
+      </div>
       
       ${article.is_financial && article.chart_data ? `
         <div style="background:var(--bg-body); border:1px solid var(--border-light); border-radius:16px; padding:20px; margin:24px 0 16px;">
@@ -3007,6 +3013,13 @@
     
     if (article.is_financial && article.chart_data) {
       setTimeout(() => initChart('modalChart', article.chart_data), 100);
+    }
+
+    // Cargar dinámicamente el anuncio In-Article de AdSense
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (err) {
+      console.warn("Google AdSense push warning inside article modal:", err);
     }
   }
 
