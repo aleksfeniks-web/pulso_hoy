@@ -3015,12 +3015,16 @@
       setTimeout(() => initChart('modalChart', article.chart_data), 100);
     }
 
-    // Cargar dinámicamente el anuncio In-Article de AdSense
-    try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (err) {
-      console.warn("Google AdSense push warning inside article modal:", err);
-    }
+    // Cargar dinámicamente el anuncio In-Article de AdSense con un retraso (setTimeout)
+    // para permitir que el modal se renderice, complete su animación de apertura
+    // y obtenga su ancho real (evitando el error 'No slot size for availableWidth=0')
+    setTimeout(() => {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (err) {
+        console.warn("Google AdSense push warning inside article modal:", err);
+      }
+    }, 250);
   }
 
   function closeModal() {
