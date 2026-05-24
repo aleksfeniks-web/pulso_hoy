@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const { pool, initTables, queryWithAuth } = require('./db');
 const { syncNews } = require('./sync');
+const ai = require('./ai');
 require('dotenv').config();
 
 const app = express();
@@ -312,6 +313,15 @@ app.get('/rss.xml', async (req, res) => {
 function escapeXml(str) {
   return str.replace(/[<>&]/g, (m) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
 }
+
+// ========== RUTAS DE INTELIGENCIA ARTIFICIAL ==========
+// Powered by Google Gemini 1.5 Flash
+app.post('/api/ai/summarize',      ai.summarize);
+app.post('/api/ai/chat',           ai.chat);
+app.post('/api/ai/analyze-bias',   ai.analyzeBias);
+app.post('/api/ai/explain',        ai.explain);
+app.get('/api/ai/quiz',            ai.quiz);
+app.post('/api/ai/briefing',       ai.briefing);
 
 // Redirigir todo lo demás al index.html (para SPA)
 app.get('*', (req, res) => {

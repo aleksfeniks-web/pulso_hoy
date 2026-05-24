@@ -68,6 +68,7 @@
     <div class="nav-links">
       <button class="nav-btn active" data-section="noticias" onclick="switchSection('noticias')">Noticias</button>
       <button class="nav-btn" data-section="tendencias" onclick="switchSection('tendencias')">🔥 Tendencias</button>
+      <button class="nav-btn" data-section="ia" onclick="switchSection('ia')">🤖 IA</button>
       <button class="nav-btn" data-section="escribir" onclick="switchSection('escribir')">✍ Escribir</button>
       <button class="nav-btn" onclick="toggleBookmarksDrawer()">🔖 Marcadores</button>
       <button class="dark-toggle" id="darkToggle" aria-label="Cambiar tema">🌙</button>
@@ -240,7 +241,170 @@
         </div>
       </div>
 
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- SECCIÓN IA — Inteligencia Artificial para las Noticias -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div id="iaSection" class="section" style="display:none;">
+        <div class="section-header">
+          <h2>🤖 UnicoNews IA</h2>
+          <span style="font-size:0.9rem; color:var(--text-muted); font-weight:600;">Powered by Google Gemini • Tu asistente inteligente de noticias</span>
+        </div>
+
+        <!-- Tabs de IA -->
+        <div class="ai-tabs" id="aiTabs">
+          <button class="ai-tab active" data-tab="chat" onclick="switchAiTab('chat')">💬 Chat</button>
+          <button class="ai-tab" data-tab="summarize" onclick="switchAiTab('summarize')">🗞️ Resumidor</button>
+          <button class="ai-tab" data-tab="bias" onclick="switchAiTab('bias')">🔍 Detector de Sesgo</button>
+          <button class="ai-tab" data-tab="explain" onclick="switchAiTab('explain')">🎓 Explicador</button>
+          <button class="ai-tab" data-tab="quiz" onclick="switchAiTab('quiz')">🎯 Quiz</button>
+          <button class="ai-tab" data-tab="briefing" onclick="switchAiTab('briefing')">📋 Briefing</button>
+        </div>
+
+        <!-- ── PANEL CHAT ── -->
+        <div class="ai-panel active" id="ai-panel-chat">
+          <div class="ai-chat-container">
+            <div class="ai-chat-messages" id="aiChatMessages">
+              <div class="ai-message ai-bot">
+                <div class="ai-avatar">🤖</div>
+                <div class="ai-bubble">
+                  ¡Hola! Soy <strong>NewsBot</strong>, el asistente de IA de UnicoNews. Puedo responder tus preguntas sobre noticias, política, economía, tecnología y más.<br><br>
+                  ¿Sobre qué tema quieres saber hoy?
+                  <div class="ai-suggestions">
+                    <button onclick="sendAiChat('¿Cuáles son las noticias más importantes de hoy?')">📰 Noticias de hoy</button>
+                    <button onclick="sendAiChat('Explícame la situación económica actual de México')">💰 Economía México</button>
+                    <button onclick="sendAiChat('¿Qué está pasando con la inteligencia artificial en 2025?')">🤖 IA en 2025</button>
+                    <button onclick="sendAiChat('¿Cómo está el mercado de criptomonedas?')">₿ Cripto</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="ai-chat-input-bar">
+              <input type="text" id="aiChatInput" placeholder="Pregunta sobre cualquier noticia o tema..." onkeydown="if(event.key==='Enter')sendAiChat()" maxlength="500">
+              <button class="ai-send-btn" onclick="sendAiChat()" id="aiSendBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── PANEL RESUMIDOR ── -->
+        <div class="ai-panel" id="ai-panel-summarize">
+          <div class="ai-tool-card">
+            <div class="ai-tool-header">
+              <span class="ai-tool-icon">🗞️</span>
+              <div>
+                <h3>Resumidor Inteligente</h3>
+                <p>Pega el texto de cualquier artículo y obtén un resumen completo con puntos clave</p>
+              </div>
+            </div>
+            <div class="ai-input-group">
+              <input type="text" id="sumTitle" placeholder="Título del artículo (opcional)" style="margin-bottom:10px;">
+              <textarea id="sumText" placeholder="Pega aquí el texto del artículo que quieres resumir...&#10;&#10;(Mínimo 50 caracteres)" rows="8"></textarea>
+              <button class="ai-action-btn" onclick="runSummarize()" id="sumBtn">
+                ✨ Resumir con IA
+              </button>
+            </div>
+            <div class="ai-result" id="sumResult" style="display:none;"></div>
+          </div>
+        </div>
+
+        <!-- ── PANEL DETECTOR DE SESGO ── -->
+        <div class="ai-panel" id="ai-panel-bias">
+          <div class="ai-tool-card">
+            <div class="ai-tool-header">
+              <span class="ai-tool-icon">🔍</span>
+              <div>
+                <h3>Detector de Sesgo y Sentimiento</h3>
+                <p>Analiza el tono, sesgo político y tipo de lenguaje de cualquier artículo</p>
+              </div>
+            </div>
+            <div class="ai-input-group">
+              <input type="text" id="biasTitle" placeholder="Título del artículo (opcional)" style="margin-bottom:10px;">
+              <textarea id="biasText" placeholder="Pega aquí el texto del artículo a analizar..." rows="8"></textarea>
+              <button class="ai-action-btn" onclick="runBiasAnalysis()" id="biasBtn">
+                🔍 Analizar Sesgo
+              </button>
+            </div>
+            <div class="ai-result" id="biasResult" style="display:none;"></div>
+          </div>
+        </div>
+
+        <!-- ── PANEL EXPLICADOR ── -->
+        <div class="ai-panel" id="ai-panel-explain">
+          <div class="ai-tool-card">
+            <div class="ai-tool-header">
+              <span class="ai-tool-icon">🎓</span>
+              <div>
+                <h3>Explicador de Conceptos</h3>
+                <p>¿No entiendes un término de las noticias? La IA te lo explica simple y claro</p>
+              </div>
+            </div>
+            <div class="ai-input-group">
+              <input type="text" id="explainTerm" placeholder="Ejemplo: inflación, stagflación, mercado de futuros, TLCAN..." style="font-size:1rem; padding:14px 16px;">
+              <textarea id="explainContext" placeholder="Contexto opcional: ¿en qué noticia encontraste este término?" rows="3"></textarea>
+              <button class="ai-action-btn" onclick="runExplain()" id="explainBtn">
+                🎓 Explicar Término
+              </button>
+            </div>
+            <!-- Términos sugeridos -->
+            <div style="margin-top:16px;">
+              <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:8px; font-weight:600;">TÉRMINOS FRECUENTES EN NOTICIAS</p>
+              <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                <button class="ai-term-chip" onclick="explainTerm('Inflación')">Inflación</button>
+                <button class="ai-term-chip" onclick="explainTerm('PIL')">PIB</button>
+                <button class="ai-term-chip" onclick="explainTerm('Aranceles')">Aranceles</button>
+                <button class="ai-term-chip" onclick="explainTerm('Déficit fiscal')">Déficit fiscal</button>
+                <button class="ai-term-chip" onclick="explainTerm('Banco Central')">Banco Central</button>
+                <button class="ai-term-chip" onclick="explainTerm('Criptomonedas')">Criptomonedas</button>
+                <button class="ai-term-chip" onclick="explainTerm('OTAN')">OTAN</button>
+                <button class="ai-term-chip" onclick="explainTerm('Inteligencia Artificial')">IA</button>
+              </div>
+            </div>
+            <div class="ai-result" id="explainResult" style="display:none;"></div>
+          </div>
+        </div>
+
+        <!-- ── PANEL QUIZ ── -->
+        <div class="ai-panel" id="ai-panel-quiz">
+          <div class="ai-quiz-header">
+            <div>
+              <h3>🎯 Quiz Diario de Noticias</h3>
+              <p style="color:var(--text-muted); margin:4px 0 0;">¿Qué tan informado estás hoy? ¡Pon a prueba tus conocimientos!</p>
+            </div>
+            <button class="ai-action-btn" onclick="loadQuiz(true)" style="padding:10px 20px; font-size:0.85rem;">🔄 Nuevo Quiz</button>
+          </div>
+          <div id="quizContainer" style="margin-top:24px;">
+            <div style="text-align:center; padding:40px;">
+              <button class="ai-action-btn" onclick="loadQuiz(false)" style="font-size:1.1rem; padding:16px 40px;">
+                🎯 Comenzar Quiz del Día
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── PANEL BRIEFING ── -->
+        <div class="ai-panel" id="ai-panel-briefing">
+          <div class="ai-tool-card">
+            <div class="ai-tool-header">
+              <span class="ai-tool-icon">📋</span>
+              <div>
+                <h3>Briefing Personalizado del Día</h3>
+                <p>Tu asistente personal de noticias te prepara un resumen diario adaptado a tus intereses</p>
+              </div>
+            </div>
+            <div style="text-align:center; padding:24px 0;">
+              <button class="ai-action-btn" onclick="runBriefing()" id="briefingBtn" style="font-size:1rem; padding:14px 36px;">
+                📋 Generar Mi Briefing del Día
+              </button>
+            </div>
+            <div class="ai-result" id="briefingResult" style="display:none;"></div>
+          </div>
+        </div>
+
+      </div><!-- fin iaSection -->
+
       <!-- SECCIÓN ESCRIBIR (Bloqueada con pared de suscripción si no está activo) -->
+
       <div id="escribirSection" class="section" style="display:none;">
         
         <!-- Muro de Suscripción (Subscription Wall) -->
@@ -907,9 +1071,10 @@
       else btn.classList.remove('active');
     });
     
-    document.getElementById('noticiasSection').style.display = section === 'noticias' ? 'block' : 'none';
+    document.getElementById('noticiasSection').style.display   = section === 'noticias'   ? 'block' : 'none';
     document.getElementById('tendenciasSection').style.display = section === 'tendencias' ? 'block' : 'none';
-    document.getElementById('escribirSection').style.display = section === 'escribir' ? 'block' : 'none';
+    document.getElementById('iaSection').style.display         = section === 'ia'         ? 'block' : 'none';
+    document.getElementById('escribirSection').style.display   = section === 'escribir'   ? 'block' : 'none';
     
     // Ocultar o mostrar panel de control
     document.getElementById('controlPanel').style.display = section === 'noticias' ? 'flex' : 'none';
@@ -921,6 +1086,357 @@
     if (section === 'tendencias') {
       renderTendencias();
     }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // MÓDULO DE INTELIGENCIA ARTIFICIAL — UnicoNews IA
+  // ═══════════════════════════════════════════════════════════════
+
+  // Estado del chat
+  const aiChatHistory = [];
+
+  function switchAiTab(tab) {
+    document.querySelectorAll('.ai-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    document.querySelectorAll('.ai-panel').forEach(p => p.classList.toggle('active', p.id === `ai-panel-${tab}`));
+  }
+
+  // Helper: mostrar spinner en botón
+  function aiLoading(btnId, loading, originalText) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.disabled = loading;
+    btn.textContent = loading ? '⏳ Procesando...' : originalText;
+  }
+
+  // ── CHAT ──
+  async function sendAiChat(presetMsg) {
+    const input = document.getElementById('aiChatInput');
+    const msg   = (presetMsg || input.value).trim();
+    if (!msg) return;
+    input.value = '';
+
+    appendChatMessage('user', msg);
+    aiChatHistory.push({ role: 'user', content: msg });
+
+    const sendBtn = document.getElementById('aiSendBtn');
+    sendBtn.disabled = true;
+
+    // Typing indicator
+    const typingId = 'typing-' + Date.now();
+    const typingEl = document.createElement('div');
+    typingEl.className = 'ai-message ai-bot';
+    typingEl.id = typingId;
+    typingEl.innerHTML = `<div class="ai-avatar">🤖</div><div class="ai-bubble"><div class="ai-typing"><span></span><span></span><span></span></div></div>`;
+    document.getElementById('aiChatMessages').appendChild(typingEl);
+    scrollChatToBottom();
+
+    try {
+      // Obtener contexto de noticias del portal
+      const newsCtx = Array.from(document.querySelectorAll('.news-card .news-title'))
+        .slice(0,8).map(el => el.textContent).join(' | ');
+
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg, history: aiChatHistory.slice(-10), newsContext: newsCtx })
+      });
+      const data = await res.json();
+      document.getElementById(typingId)?.remove();
+      if (data.reply) {
+        appendChatMessage('bot', data.reply);
+        aiChatHistory.push({ role: 'bot', content: data.reply });
+      } else {
+        appendChatMessage('bot', '❌ No pude obtener una respuesta. Inténtalo de nuevo.');
+      }
+    } catch (e) {
+      document.getElementById(typingId)?.remove();
+      appendChatMessage('bot', '❌ Error de conexión. Verifica tu servidor.');
+    } finally {
+      sendBtn.disabled = false;
+      scrollChatToBottom();
+    }
+  }
+
+  function appendChatMessage(role, text) {
+    const container = document.getElementById('aiChatMessages');
+    const div = document.createElement('div');
+    div.className = `ai-message ai-${role}`;
+    const avatarEmoji = role === 'user' ? '👤' : '🤖';
+    // Convertir saltos de línea y negrita básica
+    const html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+    div.innerHTML = `<div class="ai-avatar">${avatarEmoji}</div><div class="ai-bubble">${html}</div>`;
+    container.appendChild(div);
+    scrollChatToBottom();
+  }
+
+  function scrollChatToBottom() {
+    const c = document.getElementById('aiChatMessages');
+    if (c) c.scrollTop = c.scrollHeight;
+  }
+
+  // ── RESUMIDOR ──
+  async function runSummarize() {
+    const text  = document.getElementById('sumText').value.trim();
+    const title = document.getElementById('sumTitle').value.trim();
+    if (text.length < 50) { alert('Por favor pega un texto más largo (mínimo 50 caracteres).'); return; }
+    aiLoading('sumBtn', true, '✨ Resumir con IA');
+    try {
+      const res  = await fetch('/api/ai/summarize', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ text, title }) });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error);
+      const r = document.getElementById('sumResult');
+      r.style.display = 'block';
+      const complexIcon = { básico: '🟢', intermedio: '🟡', avanzado: '🔴' }[data.complexity] || '⚪';
+      const sentColor = { positivo:'#10b981', negativo:'#ef4444', neutral:'#f59e0b' }[data.sentiment] || '#6366f1';
+      r.innerHTML = `
+        <div class="ai-result-section">
+          <div class="ai-result-label">📝 Resumen</div>
+          <div class="ai-result-text">${data.summary}</div>
+        </div>
+        <div class="ai-result-section">
+          <div class="ai-result-label">🎯 Puntos Clave</div>
+          <ul class="ai-key-points">${(data.keyPoints||[]).map(p=>`<li>${p}</li>`).join('')}</ul>
+        </div>
+        <div style="display:flex; gap:16px; flex-wrap:wrap;">
+          <div class="ai-result-section" style="flex:1; min-width:140px;">
+            <div class="ai-result-label">📊 Complejidad</div>
+            <div style="font-weight:700; font-size:0.95rem;">${complexIcon} ${data.complexity||'-'}</div>
+          </div>
+          <div class="ai-result-section" style="flex:1; min-width:140px;">
+            <div class="ai-result-label">💬 Tono</div>
+            <div style="font-weight:700; font-size:0.95rem; color:${sentColor};">${data.sentiment||'-'}</div>
+          </div>
+          <div class="ai-result-section" style="flex:1; min-width:140px;">
+            <div class="ai-result-label">⏱️ Lectura</div>
+            <div style="font-weight:700; font-size:0.95rem;">${data.readTime||'-'}</div>
+          </div>
+        </div>
+        <div class="ai-result-section">
+          <div class="ai-result-label">🏷️ Palabras Clave</div>
+          <div class="ai-keywords">${(data.keywords||[]).map(k=>`<span class="ai-keyword">${k}</span>`).join('')}</div>
+        </div>`;
+    } catch(e) {
+      document.getElementById('sumResult').style.display = 'block';
+      document.getElementById('sumResult').innerHTML = `<div style="color:#ef4444;">❌ Error: ${e.message}</div>`;
+    } finally { aiLoading('sumBtn', false, '✨ Resumir con IA'); }
+  }
+
+  // ── DETECTOR DE SESGO ──
+  async function runBiasAnalysis() {
+    const text  = document.getElementById('biasText').value.trim();
+    const title = document.getElementById('biasTitle').value.trim();
+    if (text.length < 50) { alert('Por favor pega un texto más largo.'); return; }
+    aiLoading('biasBtn', true, '🔍 Analizar Sesgo');
+    try {
+      const res  = await fetch('/api/ai/analyze-bias', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ text, title }) });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error);
+      const r = document.getElementById('biasResult');
+      r.style.display = 'block';
+
+      const sentScore = Math.round((data.sentiment?.score||0.5)*100);
+      const biasScore = Math.round((data.bias?.score||0.5)*100);
+      const langScore = Math.round((data.language?.score||0.5)*100);
+      const credScore = Math.round((data.credibilityScore||0.7)*100);
+
+      const sentColors = { positivo:'#10b981', negativo:'#ef4444', neutral:'#f59e0b' };
+      const sentColor = sentColors[data.sentiment?.label] || '#6366f1';
+
+      // Bias color: left=blue, center=gray, right=red
+      const biasColor = biasScore < 35 ? '#3b82f6' : biasScore > 65 ? '#ef4444' : '#9ca3af';
+
+      r.innerHTML = `
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:20px;">
+          <div style="background:var(--bg-secondary);border-radius:12px;padding:14px;">
+            <div class="ai-result-label">💬 Sentimiento</div>
+            <div style="font-weight:800;font-size:1.1rem;color:${sentColor};margin:4px 0;">${data.sentiment?.label||'-'}</div>
+            <div class="ai-meter"><div class="ai-meter-fill" style="width:${sentScore}%;background:${sentColor};"></div></div>
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;">${data.sentiment?.description||''}</div>
+          </div>
+          <div style="background:var(--bg-secondary);border-radius:12px;padding:14px;">
+            <div class="ai-result-label">🏛️ Sesgo Político</div>
+            <div style="font-weight:800;font-size:1rem;color:${biasColor};margin:4px 0;">${data.bias?.label||'-'}</div>
+            <div class="ai-meter"><div class="ai-meter-fill" style="width:${biasScore}%;background:linear-gradient(90deg,#3b82f6,#ef4444);"></div></div>
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;">${data.bias?.description||''}</div>
+          </div>
+          <div style="background:var(--bg-secondary);border-radius:12px;padding:14px;">
+            <div class="ai-result-label">📰 Tipo de Lenguaje</div>
+            <div style="font-weight:800;font-size:1rem;margin:4px 0;">${data.language?.label||'-'}</div>
+            <div class="ai-meter"><div class="ai-meter-fill" style="width:${langScore}%;background:linear-gradient(90deg,#10b981,#f59e0b,#ef4444);"></div></div>
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;">${data.language?.description||''}</div>
+          </div>
+          <div style="background:var(--bg-secondary);border-radius:12px;padding:14px;">
+            <div class="ai-result-label">🛡️ Credibilidad</div>
+            <div style="font-weight:800;font-size:1.3rem;color:#6366f1;margin:4px 0;">${credScore}%</div>
+            <div class="ai-meter"><div class="ai-meter-fill" style="width:${credScore}%;background:#6366f1;"></div></div>
+          </div>
+        </div>
+        ${data.emotionalWords?.length ? `<div class="ai-result-section"><div class="ai-result-label">⚡ Palabras con Carga Emocional</div><div class="ai-keywords">${data.emotionalWords.map(w=>`<span class="ai-keyword" style="background:rgba(239,68,68,.1);color:#ef4444;">${w}</span>`).join('')}</div></div>` : ''}
+        <div class="ai-result-section">
+          <div class="ai-result-label">📋 Evaluación General</div>
+          <div class="ai-result-text">${data.overall||''}</div>
+        </div>
+        ${data.recommendations?.length ? `<div class="ai-result-section"><div class="ai-result-label">💡 Recomendaciones para Lectura Crítica</div><ul class="ai-key-points">${data.recommendations.map(r=>`<li>${r}</li>`).join('')}</ul></div>` : ''}`;
+    } catch(e) {
+      document.getElementById('biasResult').style.display='block';
+      document.getElementById('biasResult').innerHTML=`<div style="color:#ef4444;">❌ Error: ${e.message}</div>`;
+    } finally { aiLoading('biasBtn', false, '🔍 Analizar Sesgo'); }
+  }
+
+  // ── EXPLICADOR ──
+  async function runExplain() {
+    const term    = document.getElementById('explainTerm').value.trim();
+    const context = document.getElementById('explainContext').value.trim();
+    if (!term) { alert('Escribe un término para explicar.'); return; }
+    aiLoading('explainBtn', true, '🎓 Explicar Término');
+    try {
+      const res  = await fetch('/api/ai/explain', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ term, context }) });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error);
+      const r = document.getElementById('explainResult');
+      r.style.display = 'block';
+      r.innerHTML = `
+        <div class="ai-result-section">
+          <div class="ai-result-label">📖 ¿Qué es "${data.term}"?</div>
+          <div class="ai-result-text">${data.explanation||''}</div>
+        </div>
+        <div class="ai-result-section" style="background:rgba(99,102,241,.07);border-radius:12px;padding:14px;">
+          <div class="ai-result-label">👶 En palabras simples</div>
+          <div class="ai-result-text" style="font-style:italic;">${data.simpleVersion||''}</div>
+        </div>
+        <div class="ai-result-section">
+          <div class="ai-result-label">📰 Ejemplo en noticias actuales</div>
+          <div class="ai-result-text">${data.example||''}</div>
+        </div>
+        ${data.historicalContext ? `<div class="ai-result-section"><div class="ai-result-label">🕐 Contexto Histórico</div><div class="ai-result-text">${data.historicalContext}</div></div>` : ''}
+        ${data.importance ? `<div class="ai-result-section"><div class="ai-result-label">⚡ ¿Por qué importa hoy?</div><div class="ai-result-text">${data.importance}</div></div>` : ''}
+        ${data.relatedTerms?.length ? `<div class="ai-result-section"><div class="ai-result-label">🔗 Términos Relacionados</div><div class="ai-keywords">${data.relatedTerms.map(t=>`<span class="ai-keyword">${t}</span>`).join('')}</div></div>` : ''}`;
+    } catch(e) {
+      document.getElementById('explainResult').style.display='block';
+      document.getElementById('explainResult').innerHTML=`<div style="color:#ef4444;">❌ Error: ${e.message}</div>`;
+    } finally { aiLoading('explainBtn', false, '🎓 Explicar Término'); }
+  }
+
+  function explainTerm(term) {
+    document.getElementById('explainTerm').value = term;
+    switchAiTab('explain');
+    runExplain();
+  }
+
+  // ── QUIZ ──
+  let quizData = null;
+  let quizAnswers = {};
+
+  async function loadQuiz(force = false) {
+    const container = document.getElementById('quizContainer');
+    container.innerHTML = '<div style="text-align:center;padding:40px;"><span style="font-size:2rem;">⏳</span><br><p style="color:var(--text-muted);margin-top:12px;">Generando quiz con IA...</p></div>';
+    try {
+      const interests = JSON.parse(localStorage.getItem(`interests_${userToken}`) || '[]').join(',') || 'política,economía,tecnología';
+      const res  = await fetch(`/api/ai/quiz?topics=${encodeURIComponent(interests)}&force=${force}`);
+      const data = await res.json();
+      if (!data.ok || !data.questions) throw new Error(data.error || 'Sin datos');
+      quizData = data;
+      quizAnswers = {};
+      renderQuiz();
+    } catch(e) {
+      container.innerHTML = `<div style="text-align:center;padding:40px;color:#ef4444;">❌ Error: ${e.message}<br><button class="ai-action-btn" onclick="loadQuiz(true)" style="margin-top:16px;">Reintentar</button></div>`;
+    }
+  }
+
+  function renderQuiz() {
+    if (!quizData) return;
+    const container = document.getElementById('quizContainer');
+    const allAnswered = quizData.questions.length > 0 && quizData.questions.every(q => quizAnswers[q.id] !== undefined);
+
+    container.innerHTML = `
+      <div style="margin-bottom:8px;">
+        <div style="font-size:0.85rem;color:var(--text-muted);font-weight:600;">${quizData.title||'Quiz del Día'} • ${quizData.date||''}</div>
+      </div>
+      ${quizData.questions.map(q => renderQuizQuestion(q)).join('')}
+      ${allAnswered ? renderQuizScore() : ''}`;
+  }
+
+  function renderQuizQuestion(q) {
+    const answered = quizAnswers[q.id] !== undefined;
+    const diffColors = { fácil:'#10b981', medio:'#f59e0b', difícil:'#ef4444' };
+    return `<div class="quiz-question-card">
+      <div class="quiz-q-number">Pregunta ${q.id} de ${quizData.questions.length}
+        ${q.difficulty ? `<span style="color:${diffColors[q.difficulty]||'#6366f1'};margin-left:8px;">${q.difficulty}</span>` : ''}
+      </div>
+      <div class="quiz-q-text">${q.question}</div>
+      <div class="quiz-options">
+        ${q.options.map((opt, idx) => {
+          let cls = 'quiz-option';
+          if (answered) {
+            if (idx === q.correct) cls += ' correct';
+            else if (idx === quizAnswers[q.id] && idx !== q.correct) cls += ' wrong';
+          }
+          return `<button class="${cls}" onclick="answerQuiz(${q.id},${idx},${q.correct})" ${answered?'disabled':''}>${String.fromCharCode(65+idx)}) ${opt}</button>`;
+        }).join('')}
+      </div>
+      <div class="quiz-explanation" id="quiz-exp-${q.id}" style="display:${answered?'block':'none'}">
+        💡 ${q.explanation}
+      </div>
+    </div>`;
+  }
+
+  function renderQuizScore() {
+    const total   = quizData.questions.length;
+    const correct = quizData.questions.filter(q => quizAnswers[q.id] === q.correct).length;
+    const pct     = Math.round((correct/total)*100);
+    const emoji   = pct >= 80 ? '🏆' : pct >= 60 ? '⭐' : pct >= 40 ? '💪' : '📚';
+    const msg     = pct >= 80 ? '¡Excelente! Estás muy bien informado' : pct >= 60 ? '¡Buen trabajo! Sigue informándote' : pct >= 40 ? 'No está mal, hay margen de mejora' : 'Es momento de leer más noticias 😄';
+    return `<div class="quiz-score-card">
+      <div class="quiz-score-emoji">${emoji}</div>
+      <div class="quiz-score-num">${correct}/${total}</div>
+      <div style="font-size:1.1rem;font-weight:700;margin:8px 0;color:var(--text-primary);">${pct}% correcto</div>
+      <div style="color:var(--text-muted);margin-bottom:20px;">${msg}</div>
+      <button class="ai-action-btn" onclick="loadQuiz(true)">🔄 Nuevo Quiz</button>
+    </div>`;
+  }
+
+  function answerQuiz(qId, chosenIdx, correctIdx) {
+    quizAnswers[qId] = chosenIdx;
+    renderQuiz();
+    // scroll to explanation
+    setTimeout(() => {
+      const el = document.getElementById(`quiz-exp-${qId}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+  }
+
+  // ── BRIEFING ──
+  async function runBriefing() {
+    aiLoading('briefingBtn', true, '📋 Generar Mi Briefing del Día');
+    try {
+      const interests   = JSON.parse(localStorage.getItem(`interests_${userToken}`) || '[]');
+      const userName    = document.getElementById('userEmailDisplay')?.textContent || '';
+      const newsHeadlines = Array.from(document.querySelectorAll('.news-card .news-title')).slice(0,12).map(el=>el.textContent);
+
+      const res  = await fetch('/api/ai/briefing', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ interests, userName, newsHeadlines }) });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error);
+
+      const r = document.getElementById('briefingResult');
+      r.style.display = 'block';
+      const moodIcon = { informativo:'📰', serio:'🗞️', optimista:'🌟', preocupante:'⚠️' }[data.mood] || '📋';
+      r.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+          <div>
+            <div class="ai-result-label">${moodIcon} Briefing del ${new Date().toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</div>
+            ${data.readTime ? `<div style="font-size:0.78rem;color:var(--text-muted);">⏱️ Lectura: ${data.readTime}</div>` : ''}
+          </div>
+          <span style="padding:4px 12px;border-radius:999px;background:rgba(99,102,241,.1);color:#6366f1;font-size:0.78rem;font-weight:700;">🤖 Generado por IA</span>
+        </div>
+        ${data.highlights?.length ? `
+        <div class="ai-briefing-highlights">
+          ${data.highlights.map(h => `<div class="ai-briefing-highlight">📍 ${h}</div>`).join('')}
+        </div><br>` : ''}
+        <div class="ai-briefing-text">${data.briefing||''}</div>`;
+    } catch(e) {
+      document.getElementById('briefingResult').style.display='block';
+      document.getElementById('briefingResult').innerHTML=`<div style="color:#ef4444;">❌ Error: ${e.message}</div>`;
+    } finally { aiLoading('briefingBtn', false, '📋 Generar Mi Briefing del Día'); }
   }
 
   function goHome() {
