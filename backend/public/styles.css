@@ -582,6 +582,69 @@ body {
   background: var(--bg-body);
   border: 1px dashed var(--border-light);
 }
+/* ===== ESPACIOS PUBLICITARIOS PREMIUM / PATROCINIOS PLACEHOLDERS ===== */
+.adsbygoogle-placeholder {
+  display: block;
+  width: 100%;
+  background: rgba(var(--bg-card-rgb), 0.4);
+  border: 1.5px dashed var(--border-light);
+  border-radius: var(--radius-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-sizing: border-box;
+  text-align: center;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  user-select: none;
+  margin: 12px auto;
+}
+
+.adsbygoogle-placeholder:hover {
+  border-color: var(--accent-red);
+  background: rgba(var(--bg-card-rgb), 0.6);
+  box-shadow: var(--shadow-sm);
+}
+
+.adsbygoogle-placeholder .patrocinio-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.adsbygoogle-placeholder .patrocinio-icon {
+  font-size: 1.2rem;
+  opacity: 0.8;
+  animation: adPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes adPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Visibilidad Responsiva para Anuncios */
+.desktop-ad {
+  display: flex !important;
+}
+.mobile-ad {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .desktop-ad {
+    display: none !important;
+  }
+  .mobile-ad {
+    display: flex !important;
+  }
+}
 .trending-list {
   list-style: none;
 }
