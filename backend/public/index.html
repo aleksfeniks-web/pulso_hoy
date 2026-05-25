@@ -2426,7 +2426,11 @@
   function updateTickerHeadline(news) {
     const tickerEl = document.getElementById('tickerText');
     if (tickerEl && news.length > 0) {
-      const sorted = [...news].sort((a,b) => (b.truth_score || 85) - (a.truth_score || 85));
+      const sorted = [...news].sort((a,b) => {
+        const dateA = a.created_at ? new Date(a.created_at) : 0;
+        const dateB = b.created_at ? new Date(b.created_at) : 0;
+        return dateB - dateA || b.id - a.id;
+      });
       tickerEl.innerText = `🔥 NOTICIA PRINCIPAL: "${sorted[0].title}" verificada por expertos con un índice del ${sorted[0].truth_score || 85}%  ·  💵 Banxico y divisas reportan volatilidad de mercado  ·  ✨ OpenAI sorprende al mundo tecnológico con nuevos modelos de cadena lógica.`;
     }
   }
@@ -2441,16 +2445,39 @@
     }
     document.getElementById('hotTopicsBar').style.display = 'block';
     
-    // Extraer los 4 artículos con mayor índice de veracidad para el dashboard
-    const sorted = [...news].sort((a,b) => (b.truth_score || 85) - (a.truth_score || 85));
-    const tops = sorted.slice(0, 4);
+    // Agrupar por categoría para obtener la última noticia de cada tema
+    const categoriesMap = {};
+    news.forEach(item => {
+      const cat = item.category;
+      if (!categoriesMap[cat]) {
+        categoriesMap[cat] = item;
+      } else {
+        const dateItem = item.created_at ? new Date(item.created_at) : 0;
+        const dateExisting = categoriesMap[cat].created_at ? new Date(categoriesMap[cat].created_at) : 0;
+        if (dateItem > dateExisting || (dateItem === dateExisting && item.id > categoriesMap[cat].id)) {
+          categoriesMap[cat] = item;
+        }
+      }
+    });
+    
+    // Convertir a array y ordenar por fecha descendente
+    const uniqueTopicsLatestNews = Object.values(categoriesMap).sort((a, b) => {
+      const dateA = a.created_at ? new Date(a.created_at) : 0;
+      const dateB = b.created_at ? new Date(b.created_at) : 0;
+      return dateB - dateA || b.id - a.id;
+    });
+    
+    // Tomar las 4 últimas noticias de temas distintos
+    const tops = uniqueTopicsLatestNews.slice(0, 4);
     
     grid.innerHTML = tops.map((item, index) => {
       const imgUrl = (item.image_url && !item.image_url.includes('picsum.photos')) ? item.image_url : getFallbackImage(item.category, item.title);
       return `
         <div class="hot-circle-card" onclick="openArticle(${item.id})">
-          <div class="hot-img-wrap">
-            <img class="hot-circle-img" src="${imgUrl}" alt="${item.title}" loading="lazy" onerror="handleImgError(this, '${item.category}')">
+          <div class="hot-img-container">
+            <div class="hot-img-wrap">
+              <img class="hot-circle-img" src="${imgUrl}" alt="${item.title}" loading="lazy" onerror="handleImgError(this, '${item.category}')">
+            </div>
             <span class="hot-badge">0${index + 1}</span>
           </div>
           <div class="hot-circle-info">
