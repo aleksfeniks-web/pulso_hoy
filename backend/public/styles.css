@@ -96,14 +96,52 @@ body {
 
 /* ===== HEADER ===== */
 .header {
-  background: rgba(var(--bg-card-rgb), 0.85);
-  border-bottom: 1px solid var(--border-light);
+  background: rgba(17, 9, 29, 0.92) !important; /* Deep dark purple cosmic background */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
   position: sticky;
   top: 0;
   z-index: 100;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   transition: background 0.4s ease, border 0.4s ease;
+}
+
+/* Force header links/buttons to be white/light regardless of theme */
+.header .nav-btn {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+.header .nav-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+.header .nav-btn.active {
+  background: var(--accent-red) !important;
+  color: #fff !important;
+}
+.header .nav-btn.active:hover {
+  background: var(--accent-red-hover) !important;
+}
+
+/* Force dark-toggles and interests-toggle inside header to be styled for dark background */
+.header .dark-toggle {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+.header .dark-toggle:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #fff !important;
+  transform: rotate(15deg) scale(1.1);
+}
+
+/* Special styling for dynamic blue sign-in/log-in button */
+.header .nav-btn[style*="background: var(--accent-blue)"],
+.header .nav-btn[style*="background: rgb(59, 130, 246)"] {
+  background: var(--accent-blue) !important;
+  color: white !important;
+}
+.header .nav-btn[style*="background: var(--accent-blue)"]:hover,
+.header .nav-btn[style*="background: rgb(59, 130, 246)"]:hover {
+  background: #2563eb !important;
 }
 .header-inner {
   display: flex;
