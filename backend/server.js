@@ -5,6 +5,7 @@ const fs = require('fs');
 const { pool, initTables, queryWithAuth } = require('./db');
 const { syncNews } = require('./sync');
 const ai = require('./ai');
+const { Resend } = require('resend'); // Importación de la librería de correos Resend
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const app = express();
@@ -13,6 +14,15 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public'))); // Sirve el frontend
 
 initTables();
+
+// Inicialización segura del cliente Resend
+const resend = process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 're_tu_clave_de_resend_aqui'
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
+
+if (!resend) {
+  console.warn("⚠️ Advertencia: RESEND_API_KEY no configurada. El servicio de envío de boletines estará inactivo en modo de desarrollo.");
+}
 
 // ========== API RUTAS ==========
 
@@ -101,12 +111,55 @@ app.post('/api/subscribe', async (req, res) => {
   const { email, name, plan } = req.body;
   if (!email) return res.status(400).json({ error: 'Email requerido' });
   try {
+    // 1. Guardar en la base de datos de Neon
     await pool.query(`
       INSERT INTO subscribers (email, name, plan) VALUES ($1, $2, $3)
       ON CONFLICT (email) DO UPDATE SET plan = EXCLUDED.plan, name = EXCLUDED.name
     `, [email, name || null, plan || 'gratis']);
+    
+    // 2. Enviar correo electrónico mediante la API de Resend (si está configurada con una API Key válida)
+    if (resend) {
+      try {
+        await resend.emails.send({
+          from: 'UnicoNews <onboarding@resend.dev>', // Dominio Sandbox por defecto de Resend
+          to: email,
+          subject: '📰 ¡Bienvenido a UnicoNews! Tu suscripción al boletín está lista',
+          html: `
+            <div style="font-family: 'Inter', system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff; color: #1e293b;">
+              <div style="text-align: center; margin-bottom: 24px;">
+                <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: 2.2rem; color: #ef446f; margin: 0; font-weight: 800; letter-spacing: -0.5px;">UnicoNews</h1>
+                <p style="font-size: 0.88rem; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; margin-top: 4px;">Portal de Noticias Verificadas</p>
+              </div>
+              <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 24px;" />
+              <h2 style="font-size: 1.35rem; color: #0f172a; margin-top: 0; font-weight: 700;">¡Hola, ${name || 'Lector Verificado'}! 👋</h2>
+              <p style="font-size: 1rem; line-height: 1.7; color: #334155;">Te has suscrito exitosamente a nuestro boletín en el plan <strong>${(plan || 'gratis').toUpperCase()}</strong>.</p>
+              <p style="font-size: 1rem; line-height: 1.7; color: #334155;">A partir de ahora, recibirás de forma periódica las últimas noticias del día, rigurosamente analizadas por nuestra inteligencia artificial para entregarte solo la información más veraz y contrastada, libre de sesgos mediáticos.</p>
+              
+              <div style="background-color: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 12px; padding: 20px; margin: 28px 0; text-align: center;">
+                <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #3b82f6; display: block; margin-bottom: 6px; letter-spacing: 1px;">Estado de tu cuenta</span>
+                <span style="font-size: 1.25rem; font-weight: 800; color: #0f172a; display: block;">Plan ${(plan || 'gratis').toUpperCase()} Activo ✅</span>
+              </div>
+              
+              <p style="font-size: 1rem; line-height: 1.7; color: #334155;">¡Gracias por confiar en la transparencia informativa de UnicoNews!</p>
+              <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 28px 0;" />
+              <div style="text-align: center; font-size: 0.75rem; color: #94a3b8; line-height: 1.5;">
+                <p style="margin: 0 0 4px 0;">Este es un correo automático de bienvenida.</p>
+                <p style="margin: 0;">© 2026 UnicoNews Corporation. Todos los derechos reservados.</p>
+              </div>
+            </div>
+          `
+        });
+        console.log(`✉️ Correo de bienvenida enviado con éxito vía Resend a: ${email}`);
+      } catch (mailErr) {
+        console.error("⚠️ Error al despachar correo en Resend:", mailErr.message);
+      }
+    } else {
+      console.warn("⚠️ Envío omitido: Cliente Resend inactivo (API Key no configurada o usa placeholder).");
+    }
+    
     res.json({ success: true });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Error en suscripción' });
   }
 });
