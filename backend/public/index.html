@@ -899,7 +899,10 @@
 
         <!-- Bloque 3: Compras de Amazon y Shein -->
         <div style="margin-bottom: 40px;">
-          <h3 style="font-family:'Playfair Display', serif; font-size:1.5rem; margin-bottom:12px; border-left:4px solid var(--accent-blue); padding-left:12px;">🛍️ Ofertas de Amazon & Shein</h3>
+          <h3 style="font-family:'Playfair Display', serif; font-size:1.5rem; margin-bottom:12px; border-left:4px solid var(--accent-blue); padding-left:12px; display:flex; justify-content:space-between; align-items:center;">
+            <span>🛍️ Ofertas de Amazon & Shein</span>
+            <button onclick="refreshShoppingDeals()" class="ai-term-chip" style="font-size:0.75rem; padding:4px 10px !important; margin:0;">🔄 Actualizar Ofertas</button>
+          </h3>
           <div class="shopping-carousel" id="shoppingCarousel">
             <!-- Las ofertas de compras se renderizan dinámicamente -->
           </div>
@@ -4130,7 +4133,7 @@
       price: "$4,999 MXN",
       oldPrice: "$6,499 MXN",
       img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=400&q=80",
-      link: "https://www.amazon.com.mx"
+      link: "https://www.amazon.com.mx/dp/B08C5FMKB6"
     },
     {
       store: "shein",
@@ -4139,7 +4142,7 @@
       price: "$589 MXN",
       oldPrice: "$999 MXN",
       img: "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=400&q=80",
-      link: "https://www.shein.com.mx"
+      link: "https://www.shein.com.mx/s?k=Chaqueta+Cortavientos+Techwear"
     },
     {
       store: "amazon",
@@ -4148,7 +4151,7 @@
       price: "$2,899 MXN",
       oldPrice: "$3,699 MXN",
       img: "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?auto=format&fit=crop&w=400&q=80",
-      link: "https://www.amazon.com.mx"
+      link: "https://www.amazon.com.mx/dp/B09LK1S199"
     },
     {
       store: "shein",
@@ -4157,7 +4160,43 @@
       price: "$189 MXN",
       oldPrice: "$320 MXN",
       img: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=400&q=80",
-      link: "https://www.shein.com.mx"
+      link: "https://www.shein.com.mx/s?k=Gafas+de+Sol+Deportivas+Polarizadas"
+    },
+    {
+      store: "amazon",
+      title: "Consola Nintendo Switch OLED Modelo 64GB Color Blanco",
+      rating: "★★★★★ (4.9)",
+      price: "$5,799 MXN",
+      oldPrice: "$9,999 MXN",
+      img: "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=400&q=80",
+      link: "https://www.amazon.com.mx/dp/B098RK7W26"
+    },
+    {
+      store: "shein",
+      title: "Sudadera de Algodón Oversize con Estampado Gráfico Vintage",
+      rating: "★★★★☆ (4.6)",
+      price: "$299 MXN",
+      oldPrice: "$520 MXN",
+      img: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=400&q=80",
+      link: "https://www.shein.com.mx/s?k=Sudadera+Oversize+Vintage"
+    },
+    {
+      store: "amazon",
+      title: "Cámara Instantánea Fujifilm Instax Mini 12 con Enfoque Automático",
+      rating: "★★★★★ (4.8)",
+      price: "$1,699 MXN",
+      oldPrice: "$2,199 MXN",
+      img: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=400&q=80",
+      link: "https://www.amazon.com.mx/dp/B0BVT96YCF"
+    },
+    {
+      store: "shein",
+      title: "Mochila Escolar para Laptop de Gran Capacidad con Puerto USB",
+      rating: "★★★★☆ (4.4)",
+      price: "$379 MXN",
+      oldPrice: "$680 MXN",
+      img: "https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=crop&w=400&q=80",
+      link: "https://www.shein.com.mx/s?k=Mochila+Laptop+Puerto+USB"
     }
   ];
 
@@ -4257,26 +4296,36 @@
     }
 
     // ── Carrusel Amazon / Shein ──
-    const shopCarousel = document.getElementById('shoppingCarousel');
-    if (shopCarousel) {
-      shopCarousel.innerHTML = shoppingData.map(s => `
-        <div class="shop-card">
-          <span class="shop-badge shop-badge-${s.store}">${s.store}</span>
-          <img class="shop-img" src="${s.img}" alt="${s.title}" loading="lazy">
-          <div class="shop-content">
-            <h4 class="shop-title">${s.title}</h4>
-            <div class="shop-rating">${s.rating}</div>
-            <div class="shop-pricing">
-              <span class="shop-price">${s.price}</span>
-              <span class="shop-old-price">${s.oldPrice}</span>
+    if (!window.hasInitializedShopping) {
+      window.refreshShoppingDeals = function() {
+        const shopCarousel = document.getElementById('shoppingCarousel');
+        if (!shopCarousel) return;
+        
+        // Mezclar el array y tomar los primeros 4 elementos para dinamismo
+        const shuffled = [...shoppingData].sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, 4);
+        
+        shopCarousel.innerHTML = selected.map(s => `
+          <div class="shop-card">
+            <span class="shop-badge shop-badge-${s.store}">${s.store}</span>
+            <img class="shop-img" src="${s.img}" alt="${s.title}" loading="lazy">
+            <div class="shop-content">
+              <h4 class="shop-title">${s.title}</h4>
+              <div class="shop-rating">${s.rating}</div>
+              <div class="shop-pricing">
+                <span class="shop-price">${s.price}</span>
+                <span class="shop-old-price">${s.oldPrice}</span>
+              </div>
+              <a class="shop-buy-btn" href="${s.link}" target="_blank" rel="noopener noreferrer">
+                🛒 Comprar
+              </a>
             </div>
-            <a class="shop-buy-btn" href="${s.link}" target="_blank" rel="noopener noreferrer">
-              🛒 Comprar en ${s.store.toUpperCase()}
-            </a>
           </div>
-        </div>
-      `).join('');
+        `).join('');
+      };
+      window.hasInitializedShopping = true;
     }
+    refreshShoppingDeals();
 
     // (X / Twitter Feed removed)
   }
