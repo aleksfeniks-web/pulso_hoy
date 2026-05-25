@@ -735,25 +735,10 @@
 
 <header class="header">
   <div class="container header-inner">
-    <div class="logo" onclick="handleLogoClick()" style="display: flex; align-items: center; gap: 8px;">
-      <svg class="logo-svg" viewBox="0 0 100 110" width="34" height="38" style="overflow: visible; flex-shrink: 0;">
-        <defs>
-          <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="var(--accent-red)" />
-            <stop offset="100%" stop-color="var(--accent-blue)" />
-          </linearGradient>
-        </defs>
-        <g fill="url(#logoGradient)">
-          <!-- Hook 1 (Left and middle-right) -->
-          <path d="M 16 32 L 29 32 L 24 40 L 24 66 Q 38 80 52 66 L 52 28 L 60 28 L 60 66 Q 38 88 16 66 Z" />
-          <!-- Hook 2 (Right and middle-left) -->
-          <path d="M 84 75 L 71 75 L 76 67 L 76 41 Q 62 27 48 41 L 48 79 L 40 79 L 40 41 Q 62 19 84 41 Z" />
-          <!-- Top dot -->
-          <circle cx="56" cy="16" r="6" />
-          <!-- Bottom dot -->
-          <circle cx="44" cy="91" r="6" />
-        </g>
-      </svg>
+    <div class="logo" onclick="handleLogoClick()" style="display: flex; align-items: center; gap: 10px;">
+      <div class="logo-badge" style="width: 36px; height: 36px; overflow: hidden; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(239, 68, 111, 0.3); background: #11091d;">
+        <img src="logo.jpg" alt="UnicoNews Icon" style="width: 100%; height: 100%; object-fit: cover; object-position: center 15%; transform: scale(1.3) translateY(-6%);">
+      </div>
       Unico<span>News</span>
     </div>
     <div class="nav-links">
@@ -777,7 +762,13 @@
        data-ad-slot="5908743898"
        data-ad-format="auto"
        data-full-width-responsive="true"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  <script>
+    try {
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (err) {
+      console.warn("Google AdSense delayed initialization (top banner):", err.message);
+    }
+  </script>
 </div>
 
 <div class="container">
@@ -1236,7 +1227,13 @@
              data-ad-slot="5908743898"
              data-ad-format="auto"
              data-full-width-responsive="true"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        <script>
+          try {
+            (adsbygoogle = window.adsbygoogle || []).push({});
+          } catch (err) {
+            console.warn("Google AdSense delayed initialization (sidebar 1):", err.message);
+          }
+        </script>
       </div>
 
       <!-- WIDGET DE SUSCRIPCIÓN A LA NEWSLETTER -->
@@ -1318,7 +1315,13 @@
              data-ad-slot="5908743898"
              data-ad-format="auto"
              data-full-width-responsive="true"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        <script>
+          try {
+            (adsbygoogle = window.adsbygoogle || []).push({});
+          } catch (err) {
+            console.warn("Google AdSense delayed initialization (sidebar 2):", err.message);
+          }
+        </script>
       </div>
     </aside>
   </div>

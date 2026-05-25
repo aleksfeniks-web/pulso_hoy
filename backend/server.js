@@ -18,7 +18,7 @@ initTables();
 // Configuración pública (Clerk Publishable Key)
 app.get('/api/config', (req, res) => {
   res.json({
-    clerkPublishableKey: process.env.CLERK_PUBLISHABLE_KEY || null
+    clerkPublishableKey: process.env.CLERK_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || null
   });
 });
 
