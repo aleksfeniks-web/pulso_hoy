@@ -4,7 +4,7 @@ const path = require('path');
 const { pool, initTables, queryWithAuth } = require('./db');
 const { syncNews } = require('./sync');
 const ai = require('./ai');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 app.use(cors());
