@@ -3154,4 +3154,9 @@ input:focus, textarea:focus, select:focus {
   display: block !important; /* Forzar visualización de panel dentro de popup */
 }
 
+/* Modales e interacción z-index */
+#shareNewsModal {
+  z-index: 2000 !important;
+}
+
 

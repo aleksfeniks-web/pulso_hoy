@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const { pool, initTables, queryWithAuth } = require('./db');
 const { syncNews } = require('./sync');
 const ai = require('./ai');
@@ -324,10 +325,63 @@ app.get('/api/ai/quiz',            ai.quiz);
 app.post('/api/ai/briefing',       ai.briefing);
 app.post('/api/ai/local-news',     ai.localNews);
 
-// Redirigir todo lo demás al index.html (para SPA)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// Redirigir todo lo demás al index.html (para SPA) con soporte dinámico de Open Graph (SEO)
+app.get('*', async (req, res) => {
+  const id = req.query.id;
+  const indexPath = path.join(__dirname, 'public', 'index.html');
+  
+  if (id && !isNaN(parseInt(id))) {
+    try {
+      // Intentar obtener la noticia de la base de datos
+      const result = await pool.query('SELECT title, excerpt, image_url FROM news WHERE id = $1', [parseInt(id)]);
+      if (result.rows.length > 0) {
+        const article = result.rows[0];
+        let html = fs.readFileSync(indexPath, 'utf8');
+        
+        // Generar meta tags de Open Graph específicos para la noticia
+        const escapedTitle = escapeHtml(article.title);
+        const escapedExcerpt = escapeHtml(article.excerpt);
+        const imageUrl = article.image_url || 'https://uniconews.com/logo.jpg';
+        const pageUrl = `https://uniconews.com/?id=${id}`;
+        
+        const ogTags = `
+  <title>${escapedTitle} | UnicoNews 📰</title>
+  <meta name="description" content="${escapedExcerpt}">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="${pageUrl}">
+  <meta property="og:title" content="${escapedTitle}">
+  <meta property="og:description" content="${escapedExcerpt}">
+  <meta property="og:image" content="${imageUrl}">
+  <meta property="og:site_name" content="UnicoNews">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${escapedTitle}">
+  <meta name="twitter:description" content="${escapedExcerpt}">
+  <meta name="twitter:image" content="${imageUrl}">
+        `;
+        
+        // Reemplazar el título y la descripción genéricos por los tags Open Graph específicos
+        html = html.replace(/<title>UnicoNews — Portal de Noticias Verificadas<\/title>/, ogTags);
+        html = html.replace(/<meta name="description" content="Noticias de última hora calificadas rigurosamente por su veracidad, con gráficas financieras dinámicas y diseño premium.">/, '');
+        
+        return res.send(html);
+      }
+    } catch (err) {
+      console.error('⚠️ Error al generar metatags dinámicos de SEO:', err.message);
+    }
+  }
+  
+  // Fallback si no hay ID o si falla la base de datos
+  res.sendFile(indexPath);
 });
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+}
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en puerto ${PORT}`));

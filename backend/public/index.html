@@ -3795,7 +3795,19 @@
 
   // Carga Inicial Sincronizada
   initAuthSystem().then(() => {
-    loadNews();
+    loadNews().then(() => {
+      // Soporte para deep-linking: Abrir noticia si viene el parámetro id en la URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const articleId = urlParams.get('id');
+      if (articleId) {
+        const idInt = parseInt(articleId);
+        if (!isNaN(idInt)) {
+          setTimeout(() => {
+            openArticle(idInt);
+          }, 150);
+        }
+      }
+    });
     setupFilters();
     setupNovedadesFilters();
     initWeatherWidget();
