@@ -265,13 +265,38 @@ app.put('/api/news/:id', async (req, res) => {
     return res.status(400).json({ error: 'Faltan campos obligatorios' });
   }
   
+  let finalImageUrl = image_url;
+  
+  // Si la imagen es una carga local base64, la guardamos físicamente en disco
+  if (image_url && image_url.startsWith('data:image/')) {
+    try {
+      const matches = image_url.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+      if (matches && matches.length === 3) {
+        const ext = matches[1].split('/')[1] || 'png';
+        const buffer = Buffer.from(matches[2], 'base64');
+        
+        const uploadsDir = path.join(__dirname, 'public', 'uploads');
+        if (!fs.existsSync(uploadsDir)) {
+          fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+        
+        const filename = `news_${id}_${Date.now()}.${ext}`;
+        fs.writeFileSync(path.join(uploadsDir, filename), buffer);
+        finalImageUrl = `/uploads/${filename}`;
+        console.log(`✅ Imagen base64 convertida y guardada físicamente como: ${finalImageUrl}`);
+      }
+    } catch (uploadErr) {
+      console.error('⚠️ Error al guardar imagen base64 en disco:', uploadErr.message);
+    }
+  }
+  
   try {
     const result = await pool.query(`
       UPDATE news
       SET title = $1, category = $2, source = $3, excerpt = $4, body = $5, image_url = $6, local_location = $7
       WHERE id = $8
       RETURNING *
-    `, [title, category, source, excerpt, body, image_url || null, local_location || null, id]);
+    `, [title, category, source, excerpt, body, finalImageUrl || null, local_location || null, id]);
     
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Noticia no encontrada' });
@@ -341,7 +366,14 @@ app.get('*', async (req, res) => {
         // Generar meta tags de Open Graph específicos para la noticia
         const escapedTitle = escapeHtml(article.title);
         const escapedExcerpt = escapeHtml(article.excerpt);
-        const imageUrl = article.image_url || 'https://uniconews.com/logo.jpg';
+        
+        let imageUrl = article.image_url || 'https://uniconews.com/logo.jpg';
+        if (imageUrl.startsWith('/')) {
+          imageUrl = `https://uniconews.com${imageUrl}`;
+        } else if (imageUrl.startsWith('data:')) {
+          imageUrl = 'https://uniconews.com/logo.jpg';
+        }
+        
         const pageUrl = `https://uniconews.com/?id=${id}`;
         
         const ogTags = `
@@ -359,9 +391,9 @@ app.get('*', async (req, res) => {
   <meta name="twitter:image" content="${imageUrl}">
         `;
         
-        // Reemplazar el título y la descripción genéricos por los tags Open Graph específicos
-        html = html.replace(/<title>UnicoNews — Portal de Noticias Verificadas<\/title>/, ogTags);
-        html = html.replace(/<meta name="description" content="Noticias de última hora calificadas rigurosamente por su veracidad, con gráficas financieras dinámicas y diseño premium.">/, '');
+        // Reemplazar el título y la descripción genéricos por los tags Open Graph específicos de forma robusta
+        html = html.replace(/<title>[^<]*<\/title>/i, ogTags);
+        html = html.replace(/<meta\s+name=["']description["']\s+content=["'][^"']*["']\s*\/?>/i, '');
         
         return res.send(html);
       }
