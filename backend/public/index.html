@@ -1441,7 +1441,7 @@
 <div class="modal-overlay" id="shareNewsModal" onclick="handleShareOverlayClick(event)">
   <div class="modal" style="max-width: 400px; border-radius: var(--radius-card); padding: 28px; text-align: center; position: relative;">
     <button class="close-modal-btn" onclick="closeShareModal()" aria-label="Cerrar modal">✕</button>
-    <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 8px;"><img src="share_icon.png?v=1" alt="Icono" style="height: 22px; width: 22px; object-fit: contain;"> Compartir Noticia</h3>
+    <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 8px;"><img src="logo_share.png?v=1" alt="Icono" style="height: 22px; width: 22px; object-fit: contain;"> Compartir Noticia</h3>
     <p id="shareModalTitle" style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 24px; font-weight: 600; line-height: 1.4;"></p>
     
     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
@@ -2717,7 +2717,7 @@
                 ` : ''}
                 <button class="like-btn" onclick="event.stopPropagation(); likeArticle(${item.id})" aria-label="Me gusta">👍 <span id="likes_${item.id}">0</span></button>
                 <button class="later-btn ${isBookmarked ? 'active' : ''}" onclick="event.stopPropagation(); toggleBookmark(${item.id})" aria-label="Guardar marcadores" id="bookmarkBtn_${item.id}">🔖</button>
-                <button class="share-btn" onclick="event.stopPropagation(); shareArticle(${item.id})" aria-label="Compartir" style="display: inline-flex; align-items: center; justify-content: center; padding: 0 8px; width: 32px;"><img src="share_icon.png?v=1" alt="Compartir" style="height: 14px; width: 14px; object-fit: contain;"></button>
+                <button class="share-btn" onclick="event.stopPropagation(); shareArticle(${item.id})" aria-label="Compartir" style="display: inline-flex; align-items: center; justify-content: center; padding: 0 8px; width: 32px;"><img src="logo_share.png?v=1" alt="Compartir" style="height: 14px; width: 14px; object-fit: contain;"></button>
               </div>
             </div>
           </div>
@@ -2990,7 +2990,7 @@
         <button class="audio-btn-play" onclick="playAudioNews(${article.id})" id="audioPlayBtn">▶ Escuchar</button>
         <button class="audio-btn-stop" onclick="stopAudioNews()" id="audioStopBtn" style="display:none;">⏹ Detener</button>
         <span class="audio-status-text" id="audioStatusText">Audio-Noticia 🎧</span>
-        <button class="share-btn" onclick="shareArticle(${article.id})" style="background:#ffffff !important; color:#1f2937 !important; border:1px solid rgba(0,0,0,0.08) !important; margin-left: auto; height: 32px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border-radius: var(--radius-pill); cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.08);"><img src="share_icon.png?v=1" alt="Compartir" style="height: 14px; width: 14px; object-fit: contain;"> Compartir</button>
+        <button class="share-btn" onclick="shareArticle(${article.id})" style="background:#ffffff !important; color:#1f2937 !important; border:1px solid rgba(0,0,0,0.08) !important; margin-left: auto; height: 32px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border-radius: var(--radius-pill); cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.08);"><img src="logo_share.png?v=1" alt="Compartir" style="height: 14px; width: 14px; object-fit: contain;"> Compartir</button>
         <button class="audio-btn-stop" onclick="window.print()" style="background:var(--accent-green-light); color:var(--accent-green); border-color:var(--accent-green); margin-left: 8px; height: 32px; font-size: 0.8rem; font-weight: 700;">🖨 Imprimir</button>
       </div>
 
