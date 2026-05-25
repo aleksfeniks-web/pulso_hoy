@@ -27,6 +27,7 @@ async function initTables() {
         user_email TEXT,
         status TEXT DEFAULT 'published',
         local_location TEXT,
+        is_original BOOLEAN DEFAULT false,
         created_at TIMESTAMP DEFAULT NOW()
       );
       
@@ -35,6 +36,7 @@ async function initTables() {
         email TEXT UNIQUE NOT NULL,
         name TEXT,
         plan TEXT DEFAULT 'gratis',
+        profile_pic TEXT,
         created_at TIMESTAMP DEFAULT NOW()
       );
       
@@ -69,6 +71,22 @@ async function initTables() {
       console.log('✅ Columna local_location verificada/agregada');
     } catch (migErr) {
       console.warn('⚠️ Advertencia en migración de columna local_location:', migErr.message);
+    }
+
+    // Migración segura: agregar columna is_original si no existe en base de datos ya creada
+    try {
+      await client.query("ALTER TABLE news ADD COLUMN IF NOT EXISTS is_original BOOLEAN DEFAULT false");
+      console.log('✅ Columna is_original verificada/agregada');
+    } catch (migErr) {
+      console.warn('⚠️ Advertencia en migración de columna is_original:', migErr.message);
+    }
+
+    // Migración segura: agregar columna profile_pic si no existe en base de datos ya creada
+    try {
+      await client.query("ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS profile_pic TEXT");
+      console.log('✅ Columna profile_pic verificada/agregada');
+    } catch (migErr) {
+      console.warn('⚠️ Advertencia en migración de columna profile_pic:', migErr.message);
     }
     
     console.log('✅ Tablas listas');

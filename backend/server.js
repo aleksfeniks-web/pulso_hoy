@@ -33,14 +33,18 @@ app.get('/api/config', (req, res) => {
   });
 });
 
-// Obtener todas las noticias publicadas
+// Obtener todas las noticias publicadas (con Left Join para obtener foto del escritor)
 app.get('/api/news', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT id, title, category, source, source_url, excerpt, body, 
-             truth_score, truth_label, truth_factors, is_financial, 
-             chart_data, image_url, local_location, created_at
-      FROM news WHERE status = 'published' ORDER BY created_at DESC
+      SELECT n.id, n.title, n.category, n.source, n.source_url, n.excerpt, n.body, 
+             n.truth_score, n.truth_label, n.truth_factors, n.is_financial, 
+             n.chart_data, n.image_url, n.local_location, n.is_original, n.created_at, n.user_email,
+             s.name as writer_name, s.profile_pic as writer_profile_pic
+      FROM news n
+      LEFT JOIN subscribers s ON n.user_email = s.email
+      WHERE n.status = 'published' 
+      ORDER BY n.created_at DESC
     `);
     res.json(result.rows);
   } catch (err) {
@@ -49,15 +53,20 @@ app.get('/api/news', async (req, res) => {
   }
 });
 
-// Obtener una noticia por ID
+// Obtener una noticia por ID (con Left Join para obtener foto del escritor)
 app.get('/api/news/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await pool.query('SELECT * FROM news WHERE id = $1 AND status = $2', [id, 'published']);
+    const result = await pool.query(`
+      SELECT n.*, s.name as writer_name, s.profile_pic as writer_profile_pic
+      FROM news n
+      LEFT JOIN subscribers s ON n.user_email = s.email
+      WHERE n.id = $1 AND n.status = 'published'
+    `, [id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'No encontrada' });
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ error: 'Error' });
+    res.status(500).json({ error: 'Error al obtener noticia detallada' });
   }
 });
 
@@ -85,7 +94,7 @@ app.post('/api/cron/sync-news', async (req, res) => {
 
 // Publicar nueva noticia (desde el frontend)
 app.post('/api/news', async (req, res) => {
-  const { title, category, source, source_url, excerpt, body, is_financial, chart_data, image_url, user_email, local_location } = req.body;
+  const { title, category, source, source_url, excerpt, body, is_financial, chart_data, image_url, user_email, local_location, is_original } = req.body;
   if (!title || !category || !source || !excerpt || !body) {
     return res.status(400).json({ error: 'Faltan campos obligatorios' });
   }
@@ -95,10 +104,10 @@ app.post('/api/news', async (req, res) => {
 
   try {
     const result = await queryWithAuth(token, `
-      INSERT INTO news (title, category, source, source_url, excerpt, body, is_financial, chart_data, image_url, user_email, status, local_location)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'published', $11)
+      INSERT INTO news (title, category, source, source_url, excerpt, body, is_financial, chart_data, image_url, user_email, status, local_location, is_original)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'published', $11, $12)
       RETURNING *
-    `, [title, category, source, source_url, excerpt, body, is_financial || false, chart_data || null, image_url || null, user_email || null, local_location || null]);
+    `, [title, category, source, source_url, excerpt, body, is_financial || false, chart_data || null, image_url || null, user_email || null, local_location || null, is_original || false]);
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error(err);
@@ -177,6 +186,101 @@ app.post('/api/subscribe/verify', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error al verificar suscripción' });
+  }
+});
+
+// Cargar/Actualizar foto de perfil del redactor
+app.post('/api/writer/profile-pic', async (req, res) => {
+  const { email, profile_pic_base64 } = req.body;
+  if (!email || !profile_pic_base64) {
+    return res.status(400).json({ error: 'Faltan email o imagen' });
+  }
+
+  try {
+    const matches = profile_pic_base64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    if (!matches || matches.length !== 3) {
+      return res.status(400).json({ error: 'Formato de imagen inválido' });
+    }
+
+    const ext = matches[1].split('/')[1] || 'png';
+    const buffer = Buffer.from(matches[2], 'base64');
+    
+    const profileDir = path.join(__dirname, 'public', 'uploads', 'profile');
+    if (!fs.existsSync(profileDir)) {
+      fs.mkdirSync(profileDir, { recursive: true });
+    }
+
+    const filename = `profile_${Buffer.from(email).toString('hex').slice(0, 16)}.${ext}`;
+    const filePath = path.join(profileDir, filename);
+    
+    fs.writeFileSync(filePath, buffer);
+    const dbPath = `/uploads/profile/${filename}`;
+
+    const result = await pool.query(`
+      UPDATE subscribers
+      SET profile_pic = $1
+      WHERE email = $2
+      RETURNING *
+    `, [dbPath, email]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Suscriptor no encontrado' });
+    }
+
+    console.log(`👤 Foto de perfil cargada físicamente para ${email} en ${dbPath}`);
+    res.json({ success: true, profile_pic: dbPath, subscriber: result.rows[0] });
+
+  } catch (err) {
+    console.error('❌ Error al guardar foto de perfil:', err.message);
+    res.status(500).json({ error: 'Error interno del servidor al procesar imagen de perfil' });
+  }
+});
+
+// Panel de control (Dashboard) del redactor
+app.get('/api/writer/:email/dashboard', async (req, res) => {
+  const { email } = req.params;
+  try {
+    const subRes = await pool.query('SELECT * FROM subscribers WHERE email = $1', [email]);
+    if (subRes.rows.length === 0) {
+      return res.status(404).json({ error: 'Redactor no registrado' });
+    }
+    const subscriber = subRes.rows[0];
+
+    const newsRes = await pool.query(`
+      SELECT n.id, n.title, n.category, n.is_original, n.created_at, n.status,
+             (SELECT COUNT(*) FROM likes WHERE news_id = n.id) as likes_count
+      FROM news n
+      WHERE n.user_email = $1
+      ORDER BY n.created_at DESC
+    `, [email]);
+    
+    const newsList = newsRes.rows;
+
+    const newsCount = newsList.length;
+    let totalLikes = 0;
+    let originalCount = 0;
+    
+    newsList.forEach(item => {
+      totalLikes += parseInt(item.likes_count) || 0;
+      if (item.is_original) {
+        originalCount++;
+      }
+    });
+
+    res.json({
+      success: true,
+      subscriber,
+      stats: {
+        news_count: newsCount,
+        original_count: originalCount,
+        total_likes: totalLikes
+      },
+      news: newsList
+    });
+
+  } catch (err) {
+    console.error('❌ Error al obtener dashboard del redactor:', err);
+    res.status(500).json({ error: 'Error al cargar panel del redactor' });
   }
 });
 

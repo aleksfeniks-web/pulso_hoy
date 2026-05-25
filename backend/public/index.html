@@ -709,6 +709,303 @@
       color: var(--text-primary) !important;
       box-shadow: var(--shadow-sm) !important;
     }
+
+    /* ORIGINAL BADGE SHINY */
+    .original-badge-shiny {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      color: #ffffff !important;
+      font-size: 0.7rem !important;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 20px;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+      letter-spacing: 0.05em;
+      margin-right: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      animation: badgeGlow 2.5s ease-in-out infinite alternate;
+      vertical-align: middle;
+    }
+    @keyframes badgeGlow {
+      0% { box-shadow: 0 0 6px rgba(245, 158, 11, 0.4); filter: brightness(1); }
+      100% { box-shadow: 0 0 16px rgba(239, 68, 68, 0.7); filter: brightness(1.15); }
+    }
+
+    /* AUTHOR META STYLES */
+    .author-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-right: 12px;
+      vertical-align: middle;
+    }
+    .author-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid var(--accent-blue);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+      background: var(--bg-card);
+    }
+    .author-avatar-placeholder {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-light);
+      color: var(--text-muted);
+    }
+
+    /* WRITER DASHBOARD TABS AND CARDS */
+    .writer-dashboard {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      width: 100%;
+    }
+    .dashboard-tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+    .dashboard-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 10px 18px;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dashboard-tab-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .dashboard-tab-btn.active {
+      color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.08);
+      border-bottom: 2px solid var(--accent-blue);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+    .dashboard-tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+      width: 100%;
+    }
+    .dashboard-tab-content.active {
+      display: block;
+    }
+
+    /* PROFILE & METRICS CONTAINER */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      width: 100%;
+    }
+    @media (max-width: 768px) {
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .profile-card, .achievements-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-card);
+      padding: 24px;
+      box-sizing: border-box;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-card::before, .achievements-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--accent-red), var(--accent-blue));
+    }
+    
+    /* AVATAR UPLOAD COMPONENT */
+    .avatar-upload-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto;
+    }
+    .profile-pic-large {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--accent-blue);
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+      background: var(--bg-body);
+      transition: all 0.3s ease;
+    }
+    .avatar-upload-container:hover .profile-pic-large {
+      filter: brightness(0.6);
+      transform: scale(1.02);
+    }
+    .upload-overlay-btn {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 4px;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      background: rgba(0, 0, 0, 0.4);
+    }
+    .avatar-upload-container:hover .upload-overlay-btn {
+      opacity: 1;
+    }
+    
+    /* LEVEL & SCORE DISPLAY */
+    .score-badge {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(147, 51, 234, 0.15));
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      color: #93c5fd;
+      display: inline-block;
+      margin-top: 8px;
+    }
+    .stats-summary-row {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      margin-top: 12px;
+      gap: 12px;
+    }
+    .stat-box {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-light);
+      padding: 12px;
+      border-radius: var(--radius-sm);
+    }
+    .stat-number {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+
+    /* MEDAL DISPLAY STYLES */
+    .medal-container {
+      width: 140px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
+      animation: floatMedal 4s ease-in-out infinite;
+    }
+    @keyframes floatMedal {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+    }
+    .medal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin: 10px 0 2px;
+    }
+    .medal-level-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      max-width: 240px;
+    }
+
+    /* TABLE FOR MY ARTICLES */
+    .my-articles-table-wrapper {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-card);
+      overflow-x: auto;
+      margin-top: 12px;
+      width: 100%;
+    }
+    .my-articles-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+    .my-articles-table th {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 14px 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-light);
+    }
+    .my-articles-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-secondary);
+      vertical-align: middle;
+    }
+    .my-articles-table tr:last-child td {
+      border-bottom: none;
+    }
+    .my-articles-table tr:hover {
+      background: rgba(255, 255, 255, 0.015);
+    }
+    .delete-article-btn {
+      background: transparent;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--accent-red);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.78rem;
+      transition: all 0.2s ease;
+    }
+    .delete-article-btn:hover {
+      background: var(--accent-red);
+      color: white;
+      border-color: var(--accent-red);
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+    }
   </style>
 </head>
 <body>
@@ -745,6 +1042,7 @@
       <button class="nav-btn active" data-section="noticias" onclick="switchSection('noticias')">Noticias</button>
       <button class="nav-btn" data-section="tendencias" onclick="switchSection('tendencias')">🔥 Tendencias</button>
       <button class="nav-btn" data-section="escribir" onclick="switchSection('escribir')">✍ Escribir</button>
+      <button class="nav-btn" data-section="diversion" onclick="switchSection('diversion')">😜 Diversión</button>
       <button class="nav-btn" onclick="toggleBookmarksDrawer()">🔖 Marcadores</button>
       <button class="dark-toggle" id="darkToggle" aria-label="Cambiar tema">🌙</button>
       <button class="dark-toggle" id="interestsToggle" onclick="togglePreferencesModal()" aria-label="Intereses" style="margin-left: 8px;">🎯</button>
@@ -1121,87 +1419,195 @@
         </div>
 
         <!-- Editor de Artículos (Oculto si no está suscrito) -->
-        <div id="writeAppContainer" class="write-container" style="display:none;">
-          <!-- Formulario de redacción -->
-          <div class="write-form">
-            <!-- Perfil de Redactor Activo -->
-            <div id="writerProfileBadge" style="background:var(--bg-body); border:1px solid var(--border-light); border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; font-size:0.85rem;">
-              <div>
-                👤 Redactando como: <strong id="writerNameSpan">Nombre</strong> (<span id="writerEmailSpan">email@correo.com</span>) 
-                <span id="writerPlanBadge" class="truth-badge truth-badge-high" style="margin-left:8px; padding:2px 8px; font-size:0.65rem;">Plan</span>
-              </div>
-              <button onclick="handleWriterLogout()" style="background:transparent; border:none; color:var(--accent-red); font-weight:700; cursor:pointer; text-decoration:underline;">Cerrar sesión</button>
+        <div id="writeAppContainer" class="writer-dashboard" style="display:none;">
+          <!-- Perfil de Redactor Activo -->
+          <div id="writerProfileBadge" style="background:var(--bg-body); border:1px solid var(--border-light); border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; font-size:0.85rem;">
+            <div>
+              👤 Redactando como: <strong id="writerNameSpan">Nombre</strong> (<span id="writerEmailSpan">email@correo.com</span>) 
+              <span id="writerPlanBadge" class="truth-badge truth-badge-high" style="margin-left:8px; padding:2px 8px; font-size:0.65rem;">Plan</span>
             </div>
-
-            <h3>Publicar nuevo artículo</h3>
-            <div class="form-group">
-              <label for="artTitle">Título *</label>
-              <input type="text" id="artTitle" placeholder="Título atractivo y verídico" oninput="updateLivePreview()">
-            </div>
-            
-            <div class="form-group">
-              <label for="artCategory">Categoría *</label>
-              <select id="artCategory" onchange="updateLivePreview()">
-                <option value="economia">Economía</option>
-                <option value="politica">Política</option>
-                <option value="tecnologia">Tecnología</option>
-                <option value="mundo">Mundo</option>
-                <option value="salud">Salud</option>
-                <option value="business">Negocios</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label for="artSource">Fuente / Autor *</label>
-              <input type="text" id="artSource" placeholder="Ej. Banco de México, Reuters" oninput="updateLivePreview()">
-            </div>
-
-            <div class="form-group">
-              <label for="artLocalLocation">Ubicación Geográfica (opcional, ej. CDMX, Madrid, Buenos Aires)</label>
-              <input type="text" id="artLocalLocation" placeholder="Ingresa la ciudad o región de la noticia" oninput="updateLivePreview()">
-            </div>
-            
-            <div class="form-group">
-              <label for="artImageUrl">URL de imagen (opcional)</label>
-              <input type="url" id="artImageUrl" placeholder="https://images.unsplash.com/photo-..." oninput="updateLivePreview()">
-            </div>
-            
-            <div class="form-group">
-              <label for="artExcerpt">Resumen del artículo *</label>
-              <input type="text" id="artExcerpt" placeholder="Breve introducción de 1 a 2 oraciones" oninput="updateLivePreview()">
-            </div>
-            
-            <div class="form-group">
-              <label for="artBody">Cuerpo del artículo *</label>
-              <textarea id="artBody" rows="7" placeholder="Escribe los hechos y el desarrollo completo aquí..." oninput="updateLivePreview()"></textarea>
-            </div>
-            
-            <div class="form-group">
-              <label for="artHasData">¿Incluye gráfico financiero?</label>
-              <select id="artHasData" onchange="toggleFinDataInput(this.value)">
-                <option value="no">No</option>
-                <option value="yes">Sí, contiene datos financieros</option>
-              </select>
-            </div>
-            
-            <div id="finDataSection" style="display:none;" class="form-group">
-              <label for="artFinData">Datos en formato JSON *</label>
-              <textarea id="artFinData" rows="3" placeholder='{"labels":["Ene","Feb","Mar"],"values":[100,120,150],"title":"Ventas","unit":"MXN"}' oninput="updateLivePreview()"></textarea>
-            </div>
-            
-            <button class="like-btn" style="background:var(--accent-red); color:white; font-weight:700; width:100%; height:46px; margin-top:12px; font-size:0.95rem; display:block;" onclick="publishArticle()">🚀 Publicar Artículo</button>
+            <button onclick="handleWriterLogout()" style="background:transparent; border:none; color:var(--accent-red); font-weight:700; cursor:pointer; text-decoration:underline;">Cerrar sesión</button>
           </div>
-          
-          <!-- Previsualizador dinámico -->
-          <div class="write-preview">
-            <h3>Vista Previa en Vivo</h3>
-            <div id="livePreviewCard">
-              <!-- Renderizado en tiempo real -->
+
+          <!-- Dashboard Tabs -->
+          <div class="dashboard-tabs">
+            <button class="dashboard-tab-btn active" id="tabBtnPublish" onclick="switchDashboardTab('publish')">✍️ Publicar</button>
+            <button class="dashboard-tab-btn" id="tabBtnProfile" onclick="switchDashboardTab('profile')">📊 Mi Perfil & Logros</button>
+            <button class="dashboard-tab-btn" id="tabBtnArticles" onclick="switchDashboardTab('articles')">📰 Mis Artículos</button>
+          </div>
+
+          <!-- Tab 1: Publicar -->
+          <div id="dbTabPublish" class="dashboard-tab-content active">
+            <div class="write-container">
+              <!-- Formulario de redacción -->
+              <div class="write-form">
+                <h3>Publicar nuevo artículo</h3>
+                <div class="form-group">
+                  <label for="artTitle">Título *</label>
+                  <input type="text" id="artTitle" placeholder="Título atractivo y verídico" oninput="updateLivePreview()">
+                </div>
+                
+                <div class="form-group">
+                  <label for="artCategory">Categoría *</label>
+                  <select id="artCategory" onchange="updateLivePreview()">
+                    <option value="economia">Economía</option>
+                    <option value="politica">Política</option>
+                    <option value="tecnologia">Tecnología</option>
+                    <option value="mundo">Mundo</option>
+                    <option value="salud">Salud</option>
+                    <option value="business">Negocios</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="artSource">Fuente / Autor *</label>
+                  <input type="text" id="artSource" placeholder="Ej. Banco de México, Reuters" oninput="updateLivePreview()">
+                </div>
+
+                <div class="form-group">
+                  <label for="artLocalLocation">Ubicación Geográfica (opcional, ej. CDMX, Madrid, Buenos Aires)</label>
+                  <input type="text" id="artLocalLocation" placeholder="Ingresa la ciudad o región de la noticia" oninput="updateLivePreview()">
+                </div>
+                
+                <div class="form-group">
+                  <label for="artImageUrl">URL de imagen (opcional)</label>
+                  <input type="url" id="artImageUrl" placeholder="https://images.unsplash.com/photo-..." oninput="updateLivePreview()">
+                </div>
+                
+                <div class="form-group">
+                  <label for="artExcerpt">Resumen del artículo *</label>
+                  <input type="text" id="artExcerpt" placeholder="Breve introducción de 1 a 2 oraciones" oninput="updateLivePreview()">
+                </div>
+                
+                <div class="form-group">
+                  <label for="artBody">Cuerpo del artículo *</label>
+                  <textarea id="artBody" rows="7" placeholder="Escribe los hechos y el desarrollo completo aquí..." oninput="updateLivePreview()"></textarea>
+                </div>
+                
+                <div class="form-group">
+                  <label for="artHasData">¿Incluye gráfico financiero?</label>
+                  <select id="artHasData" onchange="toggleFinDataInput(this.value)">
+                    <option value="no">No</option>
+                    <option value="yes">Sí, contiene datos financieros</option>
+                  </select>
+                </div>
+                
+                <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-top: 18px; margin-bottom: 18px; background: rgba(59, 130, 246, 0.08); padding: 12px 16px; border-radius: 12px; border: 1.5px solid rgba(59, 130, 246, 0.15);">
+                  <input type="checkbox" id="artIsOriginal" style="width:20px; height:20px; cursor:pointer;" onchange="updateLivePreview()">
+                  <label for="artIsOriginal" style="font-size:0.85rem; font-weight:700; color:var(--text-primary); cursor:pointer; margin:0;">
+                    ✨ ¿Es contenido original / exclusivo de UnicoNews? <br/>
+                    <span style="font-size:0.75rem; color:var(--text-secondary); font-weight:500;">Otorga +10 pts extra de logro y una distinción visual brillante en la portada.</span>
+                  </label>
+                </div>
+                
+                <div id="finDataSection" style="display:none;" class="form-group">
+                  <label for="artFinData">Datos en formato JSON *</label>
+                  <textarea id="artFinData" rows="3" placeholder='{"labels":["Ene","Feb","Mar"],"values":[100,120,150],"title":"Ventas","unit":"MXN"}' oninput="updateLivePreview()"></textarea>
+                </div>
+                
+                <button class="like-btn" style="background:var(--accent-red); color:white; font-weight:700; width:100%; height:46px; margin-top:12px; font-size:0.95rem; display:block;" onclick="publishArticle()">🚀 Publicar Artículo</button>
+              </div>
+              
+              <!-- Previsualizador dinámico -->
+              <div class="write-preview">
+                <h3>Vista Previa en Vivo</h3>
+                <div id="livePreviewCard">
+                  <!-- Renderizado en tiempo real -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Mi Perfil & Logros -->
+          <div id="dbTabProfile" class="dashboard-tab-content">
+            <div class="profile-grid">
+              
+              <!-- Perfil e Imagen -->
+              <div class="profile-card">
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin:0;">Mi Perfil de Redactor</h3>
+                <div class="avatar-upload-container">
+                  <img id="writerDashboardAvatar" src="https://api.dicebear.com/7.x/initials/svg?seed=Redactor" class="profile-pic-large" alt="Foto de perfil">
+                  <label for="profilePicInput" class="upload-overlay-btn">
+                    📷
+                    <span>Subir Foto</span>
+                  </label>
+                  <input type="file" id="profilePicInput" accept="image/*" style="display:none;" onchange="uploadProfilePicture()">
+                </div>
+                <div>
+                  <h4 id="profileName" style="margin:8px 0 2px; font-size:1.2rem; font-weight:800;">Nombre Completo</h4>
+                  <p id="profileEmail" style="color:var(--text-secondary); font-size:0.85rem; margin:0;">email@ejemplo.com</p>
+                  <span id="profilePlan" class="truth-badge truth-badge-high" style="margin-top:8px; padding:2px 8px; font-size:0.65rem; display:inline-block;">Plan</span>
+                </div>
+                <div class="stats-summary-row">
+                  <div class="stat-box">
+                    <div id="statArticlesCount" class="stat-number">0</div>
+                    <div class="stat-label">Noticias</div>
+                  </div>
+                  <div class="stat-box">
+                    <div id="statLikesCount" class="stat-number">0</div>
+                    <div class="stat-label">Me Gusta</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Logros y Medalla -->
+              <div class="achievements-card">
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin:0;">Mis Logros & Rango</h3>
+                <div id="writerMedalContainer" class="medal-container">
+                  <!-- El SVG se inyectará dinámicamente -->
+                </div>
+                <div>
+                  <div id="writerMedalTitle" class="medal-title">Bronce</div>
+                  <div id="writerScoreBadge" class="score-badge">0 Puntos de Logro</div>
+                </div>
+                <p id="writerMedalDesc" class="medal-level-desc">Estás comenzando tu camino de periodismo veraz en UnicoNews. ¡Publica noticias y consigue me gusta para subir de nivel!</p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Tab 3: Mis Artículos -->
+          <div id="dbTabArticles" class="dashboard-tab-content">
+            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 16px;">Mis Artículos Publicados</h3>
+            <div class="my-articles-table-wrapper">
+              <table class="my-articles-table">
+                <thead>
+                  <tr>
+                    <th>Título</th>
+                    <th>Categoría</th>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>👍 Likes</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="myArticlesTableBody">
+                  <!-- Se inyectará dinámicamente -->
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
 
+      <!-- SECCIÓN DIVERSIÓN & MEMES (PREMIUM CARD-GRID LAYOUT) -->
+      <div id="diversionSection" class="section" style="display:none; animation: fadeIn 0.4s ease;">
+        <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; border-bottom:2px solid var(--border-light); padding-bottom:12px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h2 style="font-family:'Playfair Display', Georgia, serif; font-size:1.8rem; margin:0; font-weight:800; display:flex; align-items:center; gap:8px;">
+              <span>😜 Diversión & Memes del Día</span>
+            </h2>
+            <p style="font-size:0.88rem; color:var(--text-secondary); margin:4px 0 0 0;">Relájate y ríete un rato con los memes más populares y virales de internet.</p>
+          </div>
+          <button onclick="refreshMemes(this)" class="ai-action-btn" style="padding: 10px 24px !important; font-size:0.85rem !important; border-radius: var(--radius-pill) !important; margin:0; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+            <span class="btn-spinner" style="display:none; width:12px; height:12px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin 0.8s linear infinite;"></span>
+            <span>🔄 Cargar más memes</span>
+          </button>
+        </div>
+        <div id="memesGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:24px; margin-bottom:40px;">
+          <!-- Los memes se renderizarán aquí dinámicamente -->
+        </div>
       </div>
+
     </div>
 
     <!-- Barra Lateral -->
@@ -1842,6 +2248,11 @@
     document.getElementById('tendenciasSection').style.display = section === 'tendencias' ? 'block' : 'none';
     document.getElementById('iaSection').style.display         = section === 'ia'         ? 'block' : 'none';
     document.getElementById('escribirSection').style.display   = section === 'escribir'   ? 'block' : 'none';
+    document.getElementById('diversionSection').style.display  = section === 'diversion'  ? 'block' : 'none';
+    
+    if (section === 'diversion') {
+      fetchMemes();
+    }
     
     // Ocultar o mostrar panel de control
     document.getElementById('controlPanel').style.display = section === 'noticias' ? 'flex' : 'none';
@@ -2290,7 +2701,7 @@
       }
     } else {
       subWall.style.display = 'none';
-      writeApp.style.display = 'grid';
+      writeApp.style.display = 'block';
       
       document.getElementById('writerNameSpan').innerText = subName;
       document.getElementById('writerEmailSpan').innerText = subEmail;
@@ -2303,6 +2714,9 @@
       if (logoutBtn) {
         logoutBtn.style.display = isClerkActive ? 'none' : 'block';
       }
+      
+      // Cargar datos en vivo del redactor (Métricas, Medalla SVG y Artículos)
+      loadWriterDashboard(subEmail);
       
       updateLivePreview();
     }
@@ -2673,16 +3087,18 @@
         <div class="hero-main" onclick="openArticle(${main.id})" style="width: 100%;">
           ${isSuper ? `
             <div style="position: absolute; top: 16px; right: 16px; z-index: 10;" onclick="event.stopPropagation();">
-              <button class="admin-btn admin-btn-edit" onclick="openEditNewsAdmin(${main.id})" style="box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); padding: 10px 20px;">✏️ Editar Portada</button>
+              <button class="admin-btn admin-btn-edit" onclick="openEditNewsAdmin(${main.id})" style="box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); padding: 10px 20px;">✏️ Portada</button>
             </div>
           ` : ''}
           <img class="hero-img" src="${mainImg}" alt="${main.title}" loading="lazy" style="height: 440px; width: 100%;" onerror="handleImgError(this, '${main.category}')">
           <div class="hero-content">
-            <div class="hero-category">${main.category}</div>
+            <div class="hero-category">
+              ${main.is_original ? '<span class="original-badge-shiny">✨ ORIGINAL</span>' : ''}${main.category}
+            </div>
             <div class="hero-title" style="font-size: 2.3rem; line-height: 1.2; margin-bottom: 12px;">${main.title}</div>
             <div class="hero-excerpt" style="font-size: 1.05rem; margin-bottom: 20px;">${main.excerpt}</div>
             <div class="hero-meta">
-              <span class="source-name">${main.source}</span>
+              ${getWriterMetaHtml(main.writer_name, main.writer_profile_pic, main.source)}
               ${getTruthBadgeHtml(main.truth_score || 85)}
               <span>${formatDate(main.created_at)}</span>
             </div>
@@ -2729,7 +3145,9 @@
         <div class="news-card" data-id="${item.id}">
           <img class="news-card-img" src="${cardImg}" alt="${item.title}" loading="lazy" onclick="openArticle(${item.id})" onerror="handleImgError(this, '${item.category}')">
           <div class="news-card-body">
-            <div class="news-category">${item.category}</div>
+            <div class="news-category">
+              ${item.is_original ? '<span class="original-badge-shiny">✨ ORIGINAL</span>' : ''}${item.category}
+            </div>
             <div class="news-card-title" onclick="openArticle(${item.id})">${item.title}</div>
             <div class="news-excerpt">${item.excerpt}</div>
             
@@ -2737,7 +3155,7 @@
             
             <div class="card-footer">
               <div class="footer-meta">
-                <span class="source-name">${item.source}</span>
+                ${getWriterMetaHtml(item.writer_name, item.writer_profile_pic, item.source)}
                 <span>${formatDate(item.created_at)}</span>
               </div>
               <div class="card-actions">
@@ -3005,11 +3423,13 @@
           </div>
         </div>
       ` : ''}
-      <div class="hero-category" style="margin-bottom:8px;">${article.category}</div>
+      <div class="hero-category" style="margin-bottom:8px;">
+        ${article.is_original ? '<span class="original-badge-shiny">✨ ORIGINAL</span>' : ''}${article.category}
+      </div>
       <h2 class="hero-title" style="font-size:2rem; margin-bottom:16px;">${article.title}</h2>
       
-      <div class="hero-meta" style="margin-bottom:20px; border-bottom:1px solid var(--border-light); padding-bottom:16px;">
-        <span class="source-name">${article.source}</span>
+      <div class="hero-meta" style="margin-bottom:20px; border-bottom:1px solid var(--border-light); padding-bottom:16px; flex-wrap:wrap; gap:8px;">
+        ${getWriterMetaHtml(article.writer_name, article.writer_profile_pic, article.source)}
         ${getTruthBadgeHtml(article.truth_score || 85)}
         <span>${formatDate(article.created_at)}</span>
         ${article.source_url ? `<a href="${article.source_url}" target="_blank" style="color:var(--accent-blue); text-decoration:none; font-weight:600;">Ver fuente original ↗</a>` : ''}
@@ -3289,6 +3709,8 @@
     const subscriberEmail = localStorage.getItem('subscriberEmail');
     const finalImageUrl = (imageUrlInput && !imageUrlInput.includes('picsum.photos')) ? imageUrlInput : getFallbackImage(category, title);
 
+    const isOriginal = document.getElementById('artIsOriginal').checked;
+
     const payload = {
       title,
       category,
@@ -3300,7 +3722,8 @@
       chart_data: chartData,
       image_url: finalImageUrl,
       user_email: subscriberEmail || null,
-      local_location: local_location || null
+      local_location: local_location || null,
+      is_original: isOriginal
     };
 
     try {
@@ -3320,6 +3743,11 @@
         updateTickerHeadline(allNews);
         renderHotTopics(allNews);
         renderNovedadesSection();
+        
+        // Refrescar estadísticas en vivo y logros del panel del redactor
+        if (subscriberEmail) {
+          loadWriterDashboard(subscriberEmail);
+        }
       } else {
         throw new Error();
       }
@@ -3350,6 +3778,7 @@
     document.getElementById('artHasData').value = 'no';
     document.getElementById('artFinData').value = '';
     document.getElementById('finDataSection').style.display = 'none';
+    document.getElementById('artIsOriginal').checked = false;
 
     goHome();
   }
@@ -4580,6 +5009,458 @@
     if (e.target.id === 'aiPopupModal') {
       closeAiPopup();
     }
+  }
+
+  // ---------- SECCIÓN DIVERSIÓN: MEMES DINÁMICOS ----------
+  async function fetchMemes() {
+    const grid = document.getElementById('memesGrid');
+    if (!grid) return;
+    
+    // Si ya hay memes cargados y no se presionó actualizar, no volvemos a hacer fetch
+    if (grid.innerHTML.trim() !== '' && !grid.getAttribute('data-needs-refresh')) return;
+    
+    grid.innerHTML = `
+      <div style="grid-column: 1 / span -1; text-align: center; padding: 40px; color: var(--text-secondary);">
+        <span style="display:inline-block; width:30px; height:30px; border:3px solid var(--accent-red); border-top-color:transparent; border-radius:50%; animation:spin 0.8s linear infinite;"></span>
+        <p style="margin-top:12px; font-weight:700;">Ingiriendo los memes más virales en tiempo real...</p>
+      </div>
+    `;
+    
+    try {
+      const res = await fetch('https://meme-api.com/gimme/6');
+      if (!res.ok) throw new Error('Error al conectar con la API de Memes');
+      const data = await res.json();
+      
+      if (data.memes && data.memes.length > 0) {
+        grid.innerHTML = data.memes.map(m => `
+          <div style="background:var(--bg-card); border:1px solid var(--border-light); border-radius:var(--radius-card); overflow:hidden; box-shadow:var(--shadow-sm); transition:transform 0.2s ease, border-color 0.2s ease; display:flex; flex-direction:column;" class="meme-card" onmouseenter="this.style.transform='translateY(-4px)';this.style.borderColor='var(--accent-red)'" onmouseleave="this.style.transform='translateY(0)';this.style.borderColor='var(--border-light)'">
+            <div style="padding:10px 14px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-light); font-size:0.75rem; color:var(--text-secondary); font-weight:700;">
+              <span>🤖 r/${m.subreddit}</span>
+              <span style="color:var(--text-muted);">Por: u/${m.author}</span>
+            </div>
+            <div style="padding:14px; flex-grow:1; display:flex; flex-direction:column; justify-content:center;">
+              <h4 style="font-size:0.92rem; font-weight:700; margin:0 0 10px 0; color:var(--text-primary); line-height:1.4; display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${m.title}</h4>
+              <div style="width:100%; height:230px; border-radius:8px; overflow:hidden; background:#0f172a; display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="window.open('${m.url}', '_blank')">
+                <img src="${m.url}" alt="${m.title}" style="max-width:100%; max-height:100%; object-fit:contain;" loading="lazy">
+              </div>
+            </div>
+            <div style="padding:10px 14px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--border-light); background:var(--bg-body); font-size:0.8rem; font-weight:700; color:var(--text-primary);">
+              <span style="color:#ef4444; display:flex; align-items:center; gap:4px;">🔥 ${m.ups} upvotes</span>
+              <button onclick="window.open('${m.postLink}', '_blank')" style="background:transparent; border:none; color:var(--accent-blue); cursor:pointer; font-size:0.75rem; font-weight:800; padding:0; display:flex; align-items:center; gap:2px;">Ver en Reddit 🌐</button>
+            </div>
+          </div>
+        `).join('');
+        grid.removeAttribute('data-needs-refresh');
+      } else {
+        throw new Error();
+      }
+    } catch (e) {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / span -1; text-align: center; padding: 40px; color: var(--text-secondary); border: 1.5px dashed var(--border-light); border-radius: var(--radius-card); background: var(--bg-card);">
+          <div style="font-size:2.5rem; margin-bottom:8px;">🧩</div>
+          <p style="font-weight:700; margin:0 0 4px 0;">No se pudieron cargar los memes en este momento.</p>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin:0 0 16px 0;">La API pública de memes está temporalmente saturada.</p>
+          <button onclick="refreshMemes(this)" class="ai-term-chip" style="margin:0 auto; padding:6px 14px !important;">🔄 Reintentar Carga</button>
+        </div>
+      `;
+    }
+  }
+
+  }
+
+  // ---------- DETALLES Y LOGROS DEL REDACTOR ----------
+  
+  // Diseños Vectoriales (SVG) de las 6 Medallas de Logro
+  const SVG_MEDAL_BRONCE = `
+  <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="100" cy="100" r="80" fill="url(#bronze_grad)" stroke="#A1A1AA" stroke-width="6"/>
+    <circle cx="100" cy="100" r="66" fill="none" stroke="#D4D4D8" stroke-dasharray="8 6" stroke-width="2"/>
+    <polygon points="100,45 115,80 150,83 123,107 131,142 100,123 69,142 77,107 50,83 85,80" fill="url(#silver_star_grad)" stroke="#FFFFFF" stroke-width="2"/>
+    <defs>
+      <linearGradient id="bronze_grad" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#3F3F46"/>
+        <stop offset="50%" stop-color="#71717A"/>
+        <stop offset="100%" stop-color="#27272A"/>
+      </linearGradient>
+      <linearGradient id="silver_star_grad" x1="50" y1="45" x2="150" y2="142" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#FFFFFF"/>
+        <stop offset="100%" stop-color="#94A3B8"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  `;
+
+  const SVG_MEDAL_ESMERALDA = `
+  <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="100,15 175,58 175,142 100,185 25,142 25,58" fill="url(#emerald_grad)" stroke="#34D399" stroke-width="6"/>
+    <polygon points="100,28 162,64 162,136 100,172 38,136 38,64" fill="none" stroke="#A7F3D0" stroke-dasharray="10 6" stroke-width="2"/>
+    <polygon points="100,45 115,80 150,83 123,107 131,142 100,123 69,142 77,107 50,83 85,80" fill="url(#emerald_star_grad)" stroke="#FFFFFF" stroke-width="2"/>
+    <defs>
+      <linearGradient id="emerald_grad" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#064E3B"/>
+        <stop offset="50%" stop-color="#059669"/>
+        <stop offset="100%" stop-color="#022C22"/>
+      </linearGradient>
+      <linearGradient id="emerald_star_grad" x1="50" y1="45" x2="150" y2="142" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#A7F3D0"/>
+        <stop offset="100%" stop-color="#10B981"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  `;
+
+  const SVG_MEDAL_ORO = `
+  <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M70,100 L45,185 L85,185 L100,150 L115,185 L155,185 L130,100 Z" fill="#DC2626" stroke="#991B1B" stroke-width="3"/>
+    <circle cx="100" cy="100" r="70" fill="url(#gold_grad)" stroke="#FBBF24" stroke-width="6"/>
+    <circle cx="100" cy="100" r="56" fill="none" stroke="#FEF08A" stroke-dasharray="6 4" stroke-width="2"/>
+    <polygon points="100,55 112,85 142,88 119,109 126,140 100,123 74,140 81,109 58,88 88,85" fill="url(#gold_star_grad)" stroke="#FFFFFF" stroke-width="2"/>
+    <defs>
+      <linearGradient id="gold_grad" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#78350F"/>
+        <stop offset="35%" stop-color="#D97706"/>
+        <stop offset="70%" stop-color="#F59E0B"/>
+        <stop offset="100%" stop-color="#B45309"/>
+      </linearGradient>
+      <linearGradient id="gold_star_grad" x1="58" y1="55" x2="142" y2="140" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#FDE047"/>
+        <stop offset="100%" stop-color="#CA8A04"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  `;
+
+  const SVG_MEDAL_PLATINO = `
+  <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M60,90 L30,185 L75,185 L100,140 L125,185 L170,185 L140,90 Z" fill="#2563EB" stroke="#1E40AF" stroke-width="3"/>
+    <rect x="35" y="35" width="130" height="130" rx="20" fill="url(#platino_grad)" stroke="#60A5FA" stroke-width="6" transform="rotate(45 100 100)"/>
+    <rect x="47" y="47" width="106" height="106" rx="14" fill="none" stroke="#DBEAFE" stroke-dasharray="8 6" stroke-width="2" transform="rotate(45 100 100)"/>
+    <polygon points="100,45 115,85 155,100 115,115 100,155 85,115 45,100 85,85" fill="url(#safiro_grad)" stroke="#FFFFFF" stroke-width="2"/>
+    <circle cx="70" cy="70" r="4" fill="#FFFFFF" filter="drop-shadow(0 0 4px #60A5FA)"/>
+    <circle cx="130" cy="130" r="4" fill="#FFFFFF" filter="drop-shadow(0 0 4px #60A5FA)"/>
+    <defs>
+      <linearGradient id="platino_grad" x1="35" y1="35" x2="165" y2="165" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#1E3A8A"/>
+        <stop offset="50%" stop-color="#3B82F6"/>
+        <stop offset="100%" stop-color="#172554"/>
+      </linearGradient>
+      <linearGradient id="safiro_grad" x1="45" y1="45" x2="155" y2="155" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#BFDBFE"/>
+        <stop offset="100%" stop-color="#3B82F6"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  `;
+
+  const SVG_MEDAL_AMATISTA = `
+  <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M100,10 L185,55 L185,145 L100,190 L15,145 L15,55 Z" fill="url(#amatista_grad)" stroke="#C084FC" stroke-width="6"/>
+    <path d="M100,23 L172,62 L172,138 L100,177 L28,138 L28,62 Z" fill="none" stroke="#F3E8FF" stroke-dasharray="10 4" stroke-width="2"/>
+    <polygon points="100,45 113,82 150,85 122,108 130,145 100,125 70,145 78,108 50,85 87,82" fill="url(#purple_star_grad)" stroke="#FFFFFF" stroke-width="2"/>
+    <path d="M100,28 L103,42 L117,45 L103,48 L100,62 L97,48 L83,45 L97,42 Z" fill="#FAF5FF" filter="drop-shadow(0 0 6px #C084FC)"/>
+    <circle cx="50" cy="120" r="3" fill="#FFFFFF"/>
+    <circle cx="150" cy="120" r="3" fill="#FFFFFF"/>
+    <defs>
+      <linearGradient id="amatista_grad" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#4C1D95"/>
+        <stop offset="50%" stop-color="#8B5CF6"/>
+        <stop offset="100%" stop-color="#2E1065"/>
+      </linearGradient>
+      <linearGradient id="purple_star_grad" x1="50" y1="45" x2="150" y2="145" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#F3E8FF"/>
+        <stop offset="100%" stop-color="#8B5CF6"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  `;
+
+  const SVG_MEDAL_COSMICA = `
+  <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="100" cy="100" r="92" fill="none" stroke="url(#halo_grad)" stroke-width="4" stroke-dasharray="14 8" opacity="0.6"/>
+    <circle cx="100" cy="100" r="80" fill="url(#cosmic_grad)" stroke="#F472B6" stroke-width="6"/>
+    <ellipse cx="100" cy="100" rx="90" ry="25" fill="none" stroke="url(#ring_grad)" stroke-width="6" transform="rotate(-30 100 100)"/>
+    <polygon points="100,40 110,80 150,80 115,95 130,135 100,110 70,135 85,95 50,80 90,80" fill="url(#cosmic_star_grad)" stroke="#FFFFFF" stroke-width="2.5"/>
+    <circle cx="65" cy="65" r="4" fill="#FFFFFF" filter="drop-shadow(0 0 8px #F472B6)"/>
+    <circle cx="135" cy="65" r="4" fill="#FFFFFF" filter="drop-shadow(0 0 8px #3B82F6)"/>
+    <circle cx="135" cy="135" r="3" fill="#FFFFFF"/>
+    <circle cx="65" cy="135" r="3" fill="#FFFFFF"/>
+    <defs>
+      <linearGradient id="cosmic_grad" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#4C0519"/>
+        <stop offset="35%" stop-color="#881337"/>
+        <stop offset="70%" stop-color="#DB2777"/>
+        <stop offset="100%" stop-color="#4A044E"/>
+      </linearGradient>
+      <linearGradient id="halo_grad" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#EC4899"/>
+        <stop offset="50%" stop-color="#8B5CF6"/>
+        <stop offset="100%" stop-color="#F59E0B"/>
+      </linearGradient>
+      <linearGradient id="ring_grad" x1="10" y1="100" x2="190" y2="100" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#F472B6" stop-opacity="0.2"/>
+        <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.2"/>
+      </linearGradient>
+      <linearGradient id="cosmic_star_grad" x1="50" y1="40" x2="150" y2="135" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#FFFFFF"/>
+        <stop offset="50%" stop-color="#FCE7F3"/>
+        <stop offset="100%" stop-color="#F472B6"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  `;
+
+  // Generador de avatares en HTML (Soporta locales y fallbacks de initials)
+  function getWriterMetaHtml(writerName, writerProfilePic, fallbackSource) {
+    const name = writerName || fallbackSource || "Redacción";
+    let avatarHtml = '';
+    
+    if (writerProfilePic) {
+      const src = writerProfilePic.startsWith('http') || writerProfilePic.startsWith('data:') || writerProfilePic.startsWith('/') ? writerProfilePic : '/' + writerProfilePic;
+      avatarHtml = `<img src="${src}" class="author-avatar" alt="${name}" onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}';">`;
+    } else if (writerName) {
+      avatarHtml = `<img src="https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}" class="author-avatar" alt="${name}">`;
+    } else {
+      avatarHtml = `<div class="author-avatar-placeholder">👤</div>`;
+    }
+    
+    return `
+      <div class="author-wrapper">
+        ${avatarHtml}
+        <span class="source-name" style="font-weight:700; color:var(--text-primary);">${name}</span>
+      </div>
+    `;
+  }
+
+  // Pestañas del Panel del Redactor
+  function switchDashboardTab(tab) {
+    document.getElementById('tabBtnPublish').classList.toggle('active', tab === 'publish');
+    document.getElementById('tabBtnProfile').classList.toggle('active', tab === 'profile');
+    document.getElementById('tabBtnArticles').classList.toggle('active', tab === 'articles');
+    
+    document.getElementById('dbTabPublish').classList.toggle('active', tab === 'publish');
+    document.getElementById('dbTabProfile').classList.toggle('active', tab === 'profile');
+    document.getElementById('dbTabArticles').classList.toggle('active', tab === 'articles');
+  }
+
+  // Carga de Logros y Rangos según Score
+  function getWriterLevelDetails(score) {
+    if (score >= 350) {
+      return {
+        level: 6,
+        name: "Cósmico",
+        desc: "¡Increíble! Eres una leyenda del periodismo en UnicoNews, tu contenido original brilla en el cosmos de la información verídica.",
+        svg: SVG_MEDAL_COSMICA,
+        style: "background: linear-gradient(135deg, #EC4899, #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
+      };
+    } else if (score >= 180) {
+      return {
+        level: 5,
+        name: "Amatista",
+        desc: "¡Rango Magistral! Tus escritos demuestran una veracidad e influencia del más alto calibre. Tienes el respeto del equipo editorial.",
+        svg: SVG_MEDAL_AMATISTA,
+        style: "background: linear-gradient(135deg, #A855F7, #C084FC); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
+      };
+    } else if (score >= 90) {
+      return {
+        level: 4,
+        name: "Platino",
+        desc: "Excelente redactor verificado. Tus primicias exclusivas y me gusta te han consolidado como un editor sumamente confiable.",
+        svg: SVG_MEDAL_PLATINO,
+        style: "background: linear-gradient(135deg, #3B82F6, #60A5FA); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
+      };
+    } else if (score >= 45) {
+      return {
+        level: 3,
+        name: "Oro",
+        desc: "Redactor destacado. Has aportado artículos verídicos de gran calidad a nuestra comunidad. ¡Sigue brillando!",
+        svg: SVG_MEDAL_ORO,
+        style: "background: linear-gradient(135deg, #F59E0B, #FBBF24); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
+      };
+    } else if (score >= 15) {
+      return {
+        level: 2,
+        name: "Esmeralda",
+        desc: "Redactor verificado inicial. Has comenzado a destacar por tu rigor periodístico y compromiso con la verdad.",
+        svg: SVG_MEDAL_ESMERALDA,
+        style: "background: linear-gradient(135deg, #10B981, #34D399); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
+      };
+    } else {
+      return {
+        level: 1,
+        name: "Bronce",
+        desc: "Estás comenzando tu camino de periodismo veraz en UnicoNews. ¡Publica noticias y consigue me gusta para subir de nivel!",
+        svg: SVG_MEDAL_BRONCE,
+        style: "background: linear-gradient(135deg, #9CA3AF, #D1D5DB); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
+      };
+    }
+  }
+
+  // Llamada al Dashboard API en backend
+  async function loadWriterDashboard(email) {
+    if (!email) return;
+    try {
+      const headers = await getAuthHeaders();
+      const res = await fetch(`/api/writer/${encodeURIComponent(email)}/dashboard`, {
+        headers: headers
+      });
+      if (res.ok) {
+        const data = await res.json();
+        
+        const name = data.writer.name || 'Redactor';
+        document.getElementById('profileName').innerText = name;
+        document.getElementById('profileEmail').innerText = data.writer.email;
+        
+        const planText = data.writer.plan ? data.writer.plan.charAt(0).toUpperCase() + data.writer.plan.slice(1) : 'Gratis';
+        document.getElementById('profilePlan').innerText = `Plan: ${planText}`;
+        
+        const totalNews = parseInt(data.stats.total_news) || 0;
+        const totalLikes = parseInt(data.stats.total_likes) || 0;
+        const originalNews = parseInt(data.stats.original_news) || 0;
+        const commonNews = totalNews - originalNews;
+        
+        // Puntuación: Score = (Comunes * 5) + (Originales * 15) + (Likes * 2)
+        const score = (commonNews * 5) + (originalNews * 15) + (totalLikes * 2);
+        
+        document.getElementById('statArticlesCount').innerText = totalNews;
+        document.getElementById('statLikesCount').innerText = totalLikes;
+        
+        const lvl = getWriterLevelDetails(score);
+        
+        document.getElementById('writerMedalContainer').innerHTML = lvl.svg;
+        const mTitle = document.getElementById('writerMedalTitle');
+        mTitle.innerText = `${lvl.name} (Nivel ${lvl.level})`;
+        mTitle.style.cssText = lvl.style;
+        
+        document.getElementById('writerScoreBadge').innerText = `${score} Puntos de Logro`;
+        document.getElementById('writerMedalDesc').innerText = lvl.desc;
+        
+        const dashAvatar = document.getElementById('writerDashboardAvatar');
+        const avatarSrc = data.writer.profile_pic ? 
+          (data.writer.profile_pic.startsWith('http') || data.writer.profile_pic.startsWith('data:') || data.writer.profile_pic.startsWith('/') ? data.writer.profile_pic : '/' + data.writer.profile_pic) : 
+          `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`;
+        
+        dashAvatar.src = avatarSrc;
+        
+        renderWriterArticlesTable(data.articles);
+      }
+    } catch(e) {
+      console.error("Error al cargar el dashboard del escritor:", e);
+    }
+  }
+
+  // Renderizar la tabla de noticias del redactor
+  function renderWriterArticlesTable(articles) {
+    const tbody = document.getElementById('myArticlesTableBody');
+    if (!articles || articles.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:32px; color:var(--text-muted);">Aún no has publicado ningún artículo.</td></tr>`;
+      return;
+    }
+    
+    tbody.innerHTML = articles.map(art => {
+      const isOriginalBadge = art.is_original ? `<span class="original-badge-shiny" style="font-size:0.6rem !important;">✨ ORIGINAL</span>` : `<span style="font-size:0.75rem; color:var(--text-muted);">Estándar</span>`;
+      const categoryName = art.category ? art.category.toUpperCase() : 'GENERAL';
+      const dateStr = formatDate(art.created_at);
+      
+      return `
+        <tr id="my_art_row_${art.id}">
+          <td style="font-weight:700; color:var(--text-primary);"><a href="#" onclick="event.preventDefault(); openArticle(${art.id});" style="color:inherit; text-decoration:none; hover:underline;">${art.title}</a></td>
+          <td><span class="truth-badge truth-badge-mid" style="font-size:0.7rem; padding:2px 8px;">${categoryName}</span></td>
+          <td>${dateStr}</td>
+          <td>${isOriginalBadge}</td>
+          <td style="font-weight:700; color:var(--accent-blue);">👍 ${art.likes || 0}</td>
+          <td>
+            <button class="delete-article-btn" onclick="deleteWriterArticle(${art.id})">🗑️ Borrar</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Borrar artículo desde la tabla del redactor
+  async function deleteWriterArticle(id) {
+    if (!confirm("⚠️ ¿Estás seguro de que deseas eliminar permanentemente este artículo? Esta acción no se puede deshacer y afectará tu puntuación.")) return;
+    
+    try {
+      const headers = await getAuthHeaders();
+      const res = await fetch(`/api/news/${id}`, {
+        method: 'DELETE',
+        headers: headers
+      });
+      
+      if (res.ok) {
+        alert("🗑️ Artículo eliminado exitosamente.");
+        
+        const row = document.getElementById(`my_art_row_${id}`);
+        if (row) {
+          row.style.transition = 'all 0.3s ease';
+          row.style.opacity = '0';
+          row.style.transform = 'translateX(-20px)';
+          setTimeout(() => row.remove(), 300);
+        }
+        
+        allNews = allNews.filter(n => n.id !== id);
+        
+        // Recargar el feed principal y el dashboard en vivo
+        loadNews();
+        const subscriberEmail = localStorage.getItem('subscriberEmail');
+        loadWriterDashboard(subscriberEmail);
+      } else {
+        alert("⚠️ No tienes permisos para eliminar este artículo.");
+      }
+    } catch(e) {
+      console.error("Error al eliminar el artículo:", e);
+      alert("⚠️ Error de conexión al eliminar el artículo.");
+    }
+  }
+
+  // Subir foto de perfil codificada en Base64
+  async function uploadProfilePicture() {
+    const fileInput = document.getElementById('profilePicInput');
+    const file = fileInput.files[0];
+    if (!file) return;
+    
+    if (file.size > 2 * 1024 * 1024) {
+      alert("⚠️ La imagen es demasiado grande. El límite de tamaño es de 2 MB.");
+      return;
+    }
+    
+    const email = localStorage.getItem('subscriberEmail');
+    if (!email) return;
+    
+    const reader = new FileReader();
+    reader.onload = async function (e) {
+      const base64 = e.target.result;
+      
+      try {
+        const headers = await getAuthHeaders();
+        const res = await fetch('/api/writer/profile-pic', {
+          method: 'POST',
+          headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: email,
+            profile_pic_base64: base64
+          })
+        });
+        
+        if (res.ok) {
+          alert("📷 ¡Foto de perfil actualizada con éxito!");
+          loadWriterDashboard(email);
+          loadNews(); // Recargar noticias para reflejar el avatar en todas las tarjetas
+        } else {
+          const errData = await res.json();
+          alert(`⚠️ Error al actualizar foto de perfil: ${errData.error || 'Intenta de nuevo'}`);
+        }
+      } catch(e) {
+        console.error("Error al subir foto de perfil:", e);
+        alert("⚠️ Error de conexión al cargar la foto de perfil.");
+      }
+    };
+    
+    reader.readAsDataURL(file);
   }
 </script>
 
