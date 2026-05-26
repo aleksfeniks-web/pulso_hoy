@@ -2429,7 +2429,7 @@
     
     // Ocultar o mostrar panel de control
     document.getElementById('controlPanel').style.display = section === 'noticias' ? 'flex' : 'none';
-    document.getElementById('sidebarCol').style.display = (section === 'noticias' || section === 'tendencias') ? 'flex' : 'none';
+    document.getElementById('sidebarCol').style.display = section === 'escribir' ? 'none' : 'flex';
     
     if (section === 'escribir') {
       checkSubscriptionState();
