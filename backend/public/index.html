@@ -1763,25 +1763,46 @@
             </div>
           </div>
         </div>
-
       <!-- SECCIÓN DIVERSIÓN & MEMES (PREMIUM CARD-GRID LAYOUT) -->
       <div id="diversionSection" class="section" style="display:none; animation: fadeIn 0.4s ease;">
-        <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; border-bottom:2px solid var(--border-light); padding-bottom:12px; flex-wrap:wrap; gap:12px;">
-          <div>
-            <h2 style="font-family:'Playfair Display', Georgia, serif; font-size:1.8rem; margin:0; font-weight:800; display:flex; align-items:center; gap:8px;">
-              <span>😜 Diversión & Memes del Día</span>
-            </h2>
-            <p style="font-size:0.88rem; color:var(--text-secondary); margin:4px 0 0 0;">Relájate y ríete un rato con los memes más populares y virales de internet.</p>
-          </div>
-          <button onclick="refreshMemes(this)" class="ai-action-btn" style="padding: 10px 24px !important; font-size:0.85rem !important; border-radius: var(--radius-pill) !important; margin:0; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
-            <span class="btn-spinner" style="display:none; width:12px; height:12px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin 0.8s linear infinite;"></span>
-            <span>🔄 Cargar más memes</span>
-          </button>
+        
+        <!-- Tabs de Selección -->
+        <div class="diversion-tabs">
+          <button class="diversion-tab active" data-tab="memes" onclick="switchDiversionTab('memes')">😜 Memes del Día</button>
+          <button class="diversion-tab" data-tab="videos" onclick="switchDiversionTab('videos')">📱 Videos Cortos (Shorts)</button>
         </div>
-        <div id="memesGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:24px; margin-bottom:40px;"></div>
-      </div>
 
-    </div>
+        <!-- Panel de Memes -->
+        <div id="diversionMemesPanel">
+          <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; border-bottom:2px solid var(--border-light); padding-bottom:12px; flex-wrap:wrap; gap:12px;">
+            <div>
+              <h2 style="font-family:'Playfair Display', Georgia, serif; font-size:1.8rem; margin:0; font-weight:800; display:flex; align-items:center; gap:8px;">
+                <span>😜 Memes Virales del Día</span>
+              </h2>
+              <p style="font-size:0.88rem; color:var(--text-secondary); margin:4px 0 0 0;">Relájate y ríete un rato con los memes más populares y virales de internet.</p>
+            </div>
+            <button onclick="refreshMemes(this)" class="ai-action-btn" style="padding: 10px 24px !important; font-size:0.85rem !important; border-radius: var(--radius-pill) !important; margin:0; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+              <span class="btn-spinner" style="display:none; width:12px; height:12px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin 0.8s linear infinite;"></span>
+              <span>🔄 Cargar más memes</span>
+            </button>
+          </div>
+          <div id="memesGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:24px; margin-bottom:40px;"></div>
+        </div>
+
+        <!-- Panel de Videos Cortos (YouTube Shorts) -->
+        <div id="diversionVideosPanel" style="display:none;">
+          <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; border-bottom:2px solid var(--border-light); padding-bottom:12px; flex-wrap:wrap; gap:12px;">
+            <div>
+              <h2 style="font-family:'Playfair Display', Georgia, serif; font-size:1.8rem; margin:0; font-weight:800; display:flex; align-items:center; gap:8px;">
+                <span>📱 Videos Cortos (YouTube Shorts)</span>
+              </h2>
+              <p style="font-size:0.88rem; color:var(--text-secondary); margin:4px 0 0 0;">Disfruta de la mejor selección de videos cortos e impactantes de la red.</p>
+            </div>
+          </div>
+          <div id="shortsGrid" class="shorts-grid"></div>
+        </div>
+
+      </div>    </div>
 
     <!-- Barra Lateral -->
     <aside class="sidebar-col" id="sidebarCol">
@@ -5320,6 +5341,55 @@
         btn.disabled = false;
       }
     });
+  }
+
+  // ---------- MÓDULO DE VIDEOS CORTOS (YOUTUBE SHORTS) ----------
+  const SHORTS_VIDEOS = [
+    { id: '3H0Z1U6oY-I', title: 'Arte de Arena Cinética Ultra Relajante', creator: 'SandArt ASMR', views: '2.4M' },
+    { id: 'tpe7szVpeX0', title: 'El Increíble Experimento Científico de Fluidos', creator: 'PhysicsLab', views: '8.1M' },
+    { id: 'd-8MepfT0p0', title: 'Las Travesuras de un Gatito Curioso en Caja', creator: 'MeowVids', views: '12M' },
+    { id: '5X7Y2aA_pPE', title: 'Secretos del Universo que no te Enseñaron', creator: 'CosmosFact', views: '4.7M' },
+    { id: '93Fh64hU6uU', title: 'Cómo Crear Figuras 3D en Papel (Origami)', creator: 'OrigamiKing', views: '1.2M' },
+    { id: 'gJd2dG9_Rpw', title: 'Talla de Jabón ASMR Altamente Satisfactorio', creator: 'SoapCarve', views: '6.3M' },
+    { id: '9p13zR5W2i0', title: 'Nitrógeno Líquido contra Agua Hirviendo', creator: 'ScienceWorld', views: '15M' },
+    { id: 'L_LUpnjgPso', title: 'La Increíble Ilusión Óptica en Perspectiva 3D', creator: 'Illusionist', views: '3.9M' },
+    { id: 'Z52FwBdfH-w', title: 'Curiosidades del Océano Profundo que Asombran', creator: 'DeepBlue', views: '5.1M' },
+    { id: 'KYn6l7O5y_o', title: 'Decoración de Pasteles al Nivel Maestro Pastelero', creator: 'SweetChef', views: '9.2M' }
+  ];
+
+  function loadShortsVideos() {
+    const grid = document.getElementById('shortsGrid');
+    if (!grid) return;
+    if (grid.children.length > 0) return; // Ya cargados
+
+    grid.innerHTML = SHORTS_VIDEOS.map(video => `
+      <div class="short-card">
+        <div class="short-video-container">
+          <iframe 
+            src="https://www.youtube.com/embed/${video.id}" 
+            title="${video.title}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+          </iframe>
+        </div>
+        <div class="short-info">
+          <div class="short-title" title="${video.title}">${video.title}</div>
+          <div class="short-footer">
+            <span style="font-weight:700; color:var(--text-primary);">👤 ${video.creator}</span>
+            <span class="short-views">👁️ ${video.views}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function switchDiversionTab(tab) {
+    document.querySelectorAll('.diversion-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    document.getElementById('diversionMemesPanel').style.display = tab === 'memes' ? 'block' : 'none';
+    document.getElementById('diversionVideosPanel').style.display = tab === 'videos' ? 'block' : 'none';
+    if (tab === 'videos') {
+      loadShortsVideos();
+    }
   }
 
   // ---------- DETALLES Y LOGROS DEL REDACTOR ----------
