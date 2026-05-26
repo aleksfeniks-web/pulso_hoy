@@ -2072,7 +2072,7 @@
 <div class="drawer-overlay" id="bookmarksDrawer" onclick="handleDrawerOverlayClick(event)">
   <div class="drawer">
     <div class="drawer-header">
-      <h3>🔖 Mis Marcadores</h3>
+      <h3 style="display: inline-flex; align-items: center; gap: 6px;"><i class="fi fi-rr-bookmark" style="font-size: 1rem; color: var(--accent-blue);"></i> Mis Marcadores</h3>
       <button class="close-drawer-btn" onclick="toggleBookmarksDrawer()" aria-label="Cerrar marcadores">✕</button>
     </div>
     <div class="drawer-body" id="bookmarksList">
@@ -3346,8 +3346,8 @@
                   <button class="admin-btn admin-btn-edit" onclick="event.stopPropagation(); openEditNewsAdmin(${item.id})" title="Editar Noticia" style="padding: 6px 12px; font-size: 0.75rem; border-radius: 6px; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);">✏️ Editar</button>
                 ` : ''}
                 <button class="like-btn" onclick="event.stopPropagation(); likeArticle(${item.id})" aria-label="Me gusta">👍 <span id="likes_${item.id}">0</span></button>
-                <button class="later-btn ${isBookmarked ? 'active' : ''}" onclick="event.stopPropagation(); toggleBookmark(${item.id})" aria-label="Guardar marcadores" id="bookmarkBtn_${item.id}">🔖</button>
-                <button class="share-btn" onclick="event.stopPropagation(); shareArticle(${item.id})" aria-label="Compartir" style="display: inline-flex; align-items: center; justify-content: center; padding: 0 8px; width: 32px;"><img src="logo_share.png?v=1" alt="Compartir" style="height: 14px; width: 14px; object-fit: contain;"></button>
+                <button class="later-btn ${isBookmarked ? 'active' : ''}" onclick="event.stopPropagation(); toggleBookmark(${item.id})" aria-label="Guardar marcadores" id="bookmarkBtn_${item.id}" style="display: inline-flex; align-items: center; justify-content: center; padding: 0; width: 32px; height: 32px; border-radius: 50%;"><i class="fi fi-rr-bookmark"></i></button>
+                <button class="share-btn" onclick="event.stopPropagation(); shareArticle(${item.id})" aria-label="Compartir" style="display: inline-flex; align-items: center; justify-content: center; padding: 0; width: 32px; height: 32px; border-radius: 50%;"><i class="fi fi-rr-share"></i></button>
               </div>
             </div>
           </div>
@@ -3553,7 +3553,7 @@
     const list = document.getElementById('bookmarksList');
     if (bookmarkedNews.length === 0) {
       list.innerHTML = `<div style="text-align:center; padding:40px 10px; color:var(--text-muted); font-size:0.95rem;">
-        <div style="font-size:2.5rem; margin-bottom:12px;">🔖</div>
+        <div style="font-size:2.2rem; margin-bottom:12px; color:var(--text-muted);"><i class="fi fi-rr-stars"></i></div>
         No tienes marcadores guardados aún.
       </div>`;
       return;
@@ -3619,11 +3619,11 @@
 
       <!-- BARRA DE REPRODUCCIÓN DE AUDIO E IMPRESIÓN -->
       <div class="audio-player-bar">
-        <button class="audio-btn-play" onclick="playAudioNews(${article.id})" id="audioPlayBtn">▶ Escuchar</button>
-        <button class="audio-btn-stop" onclick="stopAudioNews()" id="audioStopBtn" style="display:none;">⏹ Detener</button>
-        <span class="audio-status-text" id="audioStatusText">Audio-Noticia 🎧</span>
-        <button class="share-btn" onclick="shareArticle(${article.id})" style="background:#ffffff !important; color:#1f2937 !important; border:1px solid rgba(0,0,0,0.08) !important; margin-left: auto; height: 32px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border-radius: var(--radius-pill); cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.08);"><img src="logo_share.png?v=1" alt="Compartir" style="height: 14px; width: 14px; object-fit: contain;"> Compartir</button>
-        <button class="audio-btn-stop" onclick="window.print()" style="background:var(--accent-green-light); color:var(--accent-green); border-color:var(--accent-green); margin-left: 8px; height: 32px; font-size: 0.8rem; font-weight: 700;">🖨 Imprimir</button>
+        <button class="audio-btn-play" onclick="playAudioNews(${article.id})" id="audioPlayBtn" style="display: inline-flex; align-items: center; gap: 5px; height: 32px; font-size: 0.8rem; font-weight: 700; padding: 0 12px; border-radius: var(--radius-pill);"><i class="fi fi-rr-play-pause"></i> Escuchar</button>
+        <button class="audio-btn-stop" onclick="stopAudioNews()" id="audioStopBtn" style="display:none; align-items: center; gap: 5px; height: 32px; font-size: 0.8rem; font-weight: 700; padding: 0 12px; border-radius: var(--radius-pill);"><i class="fi fi-rr-play-pause"></i> Detener</button>
+        <span class="audio-status-text" id="audioStatusText" style="display: inline-flex; align-items: center; gap: 5px; font-size: 0.78rem; font-weight: 700;"><i class="fi fi-rr-music"></i> Audio-Noticia</span>
+        <button class="share-btn" onclick="shareArticle(${article.id})" style="background:#ffffff !important; color:#1f2937 !important; border:1px solid rgba(0,0,0,0.08) !important; margin-left: auto; height: 32px; width: 32px; border-radius: 50%; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.08); padding: 0;" title="Compartir"><i class="fi fi-rr-share" style="font-size: 0.95rem;"></i></button>
+        <button class="audio-btn-stop" onclick="window.print()" style="background:var(--accent-green-light); color:var(--accent-green); border-color:var(--accent-green); margin-left: 8px; height: 32px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; padding: 0 12px; border-radius: var(--radius-pill);"><i class="fi fi-rr-print"></i> Imprimir</button>
       </div>
 
       <img src="${articleImg}" alt="${article.title}" style="width:100%; max-height:360px; object-fit:cover; border-radius:16px; margin-bottom:24px;" onerror="handleImgError(this, '${article.category}')">
@@ -3649,19 +3649,19 @@
 
       <!-- HILO DE DISCUSIÓN Y COMENTARIOS EN VIVO -->
       <div class="comments-container">
-        <h3>💬 Hilo de Discusión</h3>
+        <h3 style="display: inline-flex; align-items: center; gap: 6px;"><i class="fi fi-rr-comment" style="color: var(--accent-blue);"></i> Hilo de Discusión</h3>
         <div class="comment-list" id="modalCommentList">
           <div style="text-align:center; padding:30px; color:var(--text-muted); font-size:0.9rem;">Cargando comentarios...</div>
         </div>
         <div class="comment-form">
-          <h4>Escribe un Comentario</h4>
+          <h4 style="display: inline-flex; align-items: center; gap: 6px;"><i class="fi fi-rr-edit" style="font-size: 0.95rem;"></i> Escribe un Comentario</h4>
           <div class="form-group">
             <input type="text" id="commentAuthor" placeholder="Tu nombre o alias" required>
           </div>
           <div class="form-group">
             <textarea id="commentText" rows="3" placeholder="Añade tu perspectiva verificada sobre este hecho..." required></textarea>
           </div>
-          <button class="comment-submit-btn" onclick="submitComment(${article.id})">Comentar 💬</button>
+          <button class="comment-submit-btn" onclick="submitComment(${article.id})" style="display: inline-flex; align-items: center; gap: 6px; justify-content: center;"><i class="fi fi-rr-comment"></i> Comentar</button>
         </div>
       </div>
     `;
@@ -4036,8 +4036,8 @@
     if (isSpeechPaused && window.speechSynthesis.paused) {
       window.speechSynthesis.resume();
       isSpeechPaused = false;
-      if (playBtn) playBtn.innerText = "⏸ Pausar";
-      if (statusText) statusText.innerText = "Narrando noticia... 🔊";
+      if (playBtn) playBtn.innerHTML = "<i class='fi fi-rr-play-pause'></i> Pausar";
+      if (statusText) statusText.innerHTML = "<i class='fi fi-rr-music'></i> Narrando noticia...";
       return;
     }
     
@@ -4045,8 +4045,8 @@
     if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
       window.speechSynthesis.pause();
       isSpeechPaused = true;
-      if (playBtn) playBtn.innerText = "▶ Escuchar";
-      if (statusText) statusText.innerText = "Lectura en pausa ⏸";
+      if (playBtn) playBtn.innerHTML = "<i class='fi fi-rr-play-pause'></i> Escuchar";
+      if (statusText) statusText.innerHTML = "<i class='fi fi-rr-music'></i> Lectura en pausa";
       return;
     }
     
@@ -4061,9 +4061,9 @@
     activeSpeechUtterance.rate = 0.95; // Velocidad confortable
     
     activeSpeechUtterance.onstart = () => {
-      if (playBtn) playBtn.innerText = "⏸ Pausar";
+      if (playBtn) playBtn.innerHTML = "<i class='fi fi-rr-play-pause'></i> Pausar";
       if (stopBtn) stopBtn.style.display = "inline-flex";
-      if (statusText) statusText.innerText = "Narrando noticia... 🔊";
+      if (statusText) statusText.innerHTML = "<i class='fi fi-rr-music'></i> Narrando noticia...";
     };
     
     activeSpeechUtterance.onend = () => {
@@ -4090,9 +4090,9 @@
     const stopBtn = document.getElementById('audioStopBtn');
     const statusText = document.getElementById('audioStatusText');
     
-    if (playBtn) playBtn.innerText = "▶ Escuchar";
+    if (playBtn) playBtn.innerHTML = "<i class='fi fi-rr-play-pause'></i> Escuchar";
     if (stopBtn) stopBtn.style.display = "none";
-    if (statusText) statusText.innerText = "Audio-Noticia 🎧";
+    if (statusText) statusText.innerHTML = "<i class='fi fi-rr-music'></i> Audio-Noticia";
   }
 
   // ---------- SUSCRIPCIÓN A LA NEWSLETTER LATERAL ----------
