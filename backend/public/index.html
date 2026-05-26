@@ -1151,6 +1151,7 @@
     <div class="nav-links">
       <button class="nav-btn active" data-section="noticias" onclick="switchSection('noticias')">Noticias</button>
       <button class="nav-btn" data-section="tendencias" onclick="switchSection('tendencias')"><i class="fi fi-rr-flame" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Tendencias</button>
+      <button class="nav-btn" data-section="deportes" onclick="switchSection('deportes')"><i class="fi fi-rr-trophy" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Deportes</button>
       <button class="nav-btn" data-section="escribir" onclick="switchSection('escribir')"><i class="fi fi-rr-edit" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Escribir</button>
       <button class="nav-btn" data-section="diversion" onclick="switchSection('diversion')"><i class="fi fi-rr-rocket" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Diversión</button>
       <button class="nav-btn" data-section="podcast" onclick="switchSection('podcast')"><i class="fi fi-rr-headphones" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Podcast</button>
@@ -1282,6 +1283,280 @@
 
       </div>
 
+      <!-- SECCIÓN DEPORTES (MUNDIAL 2026 & POLYMARKET) -->
+      <div id="deportesSection" class="section" style="display:none; animation: fadeIn 0.4s ease;">
+        <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; border-bottom:2px solid var(--border-light); padding-bottom:12px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h2 style="font-family:'Playfair Display', Georgia, serif; font-size:1.8rem; margin:0; font-weight:800; display:flex; align-items:center; gap:10px;">
+              <span>🏆 Deportes & Copa Mundial FIFA 2026</span>
+            </h2>
+            <p style="font-size:0.88rem; color:var(--text-secondary); margin:4px 0 0 0;">Resultados, partidos, grupos y mercados de predicciones oficiales para el Mundial 2026.</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button onclick="resetDeportesData()" class="ai-term-chip" style="font-size:0.75rem; padding:4px 10px !important; margin:0;" title="Reiniciar datos">🔄 Reiniciar</button>
+            <button onclick="simulateDeportesMatches()" class="ai-action-btn" id="simAllMatchesBtn" style="font-size:0.82rem; padding:8px 20px !important; margin:0; border-radius: 20px !important;">
+              ⚽ Simular Partidos
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabs de Deportes -->
+        <div class="ai-tabs" id="deportesTabs" style="margin-bottom: 28px;">
+          <button class="ai-tab active" data-tab="mundial" onclick="switchDeportesTab('mundial')">⚽ Mundial 2026</button>
+          <button class="ai-tab" data-tab="polymarket" onclick="switchDeportesTab('polymarket')">📈 Mercado Polymarket</button>
+          <button class="ai-tab" data-tab="apuestas" onclick="switchDeportesTab('apuestas')">🎫 Mis Pronósticos</button>
+        </div>
+
+        <!-- Simulando partidos loader -->
+        <div id="deportesSimulatingAlert" style="display:none; margin-bottom: 24px; padding: 20px; border-radius: 16px; border: 1.5px solid rgba(59, 130, 246, 0.4); background: linear-gradient(135deg, rgba(20, 26, 42, 0.9), rgba(59, 130, 246, 0.08)); text-align: center;">
+          <div style="display:inline-block; width: 32px; height: 32px; border: 3px solid var(--accent-red); border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px;"></div>
+          <h4 style="margin: 0 0 4px; font-weight: 800; color: #fff;">Simulador de Resultados FIFA</h4>
+          <p id="deportesSimStepText" style="margin: 0; font-family: monospace; font-size: 0.82rem; color: var(--accent-blue); animate: pulse 1.5s infinite;">Cargando transmisiones...</p>
+        </div>
+
+        <!-- ── PANEL MUNDIAL 2026 ── -->
+        <div class="ai-panel active" id="deportes-panel-mundial">
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px;" class="deportes-layout">
+            <!-- Left: Matches List -->
+            <div style="display: flex; flex-direction: column; gap: 18px;">
+              <h3 style="font-family:'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; margin: 0 0 4px 0; color: var(--text-primary); border-left: 4px solid var(--accent-red); padding-left: 12px;">📅 Calendario de Partidos Inaugurales</h3>
+              <div id="deportesMatchesList" style="display: flex; flex-direction: column; gap: 14px;">
+                <!-- Cargado por JS -->
+              </div>
+            </div>
+
+            <!-- Right: Rules Widget -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+              <div style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-card); padding: 24px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 16px;">
+                <h3 style="font-family:'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; margin: 0; color: var(--text-primary); border-left: 4px solid var(--accent-blue); padding-left: 12px;">
+                  📋 Reglas de la Quiniela
+                </h3>
+                <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.5; margin:0;">
+                  Pronostica el ganador de los encuentros o el resultado exacto del partido.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.85rem; color: var(--text-secondary);">
+                  <div style="display:flex; align-items:flex-start; gap:8px;">
+                    <span style="color:var(--accent-red); font-weight:bold;">✓</span>
+                    <p style="margin:0;"><strong>Ganador Simple (1X2):</strong> Paga **2.2x** puntos si aciertas quién gana o si hay empate.</p>
+                  </div>
+                  <div style="display:flex; align-items:flex-start; gap:8px;">
+                    <span style="color:var(--accent-blue); font-weight:bold;">✓</span>
+                    <p style="margin:0;"><strong>Marcador Exacto:</strong> Paga **8.5x** puntos si adivinas los goles de ambos equipos.</p>
+                  </div>
+                  <div style="display:flex; align-items:flex-start; gap:8px;">
+                    <span style="color:var(--accent-green); font-weight:bold;">✓</span>
+                    <p style="margin:0;"><strong>Simulación RNG:</strong> Haz clic en "Simular" para resolver todos los partidos y verificar tus pronósticos de inmediato.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- FIFA URL Badge -->
+              <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-light); border-radius: var(--radius-card); padding: 20px; display: flex; align-items: center; gap: 14px;">
+                <div style="width: 42px; height: 42px; border-radius: 50%; background: rgba(59, 130, 246, 0.1); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: var(--accent-blue); flex-shrink:0;">🏆</div>
+                <div style="display: flex; flex-direction: column; gap: 2px;">
+                  <span style="font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Calendario Oficial</span>
+                  <a href="https://www.fifa.com/es/tournaments/mens/worldcup/canadamexicousa2026/scores-fixtures?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer" style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 4px;" onmouseenter="this.style.color='var(--accent-red)'" onmouseleave="this.style.color='var(--text-primary)'">
+                    FIFA World Cup 26 Fixtures ↗️
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── PANEL POLYMARKET ── -->
+        <div class="ai-panel" id="deportes-panel-polymarket">
+          <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(147, 51, 234, 0.05)); border: 1.5px solid rgba(59, 130, 246, 0.25); border-radius: var(--radius-card); padding: 24px; margin-bottom: 28px; position: relative; overflow: hidden;">
+            <div style="max-width: 700px; relative z-index: 2;">
+              <span style="background: var(--accent-blue-light); color: var(--accent-blue); font-size: 0.68rem; font-weight: 800; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(59, 130, 246, 0.2); text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; margin-bottom: 10px;">Mercado de Predicciones</span>
+              <h3 style="font-family:'Playfair Display', serif; font-size: 1.5rem; font-weight: 800; margin: 0 0 8px 0; color: var(--text-primary);">¿Qué es Polymarket?</h3>
+              <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6; margin:0 0 16px 0;">
+                Es una plataforma descentralizada donde comercias con el resultado de futuros eventos. Cada acción (SÍ) cotiza entre 1 y 99 puntos, reflejando su probabilidad implícita. Si España tiene un **17.5% de probabilidad**, una acción de SÍ cuesta **18 puntos**. Si España sale Campeón, cada acción **se liquida a 100 puntos** (ganas 82 puntos por acción). De lo contrario, se liquida a 0. Puedes vender tus contratos en vivo si las cuotas fluctúan a tu favor.
+              </p>
+              <button onclick="resolveDeportesChampion()" class="ai-action-btn" style="font-size:0.85rem; padding:10px 24px !important; border-radius: 20px !important;">
+                🏆 Coronar Campeón del Mundo (Liquidar Mercado)
+              </button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px;" class="deportes-layout">
+            <!-- Table of Favorites -->
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <h3 style="font-family:'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; margin: 0; color: var(--text-primary); border-left: 4px solid var(--accent-blue); padding-left: 12px;">📈 Favoritos para ganar el Mundial</h3>
+              <div style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-card); overflow: hidden; box-shadow: var(--shadow-sm);">
+                <table class="my-articles-table" style="width: 100%; border-collapse: collapse;">
+                  <thead>
+                    <tr style="background: rgba(255, 255, 255, 0.02);">
+                      <th style="padding: 12px 16px; font-size: 0.78rem;">Selección</th>
+                      <th style="padding: 12px 16px; font-size: 0.78rem; text-align: center;">Probabilidad</th>
+                      <th style="padding: 12px 16px; font-size: 0.78rem; text-align: right;">Comprar SÍ</th>
+                      <th style="padding: 12px 16px; font-size: 0.78rem; text-align: right;">Comprar NO</th>
+                    </tr>
+                  </thead>
+                  <tbody id="deportesPolyTableBody">
+                    <!-- Cargado por JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Portfolio -->
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <h3 style="font-family:'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; margin: 0; color: var(--text-primary); border-left: 4px solid var(--accent-orange); padding-left: 12px;">💼 Mi Cartera de Contratos</h3>
+              <div id="deportesPortfolioContainer" style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-card); padding: 22px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 14px;">
+                <!-- Cargado por JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── PANEL MIS PRONÓSTICOS ── -->
+        <div class="ai-panel" id="deportes-panel-apuestas">
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <h3 style="font-family:'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; margin: 0; color: var(--text-primary); border-left: 4px solid var(--accent-red); padding-left: 12px;">🎫 Historial de Quinielas registradas</h3>
+            <div id="deportesBetsHistory" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+              <!-- Cargado por JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODALES DE DEPORTES -->
+      <!-- Modal Formulario de Quiniela -->
+      <div class="modal-overlay" id="deportesBetModal" onclick="handleDeportesModalOverlayClick(event)">
+        <div class="modal" style="max-width: 440px; border-radius: var(--radius-card); border: 1px solid var(--border-light); padding: 32px;">
+          <button class="close-modal-btn" onclick="closeDeportesBetModal()" aria-label="Cerrar modal">✕</button>
+          <div style="font-size: 2.5rem; text-align: center; margin-bottom: 8px;">⚽</div>
+          <h3 style="font-family: 'Playfair Display', serif; font-size: 1.45rem; text-align: center; margin: 0 0 4px 0;" id="deportesModalMatchTitle">Crear Pronóstico</h3>
+          <p id="deportesModalMatchSub" style="font-size: 0.75rem; color: var(--text-secondary); text-align: center; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 20px 0; font-family: monospace;"></p>
+          
+          <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 12px;">
+            <button id="deportesTabSimple" class="filter-chip active" onclick="switchDeportesBetType('simple')">Ganador (1X2)</button>
+            <button id="deportesTabExact" class="filter-chip" onclick="switchDeportesBetType('exact')">Marcador Exacto</button>
+          </div>
+
+          <div id="deportesBetForm" class="write-form" style="padding:0; border:none; box-shadow:none; background:transparent;">
+            <input type="hidden" id="deportesBetMatchId">
+            
+            <!-- Input Ganador Simple -->
+            <div id="deportesBetSimpleInput" class="form-group" style="text-align: left;">
+              <label style="font-weight: 700; margin-bottom: 8px; display: block;">Predicción de Resultado</label>
+              <div style="display: grid; grid-template-cols: 1fr; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                <button type="button" class="filter-chip" id="depSimple1" style="height: 42px; margin: 0;" onclick="selectDeportesSimpleBet('1')">Local</button>
+                <button type="button" class="filter-chip" id="depSimpleX" style="height: 42px; margin: 0;" onclick="selectDeportesSimpleBet('X')">Empate</button>
+                <button type="button" class="filter-chip" id="depSimple2" style="height: 42px; margin: 0;" onclick="selectDeportesSimpleBet('2')">Visitante</button>
+              </div>
+            </div>
+
+            <!-- Input Marcador Exacto -->
+            <div id="deportesBetExactInput" style="display:none;" class="form-group">
+              <label style="font-weight: 700; margin-bottom: 8px; display: block;">Predicción de Goles</label>
+              <div style="display: flex; align-items: center; justify-content: center; gap: 14px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 12px; border: 1.5px solid var(--border-light);">
+                <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+                  <span id="deportesExactLabel1" style="font-size:0.65rem; font-weight:700; color:var(--text-muted);">LOCAL</span>
+                  <input type="number" id="deportesExactScore1" min="0" max="9" value="0" style="width: 50px; height: 42px; text-align: center; font-size: 1.25rem; font-weight: 800; font-family: monospace; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-body); color: #fff;">
+                </div>
+                <span style="font-weight:bold; font-size:1.2rem; color:var(--text-muted); font-family:monospace; margin-top: 14px;">:</span>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+                  <span id="deportesExactLabel2" style="font-size:0.65rem; font-weight:700; color:var(--text-muted);">VISITANTE</span>
+                  <input type="number" id="deportesExactScore2" min="0" max="9" value="0" style="width: 50px; height: 42px; text-align: center; font-size: 1.25rem; font-weight: 800; font-family: monospace; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-body); color: #fff;">
+                </div>
+              </div>
+            </div>
+
+            <!-- Input Puntos a apostar -->
+            <div class="form-group" style="text-align: left; margin-top: 14px;">
+              <label for="deportesBetPoints">Puntos a Pronosticar *</label>
+              <input type="number" id="deportesBetPoints" min="10" step="10" value="50" style="margin-top:4px; font-weight: 700; font-family: monospace;">
+              <span style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 4px; display: block;" id="deportesBetModalPointsText">Puntuación disponible: cargando...</span>
+            </div>
+
+            <!-- Retornos -->
+            <div style="background: rgba(255,255,255,0.02); border-radius: 12px; padding: 12px; margin-top: 16px; font-size: 0.78rem; color: var(--text-secondary);">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <span>Multiplicador:</span>
+                <strong id="deportesBetModalOdds" style="color:#fff;">2.20x</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-top: 1px solid var(--border-light); padding-top:4px; margin-top:4px; font-weight:bold; font-size:0.85rem;">
+                <span style="color:var(--text-primary);">Retorno Estimado:</span>
+                <strong id="deportesBetModalReturn" style="color:var(--accent-green);">110 Puntos</strong>
+              </div>
+            </div>
+            
+            <button class="newsletter-btn" style="background:var(--accent-red); width: 100%; height: 42px; margin-top: 20px; font-weight:700;" onclick="submitDeportesBet()">Registrar Pronóstico 🚀</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Comprar Contratos Polymarket -->
+      <div class="modal-overlay" id="deportesPolyModal" onclick="handleDeportesModalOverlayClick(event)">
+        <div class="modal" style="max-width: 420px; border-radius: var(--radius-card); border: 1px solid var(--border-light); padding: 32px;">
+          <button class="close-modal-btn" onclick="closeDeportesPolyModal()" aria-label="Cerrar modal">✕</button>
+          <div style="font-size: 2.5rem; text-align: center; margin-bottom: 8px;">📈</div>
+          <h3 style="font-family: 'Playfair Display', serif; font-size: 1.45rem; text-align: center; margin: 0 0 4px 0;">Comprar Contratos (SÍ)</h3>
+          <p style="font-size: 0.75rem; color: var(--text-secondary); text-align: center; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 20px 0;">MERCADO DE CAMPEÓN MUNDIAL 2026</p>
+
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-light); border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+            <span id="deportesPolyModalFlag" style="font-size: 2.5rem;">🇪🇸</span>
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <span id="deportesPolyModalCountry" style="font-size:1.05rem; font-weight:800; color:#fff;">España SÍ</span>
+              <span id="deportesPolyModalProb" style="font-size:0.75rem; font-weight:700; color:var(--accent-blue); font-family:monospace;">Probabilidad: 17.5%</span>
+            </div>
+          </div>
+
+          <div class="write-form" style="padding:0; border:none; box-shadow:none; background:transparent; text-align:left;">
+            <input type="hidden" id="deportesPolyModalId">
+            <input type="hidden" id="deportesPolyModalPrice">
+            
+            <div class="form-group" style="text-align: left;">
+              <label for="deportesPolyShares">Cantidad de Acciones</label>
+              <input type="number" id="deportesPolyShares" min="10" step="10" value="50" style="margin-top:4px; font-weight:700; font-family:monospace;" oninput="updateDeportesPolyModalCalculation()">
+              <span style="font-size:0.72rem; color:var(--text-secondary); margin-top:4px; display:block;" id="deportesPolyModalPointsText">Puntuación disponible: cargando...</span>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.02); border-radius: 12px; padding: 14px; font-size: 0.78rem; color: var(--text-secondary); display:flex; flex-direction:column; gap:4px; margin-top:16px;">
+              <div style="display:flex; justify-content:space-between;">
+                <span>Precio por Acción:</span>
+                <strong id="deportesPolyModalSharePriceText" style="color:#fff; font-family:monospace;">18¢ c/u</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--accent-orange);">
+                <span>Costo de Inversión:</span>
+                <strong id="deportesPolyModalCostText" style="font-family:monospace;">90 Puntos</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border-light); padding-top:6px; margin-top:4px; font-weight:black; font-size:0.85rem; color:var(--accent-green);">
+                <span>Retorno si se Cumple:</span>
+                <strong id="deportesPolyModalWinText" style="font-family:monospace;">5,000 Puntos</strong>
+              </div>
+            </div>
+
+            <button class="newsletter-btn" style="background:var(--accent-blue); width: 100%; height: 42px; margin-top: 20px; font-weight:700; color:white;" onclick="submitBuyDeportesPolyShares()">Comprar Acciones 🚀</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal de Celebración de Quiniela (Premios Reclamados) -->
+      <div class="modal-overlay" id="deportesCelebrationModal" onclick="handleDeportesModalOverlayClick(event)">
+        <div class="modal" style="max-width: 460px; border-radius: var(--radius-card); border: 1.5px solid rgba(255, 38, 185, 0.4); background: linear-gradient(to bottom, #1e0b36, #090312); padding: 32px; text-align: center; box-shadow: 0 0 30px rgba(255,38,185,0.25);">
+          <div style="font-size: 4rem; margin-bottom: 12px; filter: drop-shadow(0 4px 10px rgba(255,193,7,0.4));" class="animate-bounce">🏆</div>
+          <h2 style="font-family: 'Playfair Display', serif; font-size: 1.8rem; margin: 0 0 4px 0; background: linear-gradient(135deg, #ff26b9, #26faff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" id="deportesCelebrationTitle">¡QUINILAS RESUELTAS!</h2>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin: 0 0 20px 0;">Tus pronósticos del Mundial 2026 han sido evaluados oficialmente por la FIFA e IA.</p>
+          
+          <div style="background: rgba(255,255,255,0.03); border: 1.5px solid var(--border-light); border-radius: 16px; padding: 18px 24px; margin-bottom: 20px; display:inline-block; min-width: 260px;">
+            <span style="font-size: 0.65rem; font-weight:800; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:4px;">TOTAL RECOMPENSAS ADJUDICADAS</span>
+            <strong style="font-size: 2.2rem; color: #fbbf24; font-family: monospace; filter: drop-shadow(0 0 8px rgba(251,191,36,0.3));" id="deportesCelebrationPointsText">+1,250 Puntos</strong>
+          </div>
+
+          <div style="text-align: left; max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; padding-right: 6px;" id="deportesCelebrationList">
+            <!-- Cargado por JS -->
+          </div>
+
+          <button class="newsletter-btn" style="background:var(--accent-red); width: 100%; height: 44px;" onclick="closeDeportesCelebrationModal()">Reclamar Puntos y Cerrar 🚀</button>
+        </div>
+      </div>
+
+      <!-- Estilos CSS de confeti y deportes -->
+      <div id="deportesConfettiContainer" style="position:fixed; inset:0; pointer-events:none; z-index:10001; overflow:hidden; display:none;"></div>
+      
       <!-- SECCIÓN TENDENCIAS -->
       <div id="tendenciasSection" class="section" style="display:none;">
         <div class="section-header">
@@ -2544,6 +2819,7 @@
     
     document.getElementById('noticiasSection').style.display   = section === 'noticias'   ? 'block' : 'none';
     document.getElementById('tendenciasSection').style.display = section === 'tendencias' ? 'block' : 'none';
+    document.getElementById('deportesSection').style.display   = section === 'deportes'   ? 'block' : 'none';
     document.getElementById('iaSection').style.display         = section === 'ia'         ? 'block' : 'none';
     document.getElementById('escribirSection').style.display   = section === 'escribir'   ? 'block' : 'none';
     document.getElementById('diversionSection').style.display  = section === 'diversion'  ? 'block' : 'none';
@@ -2554,6 +2830,9 @@
     }
     if (section === 'podcast') {
       initPodcastCenter();
+    }
+    if (section === 'deportes') {
+      initDeportesCenter();
     }
     
     // Ocultar o mostrar panel de control
@@ -6294,6 +6573,889 @@
     } catch(e) {
       console.error("Error al actualizar perfil:", e);
       alert("⚠️ Error de conexión al guardar el perfil.");
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // MÓDULO DE DEPORTES, QUINIELAS Y POLYMARKET (WORLD CUP 2026)
+  // ═══════════════════════════════════════════════════════════════
+  
+  // Datos iniciales de partidos basados en la programación oficial de la FIFA
+  const DEPORTES_INITIAL_MATCHES = [
+    { id: 'match_1', date: '11 de Junio, 2026', time: '18:00 Local', group: 'Grupo A', venue: 'Estadio Azteca, Ciudad de México 🇲🇽', team1: { name: 'México', flag: '🇲🇽', tier: 1 }, team2: { name: 'Sudáfrica', flag: '🇿🇦', tier: 2 }, status: 'SCHEDULED', score1: null, score2: null },
+    { id: 'match_2', date: '11 de Junio, 2026', time: '20:30 Local', group: 'Grupo A', venue: 'Estadio de Guadalajara, Zapopan 🇲🇽', team1: { name: 'Corea del Sur', flag: '🇰🇷', tier: 1.5 }, team2: { name: 'Chequia', flag: '🇨🇿', tier: 1.5 }, status: 'SCHEDULED', score1: null, score2: null },
+    { id: 'match_3', date: '12 de Junio, 2026', time: '17:00 Local', group: 'Grupo B', venue: 'Estadio de Toronto, Toronto 🇨🇦', team1: { name: 'Canadá', flag: '🇨🇦', tier: 1.2 }, team2: { name: 'Bosnia y Herzegovina', flag: '🇧🇦', tier: 1.8 }, status: 'SCHEDULED', score1: null, score2: null },
+    { id: 'match_4', date: '12 de Junio, 2026', time: '19:30 Local', group: 'Grupo D', venue: 'Estadio de Los Ángeles, Los Ángeles 🇺🇸', team1: { name: 'EE. UU.', flag: '🇺🇸', tier: 1 }, team2: { name: 'Paraguay', flag: '🇵🇾', tier: 1.6 }, status: 'SCHEDULED', score1: null, score2: null },
+    { id: 'match_5', date: '13 de Junio, 2026', time: '16:00 Local', group: 'Grupo C', venue: 'Estadio de Nueva York/Nueva Jersey 🇺🇸', team1: { name: 'Brasil', flag: '🇧🇷', tier: 0.8 }, team2: { name: 'Marruecos', flag: '🇲🇦', tier: 1.3 }, status: 'SCHEDULED', score1: null, score2: null }
+  ];
+
+  // Datos de favoritos de Polymarket para WC 2026
+  const DEPORTES_POLY_FAVORITES = [
+    { id: 'esp', country: 'España', flag: '🇪🇸', prob: 17.5, yesPrice: 18, noPrice: 82 },
+    { id: 'fra', country: 'Francia', flag: '🇫🇷', prob: 17.3, yesPrice: 17, noPrice: 83 },
+    { id: 'eng', country: 'Inglaterra', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', prob: 11.0, yesPrice: 11, noPrice: 89 },
+    { id: 'arg', country: 'Argentina', flag: '🇦🇷', prob: 9.0, yesPrice: 9, noPrice: 91 },
+    { id: 'bra', country: 'Brasil', flag: '🇧🇷', prob: 8.5, yesPrice: 9, noPrice: 91 },
+    { id: 'por', country: 'Portugal', flag: '🇵🇹', prob: 8.0, yesPrice: 8, noPrice: 92 }
+  ];
+
+  // Estados de Deportes
+  let deportesMatches = [];
+  let deportesBets = [];
+  let deportesPolyFavorites = [];
+  let deportesPolyPortfolio = [];
+  let deportesPoints = 1000;
+  let deportesActiveTab = 'mundial';
+  let deportesSelectedMatch = null;
+  let deportesBetType = 'simple';
+  let deportesSimpleChoice = '1';
+  let deportesSelectedPoly = null;
+
+  // Inicializador Deportes
+  function initDeportesCenter() {
+    // Cargar partidos
+    const savedMatches = localStorage.getItem('dep_wc_matches');
+    deportesMatches = savedMatches ? JSON.parse(savedMatches) : DEPORTES_INITIAL_MATCHES;
+    
+    // Cargar apuestas / quinielas
+    const savedBets = localStorage.getItem('dep_wc_bets');
+    deportesBets = savedBets ? JSON.parse(savedBets) : [];
+
+    // Cargar Polymarket
+    const savedPoly = localStorage.getItem('dep_wc_poly');
+    deportesPolyFavorites = savedPoly ? JSON.parse(savedPoly) : DEPORTES_POLY_FAVORITES;
+
+    // Cargar cartera
+    const savedPortfolio = localStorage.getItem('dep_wc_portfolio');
+    deportesPolyPortfolio = savedPortfolio ? JSON.parse(savedPortfolio) : [];
+
+    // Cargar Puntos de deportes
+    const savedPoints = localStorage.getItem('dep_wc_points');
+    deportesPoints = savedPoints ? parseInt(savedPoints) : 1000;
+
+    // Guardar en Storage por consistencia
+    saveDeportesToStorage();
+    
+    // Sincronizar cuotas
+    updateDeportesPointsDisplay();
+
+    // Rerenderizar
+    renderDeportesMatches();
+    renderDeportesPolymarket();
+    renderDeportesBets();
+
+    // Iniciar simulación de cuotas dinámicas de Polymarket si no existe ya
+    if (!window.deportesInterval) {
+      window.deportesInterval = setInterval(() => {
+        deportesPolyFavorites = deportesPolyFavorites.map(fav => {
+          const change = Math.floor(Math.random() * 3) - 1; // -1, 0, 1
+          let newPrice = fav.yesPrice + change;
+          newPrice = Math.min(95, Math.max(2, newPrice));
+          return {
+            ...fav,
+            yesPrice: newPrice,
+            noPrice: 100 - newPrice,
+            prob: Math.min(98, Math.max(1, +(fav.prob + change * 0.4).toFixed(1)))
+          };
+        });
+        localStorage.setItem('dep_wc_poly', JSON.stringify(deportesPolyFavorites));
+        if (deportesActiveTab === 'polymarket') {
+          renderDeportesPolymarket();
+        }
+      }, 16000);
+    }
+  }
+
+  // Guardar en LocalStorage
+  function saveDeportesToStorage() {
+    localStorage.setItem('dep_wc_matches', JSON.stringify(deportesMatches));
+    localStorage.setItem('dep_wc_bets', JSON.stringify(deportesBets));
+    localStorage.setItem('dep_wc_poly', JSON.stringify(deportesPolyFavorites));
+    localStorage.setItem('dep_wc_portfolio', JSON.stringify(deportesPolyPortfolio));
+    localStorage.setItem('dep_wc_points', deportesPoints.toString());
+  }
+
+  // Actualizar visores de puntos
+  function updateDeportesPointsDisplay() {
+    const textPoints = document.getElementById('deportesBetModalPointsText');
+    if (textPoints) textPoints.innerText = `Puntuación disponible: ${deportesPoints} puntos`;
+    
+    const polyPoints = document.getElementById('deportesPolyModalPointsText');
+    if (polyPoints) polyPoints.innerText = `Puntuación disponible: ${deportesPoints} puntos`;
+    
+    // También inyectar la puntuación en los headers o títulos si corresponde
+    const newsSectionTitle = document.getElementById('newsSectionTitle');
+    // Mostrar balance de deportes flotante arriba si la sección está activa
+    let depBalanceBadge = document.getElementById('deportesBalanceBadge');
+    if (!depBalanceBadge && document.getElementById('deportesSection')) {
+      depBalanceBadge = document.createElement('span');
+      depBalanceBadge.id = 'deportesBalanceBadge';
+      depBalanceBadge.style.cssText = "margin-left: 12px; background: rgba(245, 158, 11, 0.12); border: 1.5px solid rgba(245, 158, 11, 0.3); color: #f59e0b; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; vertical-align: middle;";
+      document.querySelector('#deportesSection h2').appendChild(depBalanceBadge);
+    }
+    if (depBalanceBadge) {
+      depBalanceBadge.innerText = `🪙 ${deportesPoints} Puntos`;
+    }
+  }
+
+  // Cambiar pestaña secundaria de deportes
+  function switchDeportesTab(tab) {
+    playDeportesSound('click');
+    deportesActiveTab = tab;
+    
+    document.querySelectorAll('#deportesTabs .ai-tab').forEach(t => {
+      t.classList.toggle('active', t.getAttribute('data-tab') === tab);
+    });
+
+    document.getElementById('deportes-panel-mundial').classList.toggle('active', tab === 'mundial');
+    document.getElementById('deportes-panel-polymarket').classList.toggle('active', tab === 'polymarket');
+    document.getElementById('deportes-panel-apuestas').classList.toggle('active', tab === 'apuestas');
+
+    if (tab === 'mundial') renderDeportesMatches();
+    if (tab === 'polymarket') renderDeportesPolymarket();
+    if (tab === 'apuestas') renderDeportesBets();
+  }
+
+  // Sonidos Sintetizados (Web Audio API)
+  function playDeportesSound(type) {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      if (type === 'click') {
+        osc.frequency.setValueAtTime(440, ctx.currentTime);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.08);
+      } else if (type === 'success') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+        osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.12); // E5
+        osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.24); // G5
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.45);
+      } else if (type === 'win') {
+        const freqs = [523, 659, 784, 1046, 1318];
+        freqs.forEach((f, idx) => {
+          const osc2 = ctx.createOscillator();
+          const gain2 = ctx.createGain();
+          osc2.connect(gain2);
+          gain2.connect(ctx.destination);
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(f, ctx.currentTime + idx * 0.08);
+          gain2.gain.setValueAtTime(0.1, ctx.currentTime + idx * 0.08);
+          gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.08 + 0.3);
+          osc2.start(ctx.currentTime + idx * 0.08);
+          osc2.stop(ctx.currentTime + idx * 0.08 + 0.3);
+        });
+      }
+    } catch (e) {
+      console.log('Web Audio blocked or uninitialized:', e);
+    }
+  }
+
+  // Dibuja la lista de partidos del Mundial
+  function renderDeportesMatches() {
+    const list = document.getElementById('deportesMatchesList');
+    if (!list) return;
+
+    if (deportesMatches.length === 0) {
+      list.innerHTML = `<div style="padding:24px; text-align:center; color:var(--text-muted); font-size:0.88rem;">Sin partidos cargados. Haz click en reiniciar.</div>`;
+      return;
+    }
+
+    list.innerHTML = deportesMatches.map(m => {
+      const isCompleted = m.status === 'COMPLETED';
+      
+      let statusHtml = '';
+      if (isCompleted) {
+        statusHtml = `<span style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); color:var(--accent-green); padding:3px 10px; border-radius:20px; font-size:0.7rem; font-weight:bold;">Concluido</span>`;
+      } else {
+        statusHtml = `<span style="background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.25); color:var(--accent-blue); padding:3px 10px; border-radius:20px; font-size:0.7rem; font-weight:bold;">${m.date}</span>`;
+      }
+
+      const scoreHtml = isCompleted 
+        ? `<div style="font-size: 1.6rem; font-weight: 800; font-family: monospace; letter-spacing:4px; background:rgba(255,255,255,0.03); border:1px solid var(--border-light); padding:4px 16px; border-radius:10px; color:#fff;">${m.score1}-${m.score2}</div>`
+        : `<div style="font-size: 0.85rem; font-weight: bold; background:rgba(255,255,255,0.02); border:1px solid var(--border-light); padding:6px 14px; border-radius:30px; color:var(--text-secondary);">VS</div>`;
+
+      const actionBtn = isCompleted 
+        ? `<span style="font-size: 0.78rem; color: var(--text-muted); font-style:italic;">No disponible</span>`
+        : `<button onclick="openDeportesBetModal('${m.id}')" class="ai-term-chip" style="font-size:0.78rem; margin:0; padding:6px 16px !important; border-radius:12px;">Pronosticar</button>`;
+
+      return `
+        <div style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-card); padding: 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 12px; position:relative; overflow:hidden;">
+          
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid rgba(255,255,255,0.02); padding-bottom:8px;">
+            <span style="font-size:0.75rem; color:var(--text-secondary); font-weight:700;">${m.group} • ${m.venue}</span>
+            ${statusHtml}
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; padding: 6px 0;">
+            <!-- Team 1 -->
+            <div style="display:flex; align-items:center; gap:10px; width:40%; text-align:left;">
+              <span style="font-size:2.2rem;">${m.team1.flag}</span>
+              <strong style="font-size:0.95rem; color:#fff; display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${m.team1.name}</strong>
+            </div>
+
+            <!-- Score VS -->
+            <div style="width:20%; display:flex; justify-content:center; align-items:center;">
+              ${scoreHtml}
+            </div>
+
+            <!-- Team 2 -->
+            <div style="display:flex; align-items:center; gap:10px; width:40%; text-align:right; flex-direction:row-reverse;">
+              <span style="font-size:2.2rem;">${m.team2.flag}</span>
+              <strong style="font-size:0.95rem; color:#fff; display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${m.team2.name}</strong>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1.5px solid rgba(255,255,255,0.02); padding-top:8px; margin-top:2px;">
+            <span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace;">${m.time}</span>
+            ${actionBtn}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Dibuja la lista de Polymarket
+  function renderDeportesPolymarket() {
+    const tbody = document.getElementById('deportesPolyTableBody');
+    if (!tbody) return;
+
+    tbody.innerHTML = deportesPolyFavorites.map(fav => `
+      <tr style="border-bottom: 1.5px solid rgba(255,255,255,0.02);">
+        <td style="padding: 14px 18px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:2rem;">${fav.flag}</span>
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <strong style="font-size:0.9rem; color:#fff;">${fav.country}</strong>
+              <span style="font-size:0.62rem; color:var(--text-muted); font-weight:bold; uppercase">CAMPEÓN OUTRIGHT</span>
+            </div>
+          </div>
+        </td>
+        <td style="padding: 14px 18px; text-align: center; font-weight: 800; font-family: monospace; color:#fff;">
+          ${fav.prob}%
+        </td>
+        <td style="padding: 14px 18px; text-align: right;">
+          <button onclick="openDeportesPolyModal('${fav.id}')" class="ai-term-chip" style="font-size:0.75rem; font-family:monospace; margin:0; padding:4px 12px !important; border-color:var(--accent-blue); color:var(--accent-blue); background:rgba(59,130,246,0.05); font-weight:800;">
+            ${fav.yesPrice}¢
+          </button>
+        </td>
+        <td style="padding: 14px 18px; text-align: right;">
+          <button onclick="alert('Opción de venta en NO disponible en mercados secundarios.')" class="ai-term-chip" style="font-size:0.75rem; font-family:monospace; margin:0; padding:4px 12px !important; opacity:0.4; cursor:not-allowed;" disabled>
+            ${fav.noPrice}¢
+          </button>
+        </td>
+      </tr>
+    `).join('');
+
+    // Dibuja la cartera
+    const port = document.getElementById('deportesPortfolioContainer');
+    if (!port) return;
+
+    if (deportesPolyPortfolio.length === 0) {
+      port.innerHTML = `
+        <div style="text-align:center; padding:18px; font-size:0.8rem; color:var(--text-muted); display:flex; flex-direction:column; items-center; justify-content:center; gap:8px;">
+          <div>📊</div>
+          <span>No posees acciones de predicción. Compra acciones de campeones a la izquierda.</span>
+        </div>
+      `;
+      return;
+    }
+
+    port.innerHTML = deportesPolyPortfolio.map(item => {
+      const currentPrice = deportesPolyFavorites.find(f => f.id === item.countryId)?.yesPrice || item.avgPrice;
+      const currentValue = item.shares * currentPrice;
+      const investment = item.shares * item.avgPrice;
+      
+      return `
+        <div style="background: rgba(255,255,255,0.03); border: 1.5px solid var(--border-light); border-radius: 16px; padding: 16px; position:relative; overflow:hidden;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.02); padding-bottom:6px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.6rem;">${item.flag}</span>
+              <strong style="font-size:0.85rem; color:#fff;">${item.countryName} SÍ</strong>
+            </div>
+            <span style="font-size:0.72rem; font-weight:bold; background:var(--accent-blue-light); color:var(--accent-blue); padding:2px 8px; border-radius:6px;">${item.shares} acc.</span>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.75rem; color:var(--text-secondary); font-family:monospace; margin-bottom:10px;">
+            <div>Costo: <strong>${item.avgPrice}¢ c/u</strong></div>
+            <div>Actual: <strong>${currentPrice}¢ c/u</strong></div>
+            <div>Inversión: <strong>${investment} pts</strong></div>
+            <div>Valoración: <strong style="color:var(--accent-blue);">${currentValue} pts</strong></div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; margin-bottom:12px;">
+            <span>Premio si Campeona:</span>
+            <strong style="color:var(--accent-green); font-family:monospace;">${item.shares * 100} Puntos</strong>
+          </div>
+
+          <button onclick="sellDeportesPolyShares('${item.id}')" class="newsletter-btn" style="height:32px; font-size:0.75rem; background:rgba(255,255,255,0.05); color:#fff; border:1px solid var(--border-light); width:100%; border-radius:10px; cursor:pointer;" onmouseenter="this.style.background='rgba(255,255,255,0.08)'" onmouseleave="this.style.background='rgba(255,255,255,0.05)'">
+            Vender hoy por ${currentValue} pts
+          </button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Dibuja las apuestas del historial
+  function renderDeportesBets() {
+    const grid = document.getElementById('deportesBetsHistory');
+    if (!grid) return;
+
+    if (deportesBets.length === 0) {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; background: var(--bg-card); border: 1.5px solid var(--border-light); padding: 48px; border-radius: var(--radius-card); text-align:center; color:var(--text-muted); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;">
+          <div style="font-size:3rem;">🎫</div>
+          <span>Aún no tienes pronósticos ni quinielas activas para el mundial.</span>
+          <button onclick="switchDeportesTab('mundial')" class="newsletter-btn" style="width:fit-content; height:36px; padding:0 24px; font-size:0.8rem; margin-top:8px;">Ver Partidos e Iniciar Quiniela</button>
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = deportesBets.map(b => {
+      const isPending = b.status === 'PENDING';
+      const isWon = b.status === 'WON';
+      
+      let statusBadge = '';
+      let borderStyle = '';
+      if (isPending) {
+        statusBadge = `<span style="background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.25); color:var(--accent-blue); padding:3px 10px; border-radius:20px; font-size:0.65rem; font-weight:bold; uppercase;">Pendiente</span>`;
+      } else if (isWon) {
+        statusBadge = `<span style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); color:var(--accent-green); padding:3px 10px; border-radius:20px; font-size:0.65rem; font-weight:bold; uppercase;">¡Ganador!</span>`;
+        borderStyle = 'border-color: rgba(16,185,129,0.3); background: linear-gradient(135deg, rgba(16, 185, 129, 0.03), rgba(20,26,42,0.6));';
+      } else {
+        statusBadge = `<span style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.25); color:var(--accent-red); padding:3px 10px; border-radius:20px; font-size:0.65rem; font-weight:bold; uppercase;">Perdido</span>`;
+        borderStyle = 'opacity:0.75;';
+      }
+
+      let predictionText = '';
+      if (b.betType === 'simple') {
+        predictionText = b.prediction === '1' ? b.team1.name : b.prediction === '2' ? b.team2.name : 'Empate';
+      } else {
+        predictionText = b.prediction;
+      }
+
+      const totalWinPoints = isWon ? b.prize : (b.betType === 'simple' ? Math.round(b.amount * 2.2) : Math.round(b.amount * 8.5));
+
+      return `
+        <div style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-card); padding: 20px; box-shadow: var(--shadow-sm); display:flex; flex-direction:column; gap:10px; position:relative; overflow:hidden; ${borderStyle}">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid rgba(255,255,255,0.02); padding-bottom:6px;">
+            <span style="font-size:0.7rem; color:var(--text-muted); font-family:monospace;">${b.createdAt}</span>
+            ${statusBadge}
+          </div>
+
+          <h4 style="font-family:'Playfair Display', serif; font-size: 0.95rem; font-weight: 800; margin: 0; color:#fff;">
+            ${b.team1.flag} vs ${b.team2.flag} ${b.matchName}
+          </h4>
+
+          <div style="background: rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.03); padding:10px; border-radius:12px; font-size:0.75rem; color:var(--text-secondary); display:grid; grid-template-columns:1fr 1fr; gap:4px; font-family:monospace;">
+            <div>Tipo: <strong style="color:#fff;">${b.betType === 'simple' ? 'Ganador (1X2)' : 'Marcador Exacto'}</strong></div>
+            <div>Importe: <strong style="color:var(--accent-orange);">${b.amount} pts</strong></div>
+            <div style="grid-column: 1/-1;">Pronóstico: <strong style="color:#ff26b9;">${predictionText}</strong></div>
+            <div style="grid-column: 1/-1; border-top:1px solid rgba(255,255,255,0.02); padding-top:4px; margin-top:2px;">
+              Premio: <strong style="color:${isWon?'var(--accent-green)':'var(--text-muted)'};">${totalWinPoints} pts</strong>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Abre Modal de Quiniela
+  function openDeportesBetModal(matchId) {
+    playDeportesSound('click');
+    const match = deportesMatches.find(m => m.id === matchId);
+    if (!match) return;
+
+    deportesSelectedMatch = match;
+    deportesBetType = 'simple';
+    deportesSimpleChoice = '1';
+
+    document.getElementById('deportesBetMatchId').value = matchId;
+    document.getElementById('deportesModalMatchTitle').innerText = `${match.team1.name} vs ${match.team2.name}`;
+    document.getElementById('deportesModalMatchSub').innerText = `${match.group} • ${match.venue}`;
+    
+    document.getElementById('deportesExactLabel1').innerText = match.team1.name.toUpperCase();
+    document.getElementById('deportesExactLabel2').innerText = match.team2.name.toUpperCase();
+    document.getElementById('deportesExactScore1').value = 0;
+    document.getElementById('deportesExactScore2').value = 0;
+    
+    document.getElementById('deportesBetPoints').value = 50;
+
+    // Resetear botones simple
+    selectDeportesSimpleBet('1');
+    switchDeportesBetType('simple');
+
+    updateDeportesBetModalCalculation();
+
+    document.getElementById('deportesBetModal').classList.add('open');
+  }
+
+  // Cierra modal quiniela
+  function closeDeportesBetModal() {
+    document.getElementById('deportesBetModal').classList.remove('open');
+  }
+
+  // Cambiar tipo apuesta (simple/exact)
+  function switchDeportesBetType(type) {
+    playDeportesSound('click');
+    deportesBetType = type;
+    
+    document.getElementById('deportesTabSimple').classList.toggle('active', type === 'simple');
+    document.getElementById('deportesTabExact').classList.toggle('active', type === 'exact');
+
+    document.getElementById('deportesBetSimpleInput').style.display = type === 'simple' ? 'block' : 'none';
+    document.getElementById('deportesBetExactInput').style.display = type === 'exact' ? 'block' : 'none';
+
+    updateDeportesBetModalCalculation();
+  }
+
+  // Seleccionar resultado simple
+  function selectDeportesSimpleBet(choice) {
+    playDeportesSound('click');
+    deportesSimpleChoice = choice;
+    
+    document.getElementById('depSimple1').classList.toggle('active', choice === '1');
+    document.getElementById('depSimpleX').classList.toggle('active', choice === 'X');
+    document.getElementById('depSimple2').classList.toggle('active', choice === '2');
+
+    updateDeportesBetModalCalculation();
+  }
+
+  // Actualizar cálculo de retorno
+  function updateDeportesBetModalCalculation() {
+    updateDeportesPointsDisplay();
+    
+    const pointsInput = document.getElementById('deportesBetPoints');
+    if (!pointsInput) return;
+    
+    const pts = Math.max(10, parseInt(pointsInput.value) || 0);
+    const odds = deportesBetType === 'simple' ? 2.20 : 8.50;
+    const estReturn = Math.round(pts * odds);
+
+    document.getElementById('deportesBetModalOdds').innerText = odds.toFixed(2) + 'x';
+    document.getElementById('deportesBetModalReturn').innerText = estReturn + ' Puntos';
+  }
+
+  // Registrar apuesta / quiniela
+  function submitDeportesBet() {
+    if (!deportesSelectedMatch) return;
+    
+    const ptsInput = document.getElementById('deportesBetPoints');
+    const pts = Math.max(10, parseInt(ptsInput.value) || 0);
+
+    if (deportesPoints < pts) {
+      alert("⚠️ Puntuación disponible insuficiente para registrar esta quiniela.");
+      return;
+    }
+
+    playDeportesSound('click');
+    deportesPoints -= pts;
+
+    let prediction = '';
+    if (deportesBetType === 'simple') {
+      prediction = deportesSimpleChoice;
+    } else {
+      const g1 = parseInt(document.getElementById('deportesExactScore1').value) || 0;
+      const g2 = parseInt(document.getElementById('deportesExactScore2').value) || 0;
+      prediction = `${g1}-${g2}`;
+    }
+
+    const newBet = {
+      id: 'bet_' + Date.now(),
+      matchId: deportesSelectedMatch.id,
+      matchName: `${deportesSelectedMatch.team1.name} vs ${deportesSelectedMatch.team2.name}`,
+      team1: deportesSelectedMatch.team1,
+      team2: deportesSelectedMatch.team2,
+      betType: deportesBetType,
+      prediction: prediction,
+      amount: pts,
+      status: 'PENDING',
+      prize: 0,
+      createdAt: new Date().toLocaleDateString('es-ES')
+    };
+
+    deportesBets.unshift(newBet);
+    saveDeportesToStorage();
+    
+    closeDeportesBetModal();
+    playDeportesSound('success');
+    
+    if (deportesActiveTab === 'apuestas') {
+      renderDeportesBets();
+    } else {
+      switchDeportesTab('apuestas');
+    }
+  }
+
+  // Abre Modal Polymarket
+  function openDeportesPolyModal(id) {
+    playDeportesSound('click');
+    const fav = deportesPolyFavorites.find(f => f.id === id);
+    if (!fav) return;
+
+    deportesSelectedPoly = fav;
+    
+    document.getElementById('deportesPolyModalId').value = id;
+    document.getElementById('deportesPolyModalPrice').value = fav.yesPrice;
+    document.getElementById('deportesPolyModalFlag').innerText = fav.flag;
+    document.getElementById('deportesPolyModalCountry').innerText = `${fav.country} SÍ`;
+    document.getElementById('deportesPolyModalProb').innerText = `Probabilidad Implícita: ${fav.prob}%`;
+    document.getElementById('deportesPolyShares').value = 50;
+
+    updateDeportesPolyModalCalculation();
+
+    document.getElementById('deportesPolyModal').classList.add('open');
+  }
+
+  // Cierra modal Polymarket
+  function closeDeportesPolyModal() {
+    document.getElementById('deportesPolyModal').classList.remove('open');
+  }
+
+  // Actualiza cálculos en Modal Polymarket
+  function updateDeportesPolyModalCalculation() {
+    updateDeportesPointsDisplay();
+
+    const sharesInput = document.getElementById('deportesPolyShares');
+    if (!sharesInput || !deportesSelectedPoly) return;
+
+    const shares = Math.max(10, parseInt(sharesInput.value) || 0);
+    const cost = Math.round(shares * deportesSelectedPoly.yesPrice);
+    const estReturn = shares * 100;
+
+    document.getElementById('deportesPolyModalSharePriceText').innerText = `${deportesSelectedPoly.yesPrice}¢ c/u`;
+    document.getElementById('deportesPolyModalCostText').innerText = `${cost} Puntos`;
+    document.getElementById('deportesPolyModalWinText').innerText = `${estReturn} Puntos`;
+  }
+
+  // Comprar acciones
+  function submitBuyDeportesPolyShares() {
+    if (!deportesSelectedPoly) return;
+
+    const sharesInput = document.getElementById('deportesPolyShares');
+    const shares = Math.max(10, parseInt(sharesInput.value) || 0);
+    const cost = Math.round(shares * deportesSelectedPoly.yesPrice);
+
+    if (deportesPoints < cost) {
+      alert("⚠️ Puntuación disponible insuficiente para esta adquisición.");
+      return;
+    }
+
+    playDeportesSound('click');
+    deportesPoints -= cost;
+
+    // Agregar a cartera
+    const existing = deportesPolyPortfolio.find(p => p.countryId === deportesSelectedPoly.id);
+    if (existing) {
+      const totalShares = existing.shares + shares;
+      const totalCost = (existing.shares * existing.avgPrice) + cost;
+      existing.shares = totalShares;
+      existing.avgPrice = Math.round(totalCost / totalShares);
+    } else {
+      deportesPolyPortfolio.push({
+        id: 'port_' + Date.now(),
+        countryId: deportesSelectedPoly.id,
+        countryName: deportesSelectedPoly.country,
+        flag: deportesSelectedPoly.flag,
+        shares: shares,
+        avgPrice: deportesSelectedPoly.yesPrice,
+        type: 'YES'
+      });
+    }
+
+    saveDeportesToStorage();
+    closeDeportesPolyModal();
+    playDeportesSound('success');
+
+    renderDeportesPolymarket();
+  }
+
+  // Vender acciones
+  function sellDeportesPolyShares(portId) {
+    const item = deportesPolyPortfolio.find(p => p.id === portId);
+    if (!item) return;
+
+    const currentPrice = deportesPolyFavorites.find(f => f.id === item.countryId)?.yesPrice || item.avgPrice;
+    const value = item.shares * currentPrice;
+
+    playDeportesSound('click');
+    deportesPoints += value;
+
+    deportesPolyPortfolio = deportesPolyPortfolio.filter(p => p.id !== portId);
+    saveDeportesToStorage();
+    playDeportesSound('success');
+
+    renderDeportesPolymarket();
+  }
+
+  // Resetear simulador
+  function resetDeportesData() {
+    if (confirm("¿Quieres reiniciar todos los partidos y quinielas del Mundial?")) {
+      playDeportesSound('click');
+      deportesMatches = DEPORTES_INITIAL_MATCHES;
+      deportesBets = [];
+      deportesPolyPortfolio = [];
+      deportesPoints = 1000;
+      
+      saveDeportesToStorage();
+      initDeportesCenter();
+    }
+  }
+
+  // Motor de Simulación FIFA en vivo
+  async function simulateDeportesMatches() {
+    const scheduled = deportesMatches.filter(m => m.status === 'SCHEDULED');
+    if (scheduled.length === 0) {
+      alert("Todos los encuentros ya se han disputado. ¡Reinicia para volver a jugar!");
+      return;
+    }
+
+    playDeportesSound('click');
+    const alertBox = document.getElementById('deportesSimulatingAlert');
+    const textStep = document.getElementById('deportesSimStepText');
+    const simBtn = document.getElementById('simAllMatchesBtn');
+
+    if (alertBox) alertBox.style.display = 'block';
+    if (simBtn) simBtn.disabled = true;
+
+    // Stage 1
+    if (textStep) textStep.innerText = 'Estableciendo transmisiones satelitales en directo de la FIFA... 📡';
+    playDeportesSound('click');
+    await new Promise(r => setTimeout(r, 1200));
+
+    // Stage 2
+    let updatedMatches = [...deportesMatches];
+    let resolvedBets = [...deportesBets];
+    let totalPrizePoints = 0;
+    let winningsList = [];
+
+    for (let m of scheduled) {
+      if (textStep) textStep.innerText = `Jugando en directo: ${m.team1.flag} ${m.team1.name} vs ${m.team2.name} ${m.team2.flag}... ⚽`;
+      playDeportesSound('click');
+      await new Promise(r => setTimeout(r, 1300));
+
+      // RNG con pesos de tiers (lower is stronger)
+      const strength1 = 2.4 / (m.team1.tier || 1);
+      const strength2 = 2.4 / (m.team2.tier || 1);
+      
+      let goals1 = Math.floor(Math.random() * (strength1 + 1.8));
+      let goals2 = Math.floor(Math.random() * (strength2 + 1.8));
+
+      // Limitar a marcadores creíbles
+      if (goals1 > 7) goals1 = 3;
+      if (goals2 > 7) goals2 = 2;
+
+      m.score1 = goals1;
+      m.score2 = goals2;
+      m.status = 'COMPLETED';
+
+      updatedMatches = updatedMatches.map(item => item.id === m.id ? { ...m } : item);
+      deportesMatches = updatedMatches;
+
+      // Calcular quinielas
+      const matchWinner = goals1 > goals2 ? '1' : goals1 < goals2 ? '2' : 'X';
+      const exactScore = `${goals1}-${goals2}`;
+
+      resolvedBets = resolvedBets.map(bet => {
+        if (bet.matchId === m.id && bet.status === 'PENDING') {
+          let won = false;
+          let mult = 0;
+
+          if (bet.betType === 'simple' && bet.prediction === matchWinner) {
+            won = true;
+            mult = 2.2;
+          } else if (bet.betType === 'exact' && bet.prediction === exactScore) {
+            won = true;
+            mult = 8.5;
+          }
+
+          if (won) {
+            const prize = Math.round(bet.amount * mult);
+            totalPrizePoints += prize;
+            winningsList.push({
+              match: bet.matchName,
+              prediction: bet.prediction,
+              actual: bet.betType === 'simple' ? (matchWinner === '1' ? bet.team1.name : matchWinner === '2' ? bet.team2.name : 'Empate') : exactScore,
+              prize
+            });
+            return { ...bet, status: 'WON', prize };
+          } else {
+            return { ...bet, status: 'LOST' };
+          }
+        }
+        return bet;
+      });
+    }
+
+    // Stage 3
+    if (textStep) textStep.innerText = 'Consolidando actas oficiales y distribuyendo puntos de quiniela... 📊';
+    await new Promise(r => setTimeout(r, 1000));
+
+    if (alertBox) alertBox.style.display = 'none';
+    if (simBtn) simBtn.disabled = false;
+
+    // Actualizar estados
+    deportesBets = resolvedBets;
+    deportesPoints += totalPrizePoints;
+    saveDeportesToStorage();
+
+    // Rerenderizar
+    renderDeportesMatches();
+    updateDeportesPointsDisplay();
+
+    if (totalPrizePoints > 0) {
+      // Mostrar modal de celebración
+      document.getElementById('deportesCelebrationTitle').innerText = '¡PRONÓSTICOS GANADORES!';
+      document.getElementById('deportesCelebrationPointsText').innerText = `+${totalPrizePoints} Puntos`;
+      
+      const listContainer = document.getElementById('deportesCelebrationList');
+      if (listContainer) {
+        listContainer.innerHTML = winningsList.map(w => `
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-light); padding: 12px; border-radius: 12px; font-size: 0.8rem; line-height: 1.4;">
+            <div style="font-weight: 800; color: #fff; margin-bottom: 2px;">${w.match}</div>
+            <div style="color:var(--text-secondary);">Tu predicción: <span style="color:#ff26b9; font-weight:bold;">${w.prediction}</span></div>
+            <div style="color:var(--text-secondary);">Resultado real: <span style="color:#26faff; font-weight:bold;">${w.actual}</span></div>
+            <div style="text-align: right; color: var(--accent-green); font-weight: bold; margin-top: 4px;">+${w.prize} Puntos</div>
+          </div>
+        `).join('');
+      }
+
+      playDeportesSound('win');
+      triggerDeportesConfetti();
+      document.getElementById('deportesCelebrationModal').classList.add('open');
+    } else {
+      alert("Los partidos inaugurales del mundial han terminado. Desafortunadamente, tus predicciones no han acertado esta vez. ¡Vuelve a intentarlo!");
+    }
+  }
+
+  // Liquidar campeón Polymarket
+  function resolveDeportesChampion() {
+    if (deportesPolyPortfolio.length === 0) {
+      alert("⚠️ Para liquidar el mercado, primero debes poseer acciones (SÍ) compradas en Polymarket.");
+      return;
+    }
+
+    playDeportesSound('click');
+
+    // Escoger campeón de manera aleatoria según probabilidades de Polymarket
+    const rand = Math.random() * 100;
+    let champion = null;
+
+    if (rand < 17.5) champion = deportesPolyFavorites.find(f => f.id === 'esp');
+    else if (rand < 34.8) champion = deportesPolyFavorites.find(f => f.id === 'fra');
+    else if (rand < 45.8) champion = deportesPolyFavorites.find(f => f.id === 'eng');
+    else if (rand < 54.8) champion = deportesPolyFavorites.find(f => f.id === 'arg');
+    else if (rand < 63.3) champion = deportesPolyFavorites.find(f => f.id === 'bra');
+    else if (rand < 71.3) champion = deportesPolyFavorites.find(f => f.id === 'por');
+    else {
+      // Underdog campeón
+      champion = { country: 'Alemania', flag: '🇩🇪', yesPrice: 100 };
+    }
+
+    let winnings = 0;
+    deportesPolyPortfolio.forEach(item => {
+      if (item.countryName === champion.country) {
+        winnings += item.shares * 100; // Liquidación de YES a 100 puntos por contrato
+      }
+    });
+
+    deportesPolyPortfolio = []; // Vaciar cartera liquidada
+    deportesPoints += winnings;
+    saveDeportesToStorage();
+
+    renderDeportesPolymarket();
+    updateDeportesPointsDisplay();
+
+    if (winnings > 0) {
+      document.getElementById('deportesCelebrationTitle').innerText = '¡MERCADO DE POLYMARKET RESUELTO!';
+      document.getElementById('deportesCelebrationPointsText').innerText = `+${winnings} Puntos`;
+      
+      const listContainer = document.getElementById('deportesCelebrationList');
+      if (listContainer) {
+        listContainer.innerHTML = `
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-light); padding: 14px; border-radius: 12px; font-size: 0.8rem; text-align: center; line-height: 1.5;">
+            <div style="font-size: 2.5rem; margin-bottom: 6px;">🏆</div>
+            <strong style="color: #fff; font-size: 0.95rem; display: block; margin-bottom: 4px;">${champion.flag} ${champion.country} es el Campeón</strong>
+            <p style="margin: 0; color: var(--text-secondary);">Tus contratos de predicción comprados a favor de ${champion.country} se han liquidado exitosamente a 100 puntos c/u.</p>
+          </div>
+        `;
+      }
+
+      playDeportesSound('win');
+      triggerDeportesConfetti();
+      document.getElementById('deportesCelebrationModal').classList.add('open');
+    } else {
+      alert(`🏆 ¡La Copa del Mundo 2026 ha terminado! El campeón coronado es ${champion.flag} ${champion.country}.\nTus acciones de predicción en Polymarket se liquidaron a 0 puntos. ¡Mercado resuelto!`);
+    }
+  }
+
+  // Cierra modal celebración
+  function closeDeportesCelebrationModal() {
+    document.getElementById('deportesCelebrationModal').classList.remove('open');
+  }
+
+  // Confeti CSS falling generators
+  function triggerDeportesConfetti() {
+    const container = document.getElementById('deportesConfettiContainer');
+    if (!container) return;
+    container.innerHTML = '';
+    container.style.display = 'block';
+    
+    const colors = ['#ff26b9', '#26faff', '#ef4444', '#10b981', '#fbbf24', '#8b5cf6'];
+    for (let i = 0; i < 40; i++) {
+      const dot = document.createElement('div');
+      dot.style.position = 'absolute';
+      dot.style.top = '-20px';
+      dot.style.left = Math.random() * 100 + '%';
+      dot.style.width = Math.random() * 10 + 6 + 'px';
+      dot.style.height = Math.random() * 10 + 6 + 'px';
+      dot.style.borderRadius = '50%';
+      dot.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      dot.style.opacity = '0.85';
+      
+      const duration = Math.random() * 2.5 + 2;
+      const delay = Math.random() * 1.5;
+      dot.style.animation = `fallDeportesConfetti ${duration}s linear infinite`;
+      dot.style.animationDelay = delay + 's';
+      
+      container.appendChild(dot);
+    }
+    
+    if (!document.getElementById('deportesConfettiKeyframes')) {
+      const style = document.createElement('style');
+      style.id = 'deportesConfettiKeyframes';
+      style.innerHTML = `
+        @keyframes fallDeportesConfetti {
+          0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    
+    setTimeout(() => {
+      container.style.display = 'none';
+      container.innerHTML = '';
+    }, 5500);
+  }
+
+  // Modales generales overlays
+  function handleDeportesModalOverlayClick(e) {
+    if (e.target.id === 'deportesBetModal') {
+      closeDeportesBetModal();
+    } else if (e.target.id === 'deportesPolyModal') {
+      closeDeportesPolyModal();
+    } else if (e.target.id === 'deportesCelebrationModal') {
+      closeDeportesCelebrationModal();
     }
   }
 </script>
