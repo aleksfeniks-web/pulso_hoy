@@ -1129,6 +1129,10 @@
     <div class="top-bar-right">
       <span id="topBarDate">Sábado, 23 de Mayo de 2026</span>
       <div class="social-icons" style="display: flex; gap: 14px; align-items: center;">
+        <a href="https://www.paypal.me/donaciones" target="_blank" rel="noopener noreferrer" style="font-size: 0.82rem; font-weight: 700; color: #0070ba; background: rgba(0, 112, 186, 0.1); padding: 4px 12px; border-radius: 20px; text-decoration: none; display: flex; align-items: center; gap: 5px; transition: all 0.2s;" onmouseenter="this.style.background='rgba(0,112,186,0.18)'" onmouseleave="this.style.background='rgba(0,112,186,0.1)'">
+          <i class="fi fi-brands-paypal"></i> Donar
+        </a>
+        <span style="color: var(--border-light); font-size: 0.8rem;">|</span>
         <a href="#" aria-label="Facebook" style="font-size: 1.1rem; color: var(--text-secondary); transition: color 0.2s;" onmouseenter="this.style.color='var(--accent-blue)'" onmouseleave="this.style.color='var(--text-secondary)'"><i class="fi fi-brands-facebook"></i></a>
         <a href="#" aria-label="Instagram" style="font-size: 1.1rem; color: var(--text-secondary); transition: color 0.2s;" onmouseenter="this.style.color='#e1306c'" onmouseleave="this.style.color='var(--text-secondary)'"><i class="fi fi-brands-instagram"></i></a>
         <a href="#" aria-label="WhatsApp" style="font-size: 1.1rem; color: var(--text-secondary); transition: color 0.2s;" onmouseenter="this.style.color='#25D366'" onmouseleave="this.style.color='var(--text-secondary)'"><i class="fi fi-brands-whatsapp"></i></a>
@@ -1149,6 +1153,7 @@
       <button class="nav-btn" data-section="tendencias" onclick="switchSection('tendencias')"><i class="fi fi-rr-flame" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Tendencias</button>
       <button class="nav-btn" data-section="escribir" onclick="switchSection('escribir')"><i class="fi fi-rr-edit" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Escribir</button>
       <button class="nav-btn" data-section="diversion" onclick="switchSection('diversion')"><i class="fi fi-rr-rocket" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Diversión</button>
+      <button class="nav-btn" data-section="podcast" onclick="switchSection('podcast')"><i class="fi fi-rr-headphones" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Podcast</button>
       <button class="nav-btn" onclick="toggleBookmarksDrawer()"><i class="fi fi-rr-bookmark" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Marcadores</button>
       <button class="dark-toggle" id="darkToggle" aria-label="Cambiar tema" style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0;"><i class="fi fi-rr-moon"></i></button>
       <button class="dark-toggle" id="interestsToggle" onclick="togglePreferencesModal()" aria-label="Intereses" style="margin-left: 8px; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0;"><i class="fi fi-rr-sparkles"></i></button>
@@ -1803,7 +1808,94 @@
           <div id="shortsGrid" class="shorts-grid"></div>
         </div>
 
-      </div>    </div>
+      </div>
+
+      <!-- SECCIÓN PODCAST & RADIO EN VIVO (PREMIUM MEDIA CENTER) -->
+      <div id="podcastSection" class="section" style="display:none; animation: fadeIn 0.4s ease;">
+        <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; border-bottom:2px solid var(--border-light); padding-bottom:12px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h2 style="font-family:'Playfair Display', Georgia, serif; font-size:1.8rem; margin:0; font-weight:800; display:flex; align-items:center; gap:10px;">
+              <span>🎧 Centro de Medios: Podcast & Radio en Vivo</span>
+            </h2>
+            <p style="font-size:0.88rem; color:var(--text-secondary); margin:4px 0 0 0;">Escucha los podcasts oficiales o sintoniza nuestra variada selección de radio en vivo.</p>
+          </div>
+        </div>
+
+        <div class="podcast-layout" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px;">
+          
+          <!-- Columna Izquierda: Reproductor Principal y Podcasts -->
+          <div style="display: flex; flex-direction: column; gap: 28px;">
+            
+            <!-- Reproductor Multimedia Premium -->
+            <div class="media-player-card" style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-card); padding: 28px; box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: 20px;">
+              <div style="display: flex; gap: 24px; align-items: center;">
+                <div class="player-cover-box" id="playerCoverBox" style="width: 120px; height: 120px; border-radius: var(--radius-card); background: linear-gradient(135deg, var(--accent-red), var(--accent-blue)); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem; box-shadow: 0 8px 20px rgba(0,0,0,0.15); position: relative; overflow: hidden; transition: all 0.5s ease;">
+                  <i class="fi fi-rr-headphones" id="playerCoverIcon" style="z-index: 2;"></i>
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                  <span class="media-badge" id="playerBadge" style="background: var(--border-light); color: var(--text-secondary); font-size: 0.68rem; font-weight: 800; padding: 3px 10px; border-radius: var(--radius-pill); width: fit-content; text-transform: uppercase; letter-spacing: 0.05em;">Ninguno en reproducción</span>
+                  <h3 class="player-title" id="playerTitle" style="font-family:'Playfair Display', serif; font-size: 1.35rem; margin: 0; font-weight: 700; color: var(--text-primary);">Selecciona un audio</h3>
+                  <p class="player-author" id="playerAuthor" style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Listo para sintonizar</p>
+                </div>
+              </div>
+
+              <!-- Controles y Progreso -->
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="progress-container" style="display: flex; align-items: center; gap: 12px;">
+                  <span class="time-label" id="currentTimeLabel" style="font-size: 0.72rem; color: var(--text-secondary); font-weight: 700; min-width: 32px;">0:00</span>
+                  <div class="time-slider-bar" id="timeSliderBar" style="flex: 1; height: 6px; background: var(--border-light); border-radius: 3px; position: relative; cursor: pointer;" onclick="seekAudio(event)">
+                    <div class="time-slider-progress" id="timeSliderProgress" style="position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: var(--accent-red); border-radius: 3px; transition: width 0.1s linear;"></div>
+                  </div>
+                  <span class="time-label" id="durationLabel" style="font-size: 0.72rem; color: var(--text-secondary); font-weight: 700; min-width: 32px;">0:00</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                  <!-- Controles de volumen -->
+                  <div style="display: flex; align-items: center; gap: 8px; width: 120px;">
+                    <i class="fi fi-rr-volume" id="volumeIcon" style="color: var(--text-secondary); font-size: 0.9rem;"></i>
+                    <input type="range" id="volumeSlider" min="0" max="100" value="80" style="width: 100%; height: 4px; accent-color: var(--accent-red); cursor: pointer;" oninput="adjustVolume(this.value)">
+                  </div>
+
+                  <!-- Botón Play principal -->
+                  <button class="newsletter-btn" id="playerPlayBtn" onclick="togglePlayerState()" style="width: 50px; height: 50px; border-radius: 50%; background: var(--accent-red); display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(220,38,38,0.3); color: white; font-size: 1.1rem; transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.08)'" onmouseleave="this.style.transform='scale(1)'">
+                    <i class="fi fi-rr-play" id="playBtnIcon" style="margin-left: 2px;"></i>
+                  </button>
+
+                  <!-- Waveform visualizer animado -->
+                  <div class="music-wave" id="musicWave" style="display: flex; align-items: flex-end; gap: 3px; height: 24px; width: 40px;">
+                    <span class="wave-bar"></span>
+                    <span class="wave-bar"></span>
+                    <span class="wave-bar"></span>
+                    <span class="wave-bar"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lista de Podcasts -->
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <h3 style="font-family:'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; margin: 8px 0 0 0; color: var(--text-primary); border-left: 4px solid var(--accent-red); padding-left: 12px;">🎙️ Podcasts Recientes</h3>
+              <div class="podcast-list" id="podcastList" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Los episodios se renderizan aquí -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Radio en Vivo -->
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="radio-card" style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-card); padding: 24px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 16px;">
+              <h3 style="font-family:'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; margin: 0; color: var(--text-primary); border-left: 4px solid var(--accent-blue); padding-left: 12px;"><i class="fi fi-rr-music-alt" style="color: var(--accent-blue); margin-right: 6px;"></i> Radio en Vivo</h3>
+              <p style="font-size:0.8rem; color:var(--text-secondary); line-height:1.4; margin:0;">Sintoniza nuestras transmisiones de música y audio en directo seleccionadas especialmente para acompañarte mientras lees.</p>
+              
+              <div class="radio-stations-list" id="radioStationsList" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Las estaciones de radio se renderizan aquí -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
 
     <!-- Barra Lateral -->
     <aside class="sidebar-col" id="sidebarCol">
@@ -1821,6 +1913,17 @@
             console.warn("Google AdSense delayed initialization (sidebar 1):", err.message);
           }
         </script>
+      </div>
+
+      <!-- WIDGET DE DONACIONES PAYPAL -->
+      <div class="sidebar-widget paypal-widget" style="background: linear-gradient(135deg, rgba(0, 112, 186, 0.08), rgba(0, 121, 193, 0.05)); border: 1.5px solid rgba(0, 112, 186, 0.25); border-radius: var(--radius-card); padding: 24px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 14px; transition: var(--transition);" onmouseenter="this.style.borderColor='rgba(0, 112, 186, 0.5)'; this.style.transform='translateY(-2px)';" onmouseleave="this.style.borderColor='rgba(0, 112, 186, 0.25)'; this.style.transform='translateY(0)';">
+        <h3 style="border-left: 4px solid #0070ba; padding-left: 12px; margin: 0; font-family:'Playfair Display', serif; font-size:1.3rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px;"><i class="fi fi-brands-paypal" style="color: #0070ba; font-size: 1.25rem;"></i>Apoya nuestro Periodismo</h3>
+        <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.5; margin: 0;">
+          UnicoNews es un medio independiente y gratuito. Tu apoyo económico a través de PayPal nos ayuda a seguir combatiendo noticias falsas y expandir nuestro sistema de IA y veracidad. ¡Cualquier aportación cuenta!
+        </p>
+        <a href="https://www.paypal.com/donate" target="_blank" rel="noopener noreferrer" style="background: #0070ba; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; text-decoration: none; border-radius: var(--radius-pill); font-size: 0.85rem; height: 42px; border: none; box-shadow: 0 4px 10px rgba(0, 112, 186, 0.2); transition: all 0.2s;" onmouseenter="this.style.background='#005ea6'; this.style.boxShadow='0 6px 14px rgba(0,112,186,0.3)';" onmouseleave="this.style.background='#0070ba'; this.style.boxShadow='0 4px 10px rgba(0,112,186,0.2)';">
+          Donar con PayPal 💳
+        </a>
       </div>
 
       <!-- WIDGET DE SUSCRIPCIÓN A LA NEWSLETTER -->
@@ -2444,9 +2547,13 @@
     document.getElementById('iaSection').style.display         = section === 'ia'         ? 'block' : 'none';
     document.getElementById('escribirSection').style.display   = section === 'escribir'   ? 'block' : 'none';
     document.getElementById('diversionSection').style.display  = section === 'diversion'  ? 'block' : 'none';
+    document.getElementById('podcastSection').style.display    = section === 'podcast'    ? 'block' : 'none';
     
     if (section === 'diversion') {
       fetchMemes();
+    }
+    if (section === 'podcast') {
+      initPodcastCenter();
     }
     
     // Ocultar o mostrar panel de control
@@ -5391,6 +5498,228 @@
     if (tab === 'videos') {
       loadShortsVideos();
     }
+  }
+
+  // ---------- MÓDULO PODCAST & RADIO EN VIVO ----------
+  let podcastAudio = null;
+  let activeMediaId = null;
+  let activeMediaType = null; // 'podcast' o 'radio'
+  let isMediaPlaying = false;
+  let audioTimerInterval = null;
+
+  const PODCAST_EPISODES = [
+    { id: 'pod1', title: 'Episodio 12: El futuro de la Inteligencia Artificial Generativa', author: 'UnicoNews Podcast', duration: '10:04', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', coverColor: 'linear-gradient(135deg, #f43f5e, #e11d48)' },
+    { id: 'pod2', title: 'Episodio 11: Cómo dominar tus finanzas personales en tiempos de inflación', author: 'UnicoNews Finanzas', duration: '07:05', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', coverColor: 'linear-gradient(135deg, #10b981, #059669)' },
+    { id: 'pod3', title: 'Episodio 10: El auge de la ciberseguridad y la soberanía de datos global', author: 'UnicoNews Tech', duration: '05:44', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', coverColor: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
+    { id: 'pod4', title: 'Episodio 09: Primicias geopolíticas y el nuevo orden económico mundial', author: 'UnicoNews Global', duration: '06:02', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', coverColor: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }
+  ];
+
+  const RADIO_STATIONS = [
+    { id: 'rad1', name: 'Radio Clásica Premium', desc: 'Música clásica relajante y alta cultura las 24 horas', src: 'https://stream.srg-ssr.ch/m/rsc_de/mp3_128', isStream: true, coverColor: 'linear-gradient(135deg, #1e293b, #0f172a)' },
+    { id: 'rad2', name: 'Smooth Jazz & Café', desc: 'La mejor selección de jazz y blues contemporáneo', src: 'https://jazz.streamr.ru/jazz-128.mp3', isStream: true, coverColor: 'linear-gradient(135deg, #78350f, #451a03)' },
+    { id: 'rad3', name: 'Chill Lofi Radio', desc: 'Ritmos relajantes e instrumentales para estudiar o concentrarse', src: 'https://stream.zeno.fm/f3wvbbqbef8uv', isStream: true, coverColor: 'linear-gradient(135deg, #db2777, #9d174d)' },
+    { id: 'rad4', name: 'Café Acústico & Pop', desc: 'Música indie, pop acústico y guitarras melódicas', src: 'https://stream.zeno.fm/s4y02z1a5u8uv', isStream: true, coverColor: 'linear-gradient(135deg, #ea580c, #c2410c)' }
+  ];
+
+  function initPodcastCenter() {
+    renderPodcastList();
+    renderRadioList();
+    if (!podcastAudio) {
+      podcastAudio = new Audio();
+      
+      // Eventos del Audio Element
+      podcastAudio.addEventListener('play', () => {
+        isMediaPlaying = true;
+        updatePlayerUIState();
+      });
+      podcastAudio.addEventListener('pause', () => {
+        isMediaPlaying = false;
+        updatePlayerUIState();
+      });
+      podcastAudio.addEventListener('ended', () => {
+        isMediaPlaying = false;
+        clearInterval(audioTimerInterval);
+        document.getElementById('timeSliderProgress').style.width = '0%';
+        document.getElementById('currentTimeLabel').textContent = '0:00';
+        updatePlayerUIState();
+      });
+      podcastAudio.addEventListener('timeupdate', () => {
+        if (!podcastAudio.duration || activeMediaType === 'radio') return;
+        const progress = (podcastAudio.currentTime / podcastAudio.duration) * 100;
+        document.getElementById('timeSliderProgress').style.width = progress + '%';
+        document.getElementById('currentTimeLabel').textContent = formatAudioTime(podcastAudio.currentTime);
+      });
+      podcastAudio.addEventListener('loadedmetadata', () => {
+        if (activeMediaType === 'radio') return;
+        document.getElementById('durationLabel').textContent = formatAudioTime(podcastAudio.duration);
+      });
+    }
+  }
+
+  function formatAudioTime(secs) {
+    if (isNaN(secs)) return "0:00";
+    const minutes = Math.floor(secs / 60);
+    const seconds = Math.floor(secs % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  }
+
+  function renderPodcastList() {
+    const list = document.getElementById('podcastList');
+    if (!list || list.children.length > 0) return;
+
+    list.innerHTML = PODCAST_EPISODES.map(ep => `
+      <div class="media-item ${activeMediaId === ep.id ? 'active' : ''}" id="item-${ep.id}" onclick="playMediaItem('${ep.id}', 'podcast')">
+        <div style="display: flex; align-items: center; gap: 14px; text-align: left;">
+          <div style="width: 42px; height: 42px; border-radius: var(--radius-sm); background: ${ep.coverColor}; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; font-weight: bold; flex-shrink:0;">🎙️</div>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary); line-height:1.3;">${ep.title}</div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary);">${ep.author}</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 0.75rem; color: var(--text-secondary); font-family: monospace; font-weight: bold;">${ep.duration}</span>
+          <div style="width: 26px; height: 26px; border-radius: 50%; background: var(--border-light); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--text-primary);" id="playicon-${ep.id}">▶️</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderRadioList() {
+    const list = document.getElementById('radioStationsList');
+    if (!list || list.children.length > 0) return;
+
+    list.innerHTML = RADIO_STATIONS.map(rad => `
+      <div class="radio-item ${activeMediaId === rad.id ? 'active' : ''}" id="item-${rad.id}" onclick="playMediaItem('${rad.id}', 'radio')">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 42px; height: 42px; border-radius: var(--radius-sm); background: ${rad.coverColor}; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; flex-shrink:0;">📻</div>
+          <div style="display: flex; flex-direction: column; gap: 4px; text-align: left;">
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary); line-height:1.3;">${rad.name}</div>
+            <div style="font-size: 0.72rem; color: var(--text-secondary); line-height:1.2;">${rad.desc}</div>
+          </div>
+        </div>
+        <div style="width: 26px; height: 26px; border-radius: 50%; background: var(--border-light); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--text-primary); flex-shrink:0;" id="playicon-${rad.id}">▶️</div>
+      </div>
+    `).join('');
+  }
+
+  function playMediaItem(id, type) {
+    if (activeMediaId === id) {
+      togglePlayerState();
+      return;
+    }
+
+    if (podcastAudio) {
+      podcastAudio.pause();
+    }
+
+    document.querySelectorAll('.media-item, .radio-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.media-item, .radio-item').forEach(el => {
+      const playIcon = el.querySelector('[id^="playicon-"]');
+      if (playIcon) playIcon.textContent = '▶️';
+    });
+
+    activeMediaId = id;
+    activeMediaType = type;
+
+    const el = document.getElementById(`item-${id}`);
+    if (el) el.classList.add('active');
+    const playIcon = document.getElementById(`playicon-${id}`);
+    if (playIcon) playIcon.textContent = '⏸️';
+
+    let item = null;
+    if (type === 'podcast') {
+      item = PODCAST_EPISODES.find(ep => ep.id === id);
+      document.getElementById('playerBadge').textContent = 'Podcast';
+      document.getElementById('playerBadge').style.background = 'rgba(239, 68, 68, 0.1)';
+      document.getElementById('playerBadge').style.color = 'var(--accent-red)';
+      document.getElementById('durationLabel').textContent = item.duration;
+      document.getElementById('currentTimeLabel').textContent = '0:00';
+      document.getElementById('timeSliderProgress').style.width = '0%';
+    } else {
+      item = RADIO_STATIONS.find(rad => rad.id === id);
+      document.getElementById('playerBadge').textContent = 'Radio en Vivo';
+      document.getElementById('playerBadge').style.background = 'rgba(59, 130, 246, 0.1)';
+      document.getElementById('playerBadge').style.color = 'var(--accent-blue)';
+      document.getElementById('durationLabel').textContent = 'En Vivo 📡';
+      document.getElementById('currentTimeLabel').textContent = '0:00';
+      document.getElementById('timeSliderProgress').style.width = '100%';
+    }
+
+    document.getElementById('playerTitle').textContent = item.name || item.title;
+    document.getElementById('playerAuthor').textContent = item.desc || item.author;
+    document.getElementById('playerCoverBox').style.background = item.coverColor;
+
+    podcastAudio.src = item.src;
+    podcastAudio.load();
+    podcastAudio.play().then(() => {
+      isMediaPlaying = true;
+      updatePlayerUIState();
+    }).catch(err => {
+      console.warn("Fallo al sintonizar audio:", err);
+    });
+  }
+
+  function togglePlayerState() {
+    if (!activeMediaId) {
+      playMediaItem('pod1', 'podcast');
+      return;
+    }
+
+    if (isMediaPlaying) {
+      podcastAudio.pause();
+      isMediaPlaying = false;
+    } else {
+      podcastAudio.play().then(() => {
+        isMediaPlaying = true;
+      }).catch(err => console.warn(err));
+    }
+    updatePlayerUIState();
+  }
+
+  function updatePlayerUIState() {
+    const playBtnIcon = document.getElementById('playBtnIcon');
+    const coverBox = document.getElementById('playerCoverBox');
+    const wave = document.getElementById('musicWave');
+    const activePlayIcon = document.getElementById(`playicon-${activeMediaId}`);
+
+    if (isMediaPlaying) {
+      if (playBtnIcon) {
+        playBtnIcon.className = 'fi fi-rr-pause';
+        playBtnIcon.style.marginLeft = '0px';
+      }
+      if (coverBox) coverBox.classList.add('rotating');
+      if (wave) wave.classList.add('active');
+      if (activePlayIcon) activePlayIcon.textContent = '⏸️';
+    } else {
+      if (playBtnIcon) {
+        playBtnIcon.className = 'fi fi-rr-play';
+        playBtnIcon.style.marginLeft = '2px';
+      }
+      if (coverBox) coverBox.classList.remove('rotating');
+      if (wave) wave.classList.remove('active');
+      if (activePlayIcon) activePlayIcon.textContent = '▶️';
+    }
+  }
+
+  function adjustVolume(val) {
+    if (!podcastAudio) return;
+    podcastAudio.volume = val / 100;
+    const volIcon = document.getElementById('volumeIcon');
+    if (volIcon) {
+      if (val == 0) volIcon.className = 'fi fi-rr-volume-mute';
+      else if (val < 50) volIcon.className = 'fi fi-rr-volume-down';
+      else volIcon.className = 'fi fi-rr-volume';
+    }
+  }
+
+  // Seeking
+  function seekAudio(event) {
+    if (!podcastAudio || !podcastAudio.duration || activeMediaType === 'radio') return;
+    const bar = document.getElementById('timeSliderBar');
+    const rect = bar.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const percent = Math.min(Math.max(clickX / rect.width, 0), 1);
+    podcastAudio.currentTime = percent * podcastAudio.duration;
   }
 
   // ---------- DETALLES Y LOGROS DEL REDACTOR ----------
