@@ -236,6 +236,33 @@ app.post('/api/writer/profile-pic', async (req, res) => {
   }
 });
 
+// Actualizar información del redactor (nombre)
+app.post('/api/writer/update-profile', async (req, res) => {
+  const { email, name } = req.body;
+  if (!email || !name) {
+    return res.status(400).json({ error: 'Faltan email o nombre' });
+  }
+
+  try {
+    const result = await pool.query(`
+      UPDATE subscribers
+      SET name = $1
+      WHERE email = $2
+      RETURNING *
+    `, [name, email]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Suscriptor no encontrado' });
+    }
+
+    console.log(`👤 Perfil actualizado para ${email}: nombre cambiado a ${name}`);
+    res.json({ success: true, subscriber: result.rows[0] });
+  } catch (err) {
+    console.error('❌ Error al actualizar perfil:', err.message);
+    res.status(500).json({ error: 'Error al actualizar el perfil' });
+  }
+});
+
 // Panel de control (Dashboard) del redactor
 app.get('/api/writer/:email/dashboard', async (req, res) => {
   const { email } = req.params;
