@@ -774,6 +774,46 @@
     .profile-line-input:focus {
       border-bottom-color: var(--accent-blue);
     }
+    
+    /* SWITCH TOGGLE & SAVE BUTTON (SAMI RAHMAN FINANCE DASHBOARD) */
+    .switch-toggle input:checked + span {
+      background-color: #10b981 !important;
+    }
+    .switch-toggle span::before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    .switch-toggle input:checked + span::before {
+      transform: translateX(14px);
+    }
+    
+    .profile-save-btn {
+      background: linear-gradient(90deg, #f97316, #ec4899);
+      border: none;
+      color: white !important;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 10px 42px;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(249, 115, 22, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: inline-block;
+      text-align: center;
+      text-decoration: none;
+    }
+    .profile-save-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(249, 115, 22, 0.45);
+    }
 
     /* ORIGINAL BADGE SHINY */
     .original-badge-shiny {
@@ -1072,6 +1112,8 @@
       box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
     }
   </style>
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.1.0/uicons-brands/css/uicons-brands.css">
 </head>
 <body>
 
@@ -1086,11 +1128,10 @@
     </div>
     <div class="top-bar-right">
       <span id="topBarDate">Sábado, 23 de Mayo de 2026</span>
-      <div class="social-icons">
-        <a href="#" aria-label="Facebook">F</a>
-        <a href="#" aria-label="Twitter">T</a>
-        <a href="#" aria-label="LinkedIn">L</a>
-        <a href="#" aria-label="Instagram">I</a>
+      <div class="social-icons" style="display: flex; gap: 8px; align-items: center;">
+        <a href="#" aria-label="Facebook" style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border-light); font-size: 0.82rem; transition: background 0.2s, color 0.2s;" onmouseenter="this.style.background='var(--accent-blue)';this.style.color='white'" onmouseleave="this.style.background='transparent';this.style.color='var(--text-secondary)'"><i class="fi fi-brands-facebook"></i></a>
+        <a href="#" aria-label="Instagram" style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border-light); font-size: 0.82rem; transition: background 0.2s, color 0.2s;" onmouseenter="this.style.background='#e1306c';this.style.color='white'" onmouseleave="this.style.background='transparent';this.style.color='var(--text-secondary)'"><i class="fi fi-brands-instagram"></i></a>
+        <a href="#" aria-label="WhatsApp" style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border-light); font-size: 0.82rem; transition: background 0.2s, color 0.2s;" onmouseenter="this.style.background='#25D366';this.style.color='white'" onmouseleave="this.style.background='transparent';this.style.color='var(--text-secondary)'"><i class="fi fi-brands-whatsapp"></i></a>
       </div>
     </div>
   </div>
@@ -1105,12 +1146,12 @@
     </div>
     <div class="nav-links">
       <button class="nav-btn active" data-section="noticias" onclick="switchSection('noticias')">Noticias</button>
-      <button class="nav-btn" data-section="tendencias" onclick="switchSection('tendencias')">🔥 Tendencias</button>
-      <button class="nav-btn" data-section="escribir" onclick="switchSection('escribir')">✍ Escribir</button>
-      <button class="nav-btn" data-section="diversion" onclick="switchSection('diversion')">😜 Diversión</button>
-      <button class="nav-btn" onclick="toggleBookmarksDrawer()">🔖 Marcadores</button>
-      <button class="dark-toggle" id="darkToggle" aria-label="Cambiar tema">🌙</button>
-      <button class="dark-toggle" id="interestsToggle" onclick="togglePreferencesModal()" aria-label="Intereses" style="margin-left: 8px;">🎯</button>
+      <button class="nav-btn" data-section="tendencias" onclick="switchSection('tendencias')"><i class="fi fi-rr-flame" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Tendencias</button>
+      <button class="nav-btn" data-section="escribir" onclick="switchSection('escribir')"><i class="fi fi-rr-edit" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Escribir</button>
+      <button class="nav-btn" data-section="diversion" onclick="switchSection('diversion')"><i class="fi fi-rr-rocket" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Diversión</button>
+      <button class="nav-btn" onclick="toggleBookmarksDrawer()"><i class="fi fi-rr-bookmark" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Marcadores</button>
+      <button class="dark-toggle" id="darkToggle" aria-label="Cambiar tema" style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0;"><i class="fi fi-rr-moon"></i></button>
+      <button class="dark-toggle" id="interestsToggle" onclick="togglePreferencesModal()" aria-label="Intereses" style="margin-left: 8px; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0;"><i class="fi fi-rr-sparkles"></i></button>
       <button class="dark-toggle" id="adminToggle" onclick="toggleAdminLoginModal()" aria-label="Administrador" style="margin-left: 8px; display: none;">🔑</button>
       <span id="adminNavBadge" class="admin-badge" style="display:none;">ADMIN</span>
     </div>
@@ -1496,9 +1537,9 @@
 
           <!-- Dashboard Tabs -->
           <div class="dashboard-tabs">
-            <button class="dashboard-tab-btn active" id="tabBtnPublish" onclick="switchDashboardTab('publish')">✍️ Publicar</button>
-            <button class="dashboard-tab-btn" id="tabBtnProfile" onclick="switchDashboardTab('profile')">📊 Mi Perfil & Logros</button>
-            <button class="dashboard-tab-btn" id="tabBtnArticles" onclick="switchDashboardTab('articles')">📰 Mis Artículos</button>
+            <button class="dashboard-tab-btn active" id="tabBtnPublish" onclick="switchDashboardTab('publish')"><i class="fi fi-rr-paper-plane" style="margin-right: 6px;"></i>Publicar</button>
+            <button class="dashboard-tab-btn" id="tabBtnProfile" onclick="switchDashboardTab('profile')"><i class="fi fi-rr-diploma" style="margin-right: 6px;"></i>Mi Perfil & Logros</button>
+            <button class="dashboard-tab-btn" id="tabBtnArticles" onclick="switchDashboardTab('articles')"><i class="fi fi-rr-book-alt" style="margin-right: 6px;"></i>Mis Artículos</button>
           </div>
 
           <!-- Tab 1: Publicar -->
@@ -1585,62 +1626,113 @@
 
           <!-- Tab 2: Mi Perfil & Logros -->
           <div id="dbTabProfile" class="dashboard-tab-content">
-            <div class="profile-grid" style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 24px;">
+            <div class="profile-grid" style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 24px; width: 100%;">
               
-              <!-- Perfil e Imagen (similar al diseño de Sami Rahman) -->
-              <div class="profile-card" style="align-items: flex-start; text-align: left; padding: 24px; position: relative;">
-                <div class="profile-card-image-wrap">
+              <!-- Perfil e Imagen (Estructura y diseño idéntico al de Sami Rahman en la referencia) -->
+              <div class="profile-card" style="padding: 0; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-card); position: relative; width: 100%; align-items: stretch; text-align: left;">
+                <div class="profile-card-image-wrap" style="width: 100%; height: 280px; border-radius: 0; margin-bottom: 0; border: none; border-bottom: 1.5px solid var(--border-light); box-shadow: none;">
                   <img id="writerDashboardAvatar" src="https://api.dicebear.com/7.x/initials/svg?seed=Redactor" class="profile-pic-full" alt="Foto de perfil">
                   <label for="profilePicInput" class="profile-upload-btn-overlay">
-                    <span style="font-size: 1.6rem;">📷</span>
-                    <span>Subir Foto de Perfil</span>
+                    <i class="fi fi-rr-edit" style="font-size: 1.6rem; color: white;"></i>
+                    <span style="font-weight: 700; margin-top: 6px; font-family: 'Inter', sans-serif;">Cambiar Foto</span>
                   </label>
                   <input type="file" id="profilePicInput" accept="image/*" style="display:none;" onchange="uploadProfilePicture()">
                 </div>
                 
-                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 800; margin: 0 0 16px 0; color: var(--text-primary);">Mi Perfil</h3>
-                
-                <div class="profile-input-group">
-                  <span style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; display: block; margin-bottom: 2px;">Nombre del Redactor</span>
-                  <input type="text" id="profileNameInput" class="profile-line-input" placeholder="Tu nombre artístico o real">
-                </div>
-                
-                <div class="profile-input-group">
-                  <span style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; display: block; margin-bottom: 2px;">Correo de Suscriptor</span>
-                  <input type="email" id="profileEmailInput" class="profile-line-input" style="color: var(--text-muted); cursor: not-allowed; border-bottom: 1.5px solid rgba(255,255,255,0.05);" readonly>
-                </div>
-                
-                <div class="profile-input-group" style="margin-bottom: 24px;">
-                  <span style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; display: block; margin-bottom: 2px;">Plan de Redacción</span>
-                  <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid rgba(255,255,255,0.05); padding: 8px 0; width: 100%;">
-                    <span id="profilePlanBadgeText" style="color: var(--text-primary); font-weight: 700; font-size: 0.95rem;">Plan: Inicial</span>
-                    <span id="profilePlanBadge" class="truth-badge truth-badge-low" style="padding: 2px 8px; font-size: 0.65rem; border-radius: var(--radius-pill);">INICIAL</span>
+                <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box; width: 100%;">
+                  <!-- Título del perfil y metadatos de sesión (Fidelidad de la referencia) -->
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 10px;">
+                    <h3 style="font-family: 'Inter', sans-serif; font-size: 1.3rem; font-weight: 800; margin: 0; color: var(--text-primary);">My profile</h3>
+                    <div style="font-size: 0.65rem; color: var(--text-muted); text-align: right; line-height: 1.3; font-family: 'Inter', sans-serif;">
+                      Last login: <span id="profileLastLoginTime">hoy, 17:35</span><br>
+                      <span id="profileDeviceType">Windows 10, Redactor Verificado</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Fila 1: Nombre (Izquierda) | Plan (Derecha) -->
+                  <div style="display: flex; gap: 20px; width: 100%; box-sizing: border-box;">
+                    <div class="profile-input-group" style="flex: 1; margin: 0;">
+                      <span style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; display: block; margin-bottom: 2px;">Nombre de Autor</span>
+                      <input type="text" id="profileNameInput" class="profile-line-input" placeholder="Nombre completo">
+                    </div>
+                    <div class="profile-input-group" style="flex: 1; margin: 0;">
+                      <span style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; display: block; margin-bottom: 2px;">Plan de Redacción</span>
+                      <input type="text" id="profilePlanInput" class="profile-line-input" style="color: var(--accent-blue);" readonly value="Premium">
+                    </div>
+                  </div>
+                  
+                  <!-- Fila 2: Correo Electrónico (Ancho Completo) -->
+                  <div class="profile-input-group" style="margin: 0; width: 100%;">
+                    <span style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; display: block; margin-bottom: 2px;">Correo Registrado</span>
+                    <input type="email" id="profileEmailInput" class="profile-line-input" style="color: var(--text-muted); cursor: not-allowed;" readonly>
+                  </div>
+                  
+                  <!-- Fila 3: Activación de Alertas SMS / Notificaciones (Estilo Sami Coral/Switch) -->
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 4px; box-sizing: border-box;">
+                    <span style="font-size: 0.88rem; font-weight: 700; color: #f97316; font-family: 'Inter', sans-serif;">SMS alerts activation</span>
+                    <label class="switch-toggle" style="position: relative; display: inline-block; width: 38px; height: 22px; cursor: pointer; margin: 0;">
+                      <input type="checkbox" id="profileAlertsToggle" checked style="opacity: 0; width: 0; height: 0;">
+                      <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-light); transition: .4s; border-radius: 20px;"></span>
+                    </label>
+                  </div>
+                  
+                  <!-- Fila 4: Botón Guardar Centrado (Igual al de la referencia) -->
+                  <div style="display: flex; justify-content: center; width: 100%; margin-top: 12px;">
+                    <button class="profile-save-btn" onclick="saveWriterProfile()">Save</button>
                   </div>
                 </div>
-                
-                <button class="ai-action-btn" onclick="saveWriterProfile()" style="background: linear-gradient(135deg, var(--accent-red), var(--accent-blue)); border: none; color: white; font-weight: 700; padding: 12px 36px; border-radius: var(--radius-pill); cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 111, 0.25); font-size: 0.9rem; width: auto; margin-top: 4px; transition: transform 0.2s ease, box-shadow 0.2s ease;">Guardar Cambios</button>
               </div>
 
-              <!-- Logros y Medalla (similar a las tarjetas derechas de Sami's Finance Dashboard) -->
-              <div class="achievements-card" style="align-items: flex-start; text-align: left; padding: 24px;">
-                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 800; margin: 0 0 16px 0; color: var(--text-primary);">Mis Logros & Rango</h3>
+              <!-- Logros y Medallas (Estructura idéntica a las tarjetas derechas de Sami's Finance Dashboard) -->
+              <div class="achievements-card" style="align-items: stretch; text-align: left; padding: 0; background: transparent; border: none; border-radius: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px; position: relative;">
                 
-                <!-- Panel 1: Active Medal (estilo xPay active accounts) -->
-                <div class="medal-active-box" style="width:100%; display: flex; align-items: center; gap: 20px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-light); border-radius: 12px; padding: 16px 20px; box-sizing: border-box; text-align: left; margin-bottom: 24px; position: relative; overflow: hidden; height: 110px;">
-                  <div id="writerMedalContainer" class="medal-container" style="width: 80px; height: 80px; margin: 0; flex-shrink: 0; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));">
-                    <!-- El SVG se inyectará dinámicamente -->
+                <!-- Panel Superior (Estilo My xPay accounts card) -->
+                <div style="display: flex; flex-direction: column; gap: 16px; width: 100%; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-card); padding: 22px; box-sizing: border-box;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 8px;">
+                    <h3 style="font-family: 'Inter', sans-serif; font-size: 1.25rem; font-weight: 800; margin: 0; color: var(--text-primary);">My achievements</h3>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                      <!-- Lupa e ícono de editar interactivos de la referencia -->
+                      <span style="color: var(--text-secondary); font-size: 0.9rem; cursor: pointer; transition: color 0.2s;" onmouseenter="this.style.color='var(--accent-blue)'" onmouseleave="this.style.color='var(--text-secondary)'"><i class="fi fi-rr-sparkles"></i></span>
+                      <span style="font-size: 0.7rem; color: var(--text-secondary); border: 1px solid var(--border-light); padding: 3px 10px; border-radius: 20px; background: rgba(255,255,255,0.02); cursor: pointer; font-weight: 700; transition: background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.06)'" onmouseleave="this.style.background='rgba(255,255,255,0.02)'">Edit</span>
+                    </div>
                   </div>
-                  <div style="flex-grow: 1;">
-                    <span style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">Rango de Redactor</span>
-                    <div id="writerMedalTitle" class="medal-title" style="margin: 4px 0 2px; font-size: 1.35rem; font-weight: 800;">Bronce</div>
-                    <div id="writerScoreBadge" class="score-badge" style="margin-top: 4px; font-size: 0.78rem; padding: 4px 12px;">0 Puntos</div>
+                  
+                  <!-- Fila 1 (Rango Activo - Estilo Active account) -->
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                      <div id="writerMedalContainer" style="width: 46px; height: 46px; flex-shrink: 0; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); display: flex; align-items: center; justify-content: center;">
+                        <!-- SVG inyectado -->
+                      </div>
+                      <div>
+                        <span style="font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; display: block; margin-bottom: 2px;">Active Medal</span>
+                        <strong id="writerMedalTitle" style="font-size: 1.05rem; font-weight: 800; color: var(--text-primary); font-family: 'Inter', sans-serif;">Bronce</strong>
+                      </div>
+                    </div>
+                    <button class="profile-action-pill-orange" onclick="alert('🏅 ¡Sigue subiendo de nivel con me gustas y noticias originales!')" style="background: linear-gradient(90deg, #f97316, #ec4899); border: none; color: white !important; font-family: 'Inter', sans-serif; font-weight: 800; padding: 8px 18px; border-radius: 20px; font-size: 0.72rem; cursor: pointer; text-transform: uppercase; letter-spacing: 0.03em; box-shadow: 0 4px 10px rgba(249,115,22,0.25); transition: transform 0.2s;" onmouseenter="this.style.transform='translateY(-1px)'" onmouseleave="this.style.transform='none'">Rango Activo</button>
+                  </div>
+                  
+                  <!-- Fila 2 (Puntaje de Autor - Estilo Blocked account) -->
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding-top: 4px;">
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                      <div style="width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,0.03); border: 1px solid var(--border-light); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: #f59e0b; flex-shrink: 0; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.15));">
+                        <i class="fi fi-rr-trophy"></i>
+                      </div>
+                      <div>
+                        <span style="font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; display: block; margin-bottom: 2px;">Writer Score</span>
+                        <strong id="writerScoreBadge" style="font-size: 1.05rem; font-weight: 800; color: var(--text-primary); font-family: 'Inter', sans-serif;">0 Puntos</strong>
+                      </div>
+                    </div>
+                    <button class="profile-action-pill-green" onclick="alert('🏆 Tu puntuación se calcula como: (Noticias Comunes × 5) + (Noticias Originales × 15) + (Me Gusta × 2). ¡El periodismo veraz premia!')" style="background: linear-gradient(90deg, #10b981, #059669); border: none; color: white !important; font-family: 'Inter', sans-serif; font-weight: 800; padding: 8px 18px; border-radius: 20px; font-size: 0.72rem; cursor: pointer; text-transform: uppercase; letter-spacing: 0.03em; box-shadow: 0 4px 10px rgba(16,185,129,0.25); transition: transform 0.2s;" onmouseenter="this.style.transform='translateY(-1px)'" onmouseleave="this.style.transform='none'">Ver Detalle</button>
                   </div>
                 </div>
                 
-                <!-- Panel 2: Listado de Logros (estilo My Bills) -->
-                <div class="achievements-list-card" style="width:100%; background: transparent; text-align: left; display: flex; flex-direction: column; gap: 12px;">
-                  <h4 style="font-family:'Playfair Display', serif; font-size: 1.1rem; margin: 0 0 2px 0; color: var(--text-primary); font-weight: 700;">Progreso de Desbloqueo</h4>
-                  <div id="achievementsListContainer" style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+                <!-- Panel Inferior (Estilo My bills listado) -->
+                <div class="achievements-list-card" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-card); padding: 22px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px;">
+                    <h4 style="font-family: 'Inter', sans-serif; font-size: 1.25rem; margin: 0; color: var(--text-primary); font-weight: 800;">My levels</h4>
+                    <span style="font-size: 0.7rem; color: var(--text-secondary); border: 1px solid var(--border-light); padding: 3px 12px; border-radius: 20px; background: rgba(255,255,255,0.02); cursor: pointer; font-weight: 700;" onmouseenter="this.style.background='rgba(255,255,255,0.06)'" onmouseleave="this.style.background='rgba(255,255,255,0.02)'">Filter by</span>
+                  </div>
+                  <div id="achievementsListContainer" style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
                     <!-- Se generará dinámicamente -->
                   </div>
                 </div>
@@ -1939,7 +2031,7 @@
     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
       <!-- WhatsApp -->
       <a id="shareWhatsApp" href="#" target="_blank" style="text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-primary); font-size: 0.75rem; font-weight: 700;">
-        <div style="width: 50px; height: 50px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; box-shadow: 0 4px 10px rgba(37,211,102,0.3); transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.1)'" onmouseleave="this.style.transform='scale(1)'">💬</div>
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem; box-shadow: 0 4px 10px rgba(37,211,102,0.3); transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.1)'" onmouseleave="this.style.transform='scale(1)'"><i class="fi fi-brands-whatsapp"></i></div>
         WhatsApp
       </a>
       <!-- X / Twitter -->
@@ -1949,12 +2041,12 @@
       </a>
       <!-- Facebook -->
       <a id="shareFacebook" href="#" target="_blank" style="text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-primary); font-size: 0.75rem; font-weight: 700;">
-        <div style="width: 50px; height: 50px; border-radius: 50%; background: #1877F2; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; box-shadow: 0 4px 10px rgba(24,119,242,0.3); transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.1)'" onmouseleave="this.style.transform='scale(1)'">📘</div>
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: #1877F2; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem; box-shadow: 0 4px 10px rgba(24,119,242,0.3); transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.1)'" onmouseleave="this.style.transform='scale(1)'"><i class="fi fi-brands-facebook"></i></div>
         Facebook
       </a>
       <!-- Telegram -->
       <a id="shareTelegram" href="#" target="_blank" style="text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-primary); font-size: 0.75rem; font-weight: 700;">
-        <div style="width: 50px; height: 50px; border-radius: 50%; background: #0088cc; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem; box-shadow: 0 4px 10px rgba(0,136,204,0.3); transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.1)'" onmouseleave="this.style.transform='scale(1)'">✈️</div>
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: #0088cc; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem; box-shadow: 0 4px 10px rgba(0,136,204,0.3); transition: transform 0.2s;" onmouseenter="this.style.transform='scale(1.1)'" onmouseleave="this.style.transform='scale(1)'"><i class="fi fi-rr-paper-plane"></i></div>
         Telegram
       </a>
     </div>
@@ -1962,7 +2054,7 @@
     <!-- Copiar Enlace Directo -->
     <div style="background: var(--bg-body); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
       <input type="text" id="shareCopyInput" readonly style="border: none; background: transparent; font-size: 0.85rem; color: var(--text-primary); width: 100%; outline: none;" onclick="this.select()">
-      <button class="admin-btn admin-btn-edit" id="shareCopyBtn" onclick="copyShareUrl()" style="padding: 6px 12px; font-size: 0.78rem; border-radius: 6px; white-space: nowrap;">📋 Copiar</button>
+      <button class="admin-btn admin-btn-edit" id="shareCopyBtn" onclick="copyShareUrl()" style="padding: 6px 12px; font-size: 0.78rem; border-radius: 6px; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;"><i class="fi fi-rr-share"></i> Copiar</button>
     </div>
   </div>
 </div>
@@ -2845,6 +2937,7 @@
       });
       
       if (res.ok) {
+        localStorage.removeItem('isSuperuser');
         localStorage.setItem('subscriberEmail', email);
         localStorage.setItem('subscriberName', name);
         localStorage.setItem('subscriberPlan', plan);
@@ -2889,6 +2982,7 @@
       if (res.ok) {
         const data = await res.json();
         const sub = data.subscriber;
+        localStorage.removeItem('isSuperuser');
         localStorage.setItem('subscriberEmail', sub.email);
         localStorage.setItem('subscriberName', sub.name || 'Redactor');
         localStorage.setItem('subscriberPlan', sub.plan || 'gratis');
@@ -2915,6 +3009,7 @@
     localStorage.removeItem('subscriberName');
     localStorage.removeItem('subscriberPlan');
     localStorage.removeItem('subscriberProfilePic');
+    localStorage.removeItem('isSuperuser');
     checkSubscriptionState();
   }
 
@@ -3907,7 +4002,7 @@
       document.body.classList.toggle('dark');
       const isDark = document.body.classList.contains('dark');
       localStorage.setItem('darkMode', isDark);
-      darkToggle.innerText = isDark ? '☀️' : '🌙';
+      darkToggle.innerHTML = isDark ? '<i class="fi fi-rr-sun"></i>' : '<i class="fi fi-rr-moon"></i>';
       
       filterAndRender();
       renderNovedadesSection();
@@ -3922,7 +4017,7 @@
 
   if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark');
-    darkToggle.innerText = '☀️';
+    darkToggle.innerHTML = '<i class="fi fi-rr-sun"></i>';
   }
 
   // ---------- SISTEMA PREMIUM DE AUDIO-NOTICIA (TEXT-TO-SPEECH NATIVO) ----------
@@ -5087,6 +5182,80 @@
   }
 
   // ---------- SECCIÓN DIVERSIÓN: MEMES DINÁMICOS ----------
+  const FALLBACK_MEMES = [
+    {
+      title: "Cuando cambias una línea de CSS en producción y todo se rompe de golpe",
+      url: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=600&q=80",
+      subreddit: "css_magia",
+      author: "flexbox_hero",
+      ups: 4892,
+      postLink: "https://unsplash.com"
+    },
+    {
+      title: "Mi cara cuando veo un 'TODO: refactorizar esto' que yo mismo escribí hace 3 años",
+      url: "https://images.unsplash.com/photo-1531747118685-ca8fa6e08806?auto=format&fit=crop&w=600&q=80",
+      subreddit: "desarrollo_caotico",
+      author: "git_blame_me",
+      ups: 3951,
+      postLink: "https://unsplash.com"
+    },
+    {
+      title: "El diseñador explicando la experiencia de usuario premium vs Mi código final",
+      url: "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?auto=format&fit=crop&w=600&q=80",
+      subreddit: "interfaz_vida",
+      author: "pixel_perfect",
+      ups: 5204,
+      postLink: "https://unsplash.com"
+    },
+    {
+      title: "Hacer un git push --force el viernes a las 17:59 y salir de la oficina corriendo",
+      url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80",
+      subreddit: "sysadmin_ops",
+      author: "deploy_ninja",
+      ups: 6183,
+      postLink: "https://unsplash.com"
+    },
+    {
+      title: "Cuando el código compila y funciona a la primera pero no confías en absoluto",
+      url: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80",
+      subreddit: "incertidumbre_dev",
+      author: "compilador_feliz",
+      ups: 2743,
+      postLink: "https://unsplash.com"
+    },
+    {
+      title: "El becario entrando a la base de datos de producción por primera vez",
+      url: "https://images.unsplash.com/photo-1552581230-c01bc9148c00?auto=format&fit=crop&w=600&q=80",
+      subreddit: "sql_queries",
+      author: "drop_table",
+      ups: 3152,
+      postLink: "https://unsplash.com"
+    }
+  ];
+
+  function renderMemesHtml(memesArray) {
+    const grid = document.getElementById('memesGrid');
+    if (!grid) return;
+    grid.innerHTML = memesArray.map(m => `
+      <div style="background:var(--bg-card); border:1px solid var(--border-light); border-radius:var(--radius-card); overflow:hidden; box-shadow:var(--shadow-sm); transition:transform 0.2s ease, border-color 0.2s ease; display:flex; flex-direction:column;" class="meme-card" onmouseenter="this.style.transform='translateY(-4px)';this.style.borderColor='var(--accent-red)'" onmouseleave="this.style.transform='translateY(0)';this.style.borderColor='var(--border-light)'">
+        <div style="padding:10px 14px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-light); font-size:0.75rem; color:var(--text-secondary); font-weight:700;">
+          <span>🤖 r/${m.subreddit}</span>
+          <span style="color:var(--text-muted);">Por: u/${m.author}</span>
+        </div>
+        <div style="padding:14px; flex-grow:1; display:flex; flex-direction:column; justify-content:center;">
+          <h4 style="font-size:0.92rem; font-weight:700; margin:0 0 10px 0; color:var(--text-primary); line-height:1.4; display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${m.title}</h4>
+          <div style="width:100%; height:230px; border-radius:8px; overflow:hidden; background:#0f172a; display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="window.open('${m.url}', '_blank')">
+            <img src="${m.url}" alt="${m.title}" style="max-width:100%; max-height:100%; object-fit:contain;" loading="lazy">
+          </div>
+        </div>
+        <div style="padding:10px 14px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--border-light); background:var(--bg-body); font-size:0.8rem; font-weight:700; color:var(--text-primary);">
+          <span style="color:#ef4444; display:flex; align-items:center; gap:4px;">🔥 ${m.ups} upvotes</span>
+          <button onclick="window.open('${m.postLink}', '_blank')" style="background:transparent; border:none; color:var(--accent-blue); cursor:pointer; font-size:0.75rem; font-weight:800; padding:0; display:flex; align-items:center; gap:2px;">Ver en Reddit 🌐</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
   async function fetchMemes() {
     const grid = document.getElementById('memesGrid');
     if (!grid) return;
@@ -5107,37 +5276,15 @@
       const data = await res.json();
       
       if (data.memes && data.memes.length > 0) {
-        grid.innerHTML = data.memes.map(m => `
-          <div style="background:var(--bg-card); border:1px solid var(--border-light); border-radius:var(--radius-card); overflow:hidden; box-shadow:var(--shadow-sm); transition:transform 0.2s ease, border-color 0.2s ease; display:flex; flex-direction:column;" class="meme-card" onmouseenter="this.style.transform='translateY(-4px)';this.style.borderColor='var(--accent-red)'" onmouseleave="this.style.transform='translateY(0)';this.style.borderColor='var(--border-light)'">
-            <div style="padding:10px 14px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-light); font-size:0.75rem; color:var(--text-secondary); font-weight:700;">
-              <span>🤖 r/${m.subreddit}</span>
-              <span style="color:var(--text-muted);">Por: u/${m.author}</span>
-            </div>
-            <div style="padding:14px; flex-grow:1; display:flex; flex-direction:column; justify-content:center;">
-              <h4 style="font-size:0.92rem; font-weight:700; margin:0 0 10px 0; color:var(--text-primary); line-height:1.4; display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${m.title}</h4>
-              <div style="width:100%; height:230px; border-radius:8px; overflow:hidden; background:#0f172a; display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="window.open('${m.url}', '_blank')">
-                <img src="${m.url}" alt="${m.title}" style="max-width:100%; max-height:100%; object-fit:contain;" loading="lazy">
-              </div>
-            </div>
-            <div style="padding:10px 14px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--border-light); background:var(--bg-body); font-size:0.8rem; font-weight:700; color:var(--text-primary);">
-              <span style="color:#ef4444; display:flex; align-items:center; gap:4px;">🔥 ${m.ups} upvotes</span>
-              <button onclick="window.open('${m.postLink}', '_blank')" style="background:transparent; border:none; color:var(--accent-blue); cursor:pointer; font-size:0.75rem; font-weight:800; padding:0; display:flex; align-items:center; gap:2px;">Ver en Reddit 🌐</button>
-            </div>
-          </div>
-        `).join('');
+        renderMemesHtml(data.memes);
         grid.removeAttribute('data-needs-refresh');
       } else {
         throw new Error();
       }
     } catch (e) {
-      grid.innerHTML = `
-        <div style="grid-column: 1 / span -1; text-align: center; padding: 40px; color: var(--text-secondary); border: 1.5px dashed var(--border-light); border-radius: var(--radius-card); background: var(--bg-card);">
-          <div style="font-size:2.5rem; margin-bottom:8px;">🧩</div>
-          <p style="font-weight:700; margin:0 0 4px 0;">No se pudieron cargar los memes en este momento.</p>
-          <p style="font-size:0.8rem; color:var(--text-muted); margin:0 0 16px 0;">La API pública de memes está temporalmente saturada.</p>
-          <button onclick="refreshMemes(this)" class="ai-term-chip" style="margin:0 auto; padding:6px 14px !important;">🔄 Reintentar Carga</button>
-        </div>
-      `;
+      console.warn("Fallo al consumir la API pública. Usando memes premium de respaldo.");
+      renderMemesHtml(FALLBACK_MEMES);
+      grid.removeAttribute('data-needs-refresh');
     }
   }
 
@@ -5392,6 +5539,19 @@
           emailInput.value = data.writer.email;
         }
         
+        // Populate session metadata dynamically for premium fidelity
+        const lastLoginEl = document.getElementById('profileLastLoginTime');
+        if (lastLoginEl) {
+          const now = new Date();
+          const options = { hour: '2-digit', minute: '2-digit' };
+          lastLoginEl.innerText = `hoy, ${now.toLocaleTimeString([], options)}`;
+        }
+        const deviceTypeEl = document.getElementById('profileDeviceType');
+        if (deviceTypeEl) {
+          const isPremium = (data.writer.plan === 'premium');
+          deviceTypeEl.innerText = `Windows 10, Redactor ${isPremium ? 'Premium ⭐' : 'Estándar ✍️'}`;
+        }
+        
         const planText = data.writer.plan ? data.writer.plan.charAt(0).toUpperCase() + data.writer.plan.slice(1) : 'Gratis';
         const planBadgeText = document.getElementById('profilePlanBadgeText');
         if (planBadgeText) {
@@ -5443,23 +5603,32 @@
         
         const listContainer = document.getElementById('achievementsListContainer');
         if (listContainer) {
-          listContainer.innerHTML = levels.map((lvl) => {
+          listContainer.innerHTML = levels.map((lvl, index) => {
             const isReached = score >= lvl.req;
             const statusText = isReached ? "Alcanzado" : "Bloqueado";
+            
+            // Dot color matching the reference image: green if achieved, red/pink if locked
+            const dotColor = isReached ? "#10b981" : "#ec4899";
+            
+            // Status pills styled exactly like green "Bill paid" and pink "Not paid" in the reference
             const pillStyle = isReached ? 
-              "background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.25);" : 
-              "background: rgba(255, 255, 255, 0.02); color: var(--text-muted); border: 1px solid var(--border-light); opacity: 0.65;";
+              "background: linear-gradient(90deg, #10b981, #059669); color: white !important; font-family: 'Inter', sans-serif; font-weight: 800; border: none; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);" : 
+              "background: linear-gradient(90deg, #ec4899, #be123c); color: white !important; font-family: 'Inter', sans-serif; font-weight: 800; border: none; box-shadow: 0 2px 8px rgba(236, 72, 153, 0.25); opacity: 0.85;";
+            
+            // Row separator line (last item has no bottom border)
+            const isLast = index === levels.length - 1;
+            const bottomBorder = isLast ? "" : "border-bottom: 1px solid rgba(255,255,255,0.03);";
             
             return `
-              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-light); border-radius: 8px; font-size: 0.8rem; box-sizing: border-box; width: 100%;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <span style="width: 8px; height: 8px; border-radius: 50%; background: ${lvl.color}; display: inline-block; filter: drop-shadow(0 0 3px ${lvl.color});"></span>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; ${bottomBorder} font-size: 0.85rem; box-sizing: border-box; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span style="width: 9px; height: 9px; border-radius: 50%; background: ${dotColor}; display: inline-block; filter: drop-shadow(0 0 3px ${dotColor});"></span>
                   <div>
-                    <strong style="color: ${isReached ? 'var(--text-primary)' : 'var(--text-muted)'};">${lvl.name}</strong>
-                    <span style="color: var(--text-secondary); font-size: 0.7rem; margin-left: 4px;">(${lvl.req}+ pts)</span>
+                    <strong style="color: ${isReached ? 'var(--text-primary)' : 'var(--text-muted)'}; font-family: 'Inter', sans-serif; font-size: 0.88rem;">${lvl.name}</strong>
+                    <span style="color: var(--text-secondary); font-size: 0.72rem; margin-left: 4px;">(${lvl.req}+ pts)</span>
                   </div>
                 </div>
-                <span class="truth-badge" style="${pillStyle} font-size: 0.62rem; padding: 2px 8px; font-weight: 700; text-transform: uppercase; border-radius: 20px;">${statusText}</span>
+                <span class="truth-badge" style="${pillStyle} font-size: 0.65rem; padding: 5px 14px; text-transform: uppercase; border-radius: 20px; cursor: pointer; text-align: center; display: inline-block; width: 85px;">${statusText}</span>
               </div>
             `;
           }).join('');
