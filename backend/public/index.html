@@ -1778,9 +1778,7 @@
             <span>🔄 Cargar más memes</span>
           </button>
         </div>
-        <div id="memesGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:24px; margin-bottom:40px;">
-          <!-- Los memes se renderizarán aquí dinámicamente -->
-        </div>
+        <div id="memesGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:24px; margin-bottom:40px;"></div>
       </div>
 
     </div>
@@ -5268,33 +5266,60 @@
   async function fetchMemes() {
     const grid = document.getElementById('memesGrid');
     if (!grid) return;
-    
-    // Si ya hay memes cargados y no se presionó actualizar, no volvemos a hacer fetch
-    if (grid.innerHTML.trim() !== '' && !grid.getAttribute('data-needs-refresh')) return;
-    
-    grid.innerHTML = `
-      <div style="grid-column: 1 / span -1; text-align: center; padding: 40px; color: var(--text-secondary);">
-        <span style="display:inline-block; width:30px; height:30px; border:3px solid var(--accent-red); border-top-color:transparent; border-radius:50%; animation:spin 0.8s linear infinite;"></span>
-        <p style="margin-top:12px; font-weight:700;">Ingiriendo los memes más virales en tiempo real...</p>
-      </div>
-    `;
-    
+
+    // Comprobar si hay tarjetas reales ya renderizadas (no comentarios HTML estáticos)
+    const hasRealContent = grid.querySelector('.meme-card') !== null;
+
+    // Si ya hay contenido real y no se pidió actualizar, salir
+    if (hasRealContent && !grid.getAttribute('data-needs-refresh')) return;
+
+    // Mostrar fallback inmediatamente para que el usuario vea contenido al instante
+    renderMemesHtml(FALLBACK_MEMES);
+
+    // Intentar actualizar con la API externa en segundo plano (sin bloquear la UI)
     try {
-      const res = await fetch('https://meme-api.com/gimme/6');
-      if (!res.ok) throw new Error('Error al conectar con la API de Memes');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // timeout de 5 seg
+
+      const res = await fetch('https://meme-api.com/gimme/6', { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (!res.ok) throw new Error('API no disponible');
       const data = await res.json();
-      
+
       if (data.memes && data.memes.length > 0) {
-        renderMemesHtml(data.memes);
-        grid.removeAttribute('data-needs-refresh');
-      } else {
-        throw new Error();
+        renderMemesHtml(data.memes); // Actualizar con los memes reales si llegaron
       }
     } catch (e) {
-      console.warn("Fallo al consumir la API pública. Usando memes premium de respaldo.");
-      renderMemesHtml(FALLBACK_MEMES);
+      // La API falló o tardó demasiado; los fallbacks ya están visibles, no hacer nada
+      console.warn('Meme-API no disponible, mostrando colección premium de respaldo.');
+    } finally {
       grid.removeAttribute('data-needs-refresh');
     }
+  }
+
+  function refreshMemes(btn) {
+    const grid = document.getElementById('memesGrid');
+    if (!grid) return;
+    // Marcar que se necesita actualizar y volver a llamar fetchMemes
+    grid.setAttribute('data-needs-refresh', '1');
+    // Mostrar spinner en el botón
+    if (btn) {
+      const spinner = btn.querySelector('.btn-spinner');
+      const label = btn.querySelector('span:last-child');
+      if (spinner) spinner.style.display = 'inline-block';
+      if (label) label.textContent = 'Cargando...';
+      btn.disabled = true;
+    }
+    fetchMemes().finally(() => {
+      if (btn) {
+        const spinner = btn.querySelector('.btn-spinner');
+        const label = btn.querySelector('span:last-child');
+        if (spinner) spinner.style.display = 'none';
+        if (label) label.textContent = '🔄 Cargar más memes';
+        btn.disabled = false;
+      }
+    });
   }
 
   // ---------- DETALLES Y LOGROS DEL REDACTOR ----------
