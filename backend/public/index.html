@@ -3294,6 +3294,7 @@
   // Renderizar Grilla de Tarjetas
   function renderNewsGrid(news) {
     const grid = document.getElementById('newsGrid');
+    const isSuper = localStorage.getItem('isSuperuser') === 'true';
     
     // Si estamos en la categoría local y no hay noticias cargadas en base de datos ni por la IA
     if (currentFilter === 'local' && !news.length) {
@@ -3303,11 +3304,15 @@
           <div style="font-size: 3.5rem; animation: float 3s ease-in-out infinite;">📍</div>
           <h3 style="font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--text-primary); margin: 0; font-weight: 800;">Sin noticias locales publicadas en ${locName || 'tu zona'}</h3>
           <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; max-width: 480px; margin: 0;">
-            No hay corresponsales publicando noticias locales en este momento cerca de ti. Sin embargo, nuestro reportero premium de IA puede redactar un boletín local veraz al instante.
+            No hay corresponsales publicando noticias locales en este momento cerca de ti. ${isSuper ? 'Como superadministrador, puedes redactar un boletín local con IA al instante.' : 'Suscríbete o contacta al administrador para ver crónicas de tu localidad.'}
           </p>
-          <button class="ai-action-btn" id="generateAiLocalNewsBtn" onclick="generateLocalNewsWithAI()" style="margin-top: 12px; font-size: 0.95rem; padding: 14px 36px; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);">
-            ✨ Generar Noticias Locales con IA
-          </button>
+          ${isSuper ? `
+            <button class="ai-action-btn" id="generateAiLocalNewsBtn" onclick="generateLocalNewsWithAI()" style="margin-top: 12px; font-size: 0.95rem; padding: 14px 36px; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);">
+              ✨ Generar Noticias Locales con IA
+            </button>
+          ` : `
+            <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px; display: inline-flex; align-items: center; gap: 4px;"><i class="fi fi-rr-lock"></i> La redacción por IA está disponible exclusivamente para Superadministradores.</span>
+          `}
         </div>
       `;
       return;
@@ -3357,7 +3362,7 @@
     
     if (currentFilter === 'local') {
       const locName = [userCity, userRegion, userCountry].filter(Boolean).slice(0, 2).join(', ');
-      const bannerHtml = `
+      const bannerHtml = isSuper ? `
         <div class="local-ai-banner" style="grid-column: 1/-1; display: flex; justify-content: space-between; align-items: center; gap: 16px; background: linear-gradient(135deg, rgba(239, 68, 111, 0.08), rgba(59, 130, 246, 0.08)); border: 1px solid var(--border-light); border-radius: var(--radius-card); padding: 16px 24px; margin-bottom: 12px; flex-wrap: wrap; animation: slideUp 0.3s ease; box-sizing: border-box;">
           <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
             <img src="ai_logo.png?v=1" alt="IA" style="height: 38px; width: 38px; object-fit: contain;">
@@ -3370,7 +3375,7 @@
             ✨ Generar con IA
           </button>
         </div>
-      `;
+      ` : '';
       grid.innerHTML = bannerHtml + newsCardsHtml;
     } else {
       grid.innerHTML = newsCardsHtml;
@@ -4275,6 +4280,11 @@
   }
 
   async function generateLocalNewsWithAI() {
+    const isSuper = localStorage.getItem('isSuperuser') === 'true';
+    if (!isSuper) {
+      alert("❌ Acción restringida al Superadministrador.");
+      return;
+    }
     const btn = document.getElementById('generateAiLocalNewsBtn');
     const originalText = btn ? btn.innerText : '✨ Generar con IA';
     if (btn) {
@@ -5527,7 +5537,9 @@
       if (res.ok) {
         const data = await res.json();
         
-        const name = data.writer.name || 'Redactor';
+        // Bulletproof parsing of subscriber/writer details to prevent TypeErrors
+        const writer = data.writer || data.subscriber || {};
+        const name = writer.name || 'Redactor';
         
         // Cargar inputs del perfil
         const nameInput = document.getElementById('profileNameInput');
@@ -5536,7 +5548,7 @@
         }
         const emailInput = document.getElementById('profileEmailInput');
         if (emailInput) {
-          emailInput.value = data.writer.email;
+          emailInput.value = writer.email || '';
         }
         
         // Populate session metadata dynamically for premium fidelity
@@ -5548,11 +5560,11 @@
         }
         const deviceTypeEl = document.getElementById('profileDeviceType');
         if (deviceTypeEl) {
-          const isPremium = (data.writer.plan === 'premium');
+          const isPremium = (writer.plan === 'premium');
           deviceTypeEl.innerText = `Windows 10, Redactor ${isPremium ? 'Premium ⭐' : 'Estándar ✍️'}`;
         }
         
-        const planText = data.writer.plan ? data.writer.plan.charAt(0).toUpperCase() + data.writer.plan.slice(1) : 'Gratis';
+        const planText = writer.plan ? writer.plan.charAt(0).toUpperCase() + writer.plan.slice(1) : 'Gratis';
         const planBadgeText = document.getElementById('profilePlanBadgeText');
         if (planBadgeText) {
           planBadgeText.innerText = `Plan: ${planText}`;
@@ -5560,12 +5572,14 @@
         const planBadge = document.getElementById('profilePlanBadge');
         if (planBadge) {
           planBadge.innerText = planText.toUpperCase();
-          planBadge.className = 'truth-badge ' + (data.writer.plan === 'premium' ? 'truth-badge-high' : data.writer.plan === 'standard' ? 'truth-badge-mid' : 'truth-badge-low');
+          planBadge.className = 'truth-badge ' + (writer.plan === 'premium' ? 'truth-badge-high' : writer.plan === 'standard' ? 'truth-badge-mid' : 'truth-badge-low');
         }
         
-        const totalNews = parseInt(data.stats.total_news) || 0;
-        const totalLikes = parseInt(data.stats.total_likes) || 0;
-        const originalNews = parseInt(data.stats.original_news) || 0;
+        // Bulletproof parsing of stats to support news_count/total_news, etc.
+        const stats = data.stats || {};
+        const totalNews = parseInt(stats.total_news !== undefined ? stats.total_news : stats.news_count) || 0;
+        const totalLikes = parseInt(stats.total_likes) || 0;
+        const originalNews = parseInt(stats.original_news !== undefined ? stats.original_news : stats.original_count) || 0;
         const commonNews = totalNews - originalNews;
         
         // Puntuación: Score = (Comunes * 5) + (Originales * 15) + (Likes * 2)
@@ -5581,15 +5595,19 @@
         document.getElementById('writerScoreBadge').innerText = `${score} Puntos de Logro`;
         
         const dashAvatar = document.getElementById('writerDashboardAvatar');
-        const avatarSrc = data.writer.profile_pic ? 
-          (data.writer.profile_pic.startsWith('http') || data.writer.profile_pic.startsWith('data:') || data.writer.profile_pic.startsWith('/') ? data.writer.profile_pic : '/' + data.writer.profile_pic) : 
+        const avatarSrc = writer.profile_pic ? 
+          (writer.profile_pic.startsWith('http') || writer.profile_pic.startsWith('data:') || writer.profile_pic.startsWith('/') ? writer.profile_pic : '/' + writer.profile_pic) : 
           `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`;
         
         dashAvatar.src = avatarSrc;
         
         // Guardar foto de perfil en localStorage para actualizar la barra de navegación al instante
-        localStorage.setItem('subscriberProfilePic', data.writer.profile_pic || '');
+        localStorage.setItem('subscriberProfilePic', writer.profile_pic || '');
         updateNavbarUserIcon();
+        
+        // Renderizar la tabla de artículos con soporte compatible
+        const articlesList = data.articles || data.news || [];
+        renderWriterArticlesTable(articlesList);
         
         // Generar la lista de logros del redactor con el formato de lista de facturas de Sami
         const levels = [
@@ -5633,8 +5651,6 @@
             `;
           }).join('');
         }
-        
-        renderWriterArticlesTable(data.articles);
       }
     } catch(e) {
       console.error("Error al cargar el dashboard del escritor:", e);

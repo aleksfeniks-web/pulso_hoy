@@ -297,12 +297,16 @@ app.get('/api/writer/:email/dashboard', async (req, res) => {
     res.json({
       success: true,
       subscriber,
+      writer: subscriber,
       stats: {
         news_count: newsCount,
+        total_news: newsCount,
         original_count: originalCount,
+        original_news: originalCount,
         total_likes: totalLikes
       },
-      news: newsList
+      news: newsList,
+      articles: newsList
     });
 
   } catch (err) {
