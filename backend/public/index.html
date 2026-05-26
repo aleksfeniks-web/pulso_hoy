@@ -3323,7 +3323,6 @@
       return;
     }
     
-    const isSuper = localStorage.getItem('isSuperuser') === 'true';
     const newsCardsHtml = news.map(item => {
       const isBookmarked = bookmarkedNews.some(b => b.id === item.id);
       const cardImg = (item.image_url && !item.image_url.includes('picsum.photos')) ? item.image_url : getFallbackImage(item.category, item.title);
