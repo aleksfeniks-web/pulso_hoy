@@ -314,8 +314,9 @@ Responde SOLO con el JSON válido, en español, sin texto adicional.`;
  * Devuelve: { news: [newsItems] }
  */
 async function localNews(req, res) {
+  let location = 'CDMX';
   try {
-    const { location } = req.body;
+    location = req.body?.location || 'CDMX';
     if (!location?.trim()) {
       return res.status(400).json({ error: 'Ubicación requerida' });
     }
