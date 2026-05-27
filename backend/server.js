@@ -267,9 +267,14 @@ app.post('/api/writer/update-profile', async (req, res) => {
 app.get('/api/writer/:email/dashboard', async (req, res) => {
   const { email } = req.params;
   try {
-    const subRes = await pool.query('SELECT * FROM subscribers WHERE email = $1', [email]);
+    let subRes = await pool.query('SELECT * FROM subscribers WHERE email = $1', [email]);
     if (subRes.rows.length === 0) {
-      return res.status(404).json({ error: 'Redactor no registrado' });
+      // Lazy registration: si se autentica con Clerk pero no existe en PostgreSQL, se registra
+      await pool.query(`
+        INSERT INTO subscribers (email, name, plan) 
+        VALUES ($1, $2, 'gratis')
+      `, [email, 'Redactor de Pulso Hoy']);
+      subRes = await pool.query('SELECT * FROM subscribers WHERE email = $1', [email]);
     }
     const subscriber = subRes.rows[0];
 

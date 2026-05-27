@@ -2660,7 +2660,7 @@
         console.log("🔑 Clerk Publishable Key detectada. Inicializando Clerk Auth...");
         
         const script = document.createElement('script');
-        script.src = "https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js";
+        script.src = "https://cdn.clerk.com/public/clerk.js";
         script.setAttribute('data-clerk-publishable-key', config.clerkPublishableKey);
         script.crossOrigin = "anonymous";
         script.async = true;

@@ -39,6 +39,25 @@ async function askGemini(prompt, temperature = 0.7) {
 }
 
 /**
+ * Extrae y parsea de manera segura bloques JSON en las respuestas de la IA
+ */
+function parseRobustJson(raw) {
+  let cleaned = raw.trim();
+  // Quitar marcas de markdown
+  cleaned = cleaned.replace(/```json?/ig, '').replace(/```/g, '').trim();
+  
+  // Buscar delimitadores de objeto principal
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  
+  if (firstBrace !== -1 && lastBrace !== -1) {
+    cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+  }
+  
+  return JSON.parse(cleaned);
+}
+
+/**
  * POST /api/ai/summarize
  * Body: { text: string, url?: string }
  * Devuelve: { summary, keyPoints, complexity, keywords, readTime }
@@ -67,8 +86,7 @@ ${text.substring(0, 3000)}
 Responde SOLO con el JSON, sin texto adicional, sin markdown, sin backticks.`;
 
     const raw = await askGemini(prompt, 0.3);
-    const jsonStr = raw.replace(/```json?/g, '').replace(/```/g, '').trim();
-    const result = JSON.parse(jsonStr);
+    const result = parseRobustJson(raw);
     res.json({ ok: true, ...result });
   } catch (err) {
     console.error('[AI summarize]', err.message);
@@ -155,8 +173,7 @@ ${text.substring(0, 2500)}
 Responde SOLO con el JSON válido, sin texto adicional.`;
 
     const raw = await askGemini(prompt, 0.2);
-    const jsonStr = raw.replace(/```json?/g, '').replace(/```/g, '').trim();
-    const result = JSON.parse(jsonStr);
+    const result = parseRobustJson(raw);
     res.json({ ok: true, ...result });
   } catch (err) {
     console.error('[AI bias]', err.message);
@@ -190,8 +207,7 @@ ${context ? `CONTEXTO DEL ARTÍCULO: ${context.substring(0, 500)}` : ''}
 Responde SOLO con el JSON válido, en español, sin texto adicional.`;
 
     const raw = await askGemini(prompt, 0.5);
-    const jsonStr = raw.replace(/```json?/g, '').replace(/```/g, '').trim();
-    const result = JSON.parse(jsonStr);
+    const result = parseRobustJson(raw);
     res.json({ ok: true, term, ...result });
   } catch (err) {
     console.error('[AI explain]', err.message);
@@ -245,8 +261,7 @@ Asegúrate de que:
 Responde SOLO con el JSON válido, sin texto adicional.`;
 
     const raw = await askGemini(prompt, 0.6);
-    const jsonStr = raw.replace(/```json?/g, '').replace(/```/g, '').trim();
-    const result = JSON.parse(jsonStr);
+    const result = parseRobustJson(raw);
 
     // Guardar en caché
     dailyCache.quiz = result;
@@ -299,8 +314,7 @@ Responde ÚNICAMENTE con este JSON:
 Responde SOLO con el JSON válido, en español, sin texto adicional.`;
 
     const raw = await askGemini(prompt, 0.8);
-    const jsonStr = raw.replace(/```json?/g, '').replace(/```/g, '').trim();
-    const result = JSON.parse(jsonStr);
+    const result = parseRobustJson(raw);
     res.json({ ok: true, date: today, ...result });
   } catch (err) {
     console.error('[AI briefing]', err.message);
@@ -351,8 +365,7 @@ Responde ÚNICAMENTE con este JSON con esta estructura exacta (sin texto adicion
 Responde SOLO con el JSON válido, en español, sin texto adicional y sin formateo markdown de código.`;
 
     const raw = await askGemini(prompt, 0.75);
-    const jsonStr = raw.replace(/```json?/g, '').replace(/```/g, '').trim();
-    const result = JSON.parse(jsonStr);
+    const result = parseRobustJson(raw);
     
     // Asignar IDs secuenciales únicos temporales a partir de un timestamp
     const now = Date.now();
