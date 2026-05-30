@@ -1155,7 +1155,7 @@
       <button class="nav-btn" data-section="escribir" onclick="switchSection('escribir')"><i class="fi fi-rr-edit" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Escribir</button>
       <button class="nav-btn" data-section="diversion" onclick="switchSection('diversion')"><i class="fi fi-rr-rocket" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Diversión</button>
       <button class="nav-btn" data-section="podcast" onclick="switchSection('podcast')"><i class="fi fi-rr-headphones" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Podcast</button>
-      <button class="nav-btn" onclick="toggleBookmarksDrawer()"><i class="fi fi-rr-bookmark" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Marcadores</button>
+      <button class="nav-btn" data-section="change" onclick="switchSection('change')"><i class="fi fi-rr-globe" style="margin-right: 5px; font-size: 0.85rem; vertical-align: middle;"></i>Change.org</button>
       <button class="dark-toggle" id="darkToggle" aria-label="Cambiar tema" style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0;"><i class="fi fi-rr-moon"></i></button>
       <button class="dark-toggle" id="interestsToggle" onclick="togglePreferencesModal()" aria-label="Intereses" style="margin-left: 8px; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0;"><i class="fi fi-rr-sparkles"></i></button>
       <button class="dark-toggle" id="adminToggle" onclick="toggleAdminLoginModal()" aria-label="Administrador" style="margin-left: 8px; display: none;">🔑</button>
@@ -2170,6 +2170,27 @@
 
         </div>
       </div>
+
+      <!-- SECCIÓN CHANGE.ORG (VOTACIONES Y PETICIONES) -->
+      <div id="changeSection" class="section" style="display:none; animation: fadeIn 0.4s ease;">
+        <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; border-bottom:2px solid var(--border-light); padding-bottom:12px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h2 style="font-family:'Playfair Display', Georgia, serif; font-size:1.8rem; margin:0; font-weight:800; display:flex; align-items:center; gap:10px;">
+              <span>✍️ Peticiones Change.org</span>
+            </h2>
+            <p style="font-size:0.88rem; color:var(--text-secondary); margin:4px 0 0 0;">Descubre, apoya y firma las causas más influyentes de México y del Mundo entero.</p>
+          </div>
+          <div class="change-filters" style="display: flex; gap: 8px;">
+            <button class="filter-chip active" id="changeFilterAll" onclick="filterChangePetitions('all')">Todas</button>
+            <button class="filter-chip" id="changeFilterMexico" onclick="filterChangePetitions('mexico')">🇲🇽 México</button>
+            <button class="filter-chip" id="changeFilterMundo" onclick="filterChangePetitions('mundo')">🌍 Mundo</button>
+          </div>
+        </div>
+        
+        <div id="changePetitionsGrid" class="news-grid" style="margin-bottom: 56px;">
+          <!-- Peticiones renderizadas dinámicamente -->
+        </div>
+      </div>
     </div>
 
     <!-- Barra Lateral -->
@@ -2466,18 +2487,7 @@
   </div>
 </div>
 
-<!-- Drawer de Marcadores (Slide-out) -->
-<div class="drawer-overlay" id="bookmarksDrawer" onclick="handleDrawerOverlayClick(event)">
-  <div class="drawer">
-    <div class="drawer-header">
-      <h3 style="display: inline-flex; align-items: center; gap: 6px;"><i class="fi fi-rr-bookmark" style="font-size: 1rem; color: var(--accent-blue);"></i> Mis Marcadores</h3>
-      <button class="close-drawer-btn" onclick="toggleBookmarksDrawer()" aria-label="Cerrar marcadores">✕</button>
-    </div>
-    <div class="drawer-body" id="bookmarksList">
-      <!-- Los marcadores se insertarán aquí dinámicamente -->
-    </div>
-  </div>
-</div>
+
 
 <script>
   let allNews = [];
@@ -2824,6 +2834,7 @@
     document.getElementById('escribirSection').style.display   = section === 'escribir'   ? 'block' : 'none';
     document.getElementById('diversionSection').style.display  = section === 'diversion'  ? 'block' : 'none';
     document.getElementById('podcastSection').style.display    = section === 'podcast'    ? 'block' : 'none';
+    document.getElementById('changeSection').style.display     = section === 'change'     ? 'block' : 'none';
     
     if (section === 'diversion') {
       fetchMemes();
@@ -2833,6 +2844,9 @@
     }
     if (section === 'deportes') {
       initDeportesCenter();
+    }
+    if (section === 'change') {
+      initChangeCenter();
     }
     
     // Ocultar o mostrar panel de control
@@ -3756,7 +3770,6 @@
                   <button class="admin-btn admin-btn-edit" onclick="event.stopPropagation(); openEditNewsAdmin(${item.id})" title="Editar Noticia" style="padding: 6px 12px; font-size: 0.75rem; border-radius: 6px; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);">✏️ Editar</button>
                 ` : ''}
                 <button class="like-btn" onclick="event.stopPropagation(); likeArticle(${item.id})" aria-label="Me gusta">👍 <span id="likes_${item.id}">0</span></button>
-                <button class="later-btn ${isBookmarked ? 'active' : ''}" onclick="event.stopPropagation(); toggleBookmark(${item.id})" aria-label="Guardar marcadores" id="bookmarkBtn_${item.id}" style="display: inline-flex; align-items: center; justify-content: center; padding: 0; width: 32px; height: 32px; border-radius: 50%;"><i class="fi fi-rr-bookmark"></i></button>
                 <button class="share-btn" onclick="event.stopPropagation(); shareArticle(${item.id})" aria-label="Compartir" style="display: inline-flex; align-items: center; justify-content: center; padding: 0; width: 32px; height: 32px; border-radius: 50%;"><i class="fi fi-rr-share"></i></button>
               </div>
             </div>
@@ -3912,73 +3925,168 @@
     }
   }
 
-  // ---------- MARCADORES (LEER DESPUÉS) ----------
-  function toggleBookmarksDrawer() {
-    const drawer = document.getElementById('bookmarksDrawer');
-    drawer.classList.toggle('open');
-    if (drawer.classList.contains('open')) {
-      renderBookmarks();
+  // ---------- CHANGE.ORG PETICIONES & VOTACIONES ----------
+  let currentChangeFilter = 'all';
+  
+  // Causas de Change.org realistas
+  const changePetitions = [
+    {
+      id: 1,
+      title: "Protección Integral de las Selvas del Sureste de México",
+      excerpt: "Las selvas de Chiapas, Campeche y Quintana Roo enfrentan una deforestación sin precedentes. Exigimos medidas estrictas y zonas de veda ecológicas definitivas para salvaguardar la biodiversidad de nuestro jaguar y ecosistemas nativos.",
+      category: "mexico",
+      categoryLabel: "🇲🇽 México",
+      image: "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=600&q=80",
+      url: "https://www.change.org/p/semarnat-mx-protecci%C3%B3n-integral-de-las-selvas-del-sureste-de-m%C3%A9xico",
+      signatures: 48920,
+      target: 50000
+    },
+    {
+      id: 2,
+      title: "Garantizar el Acceso al Agua Potable en la Mixteca Oaxaqueña",
+      excerpt: "Más de 50 comunidades indígenas en Oaxaca sufren de escasez severa de agua potable limpia. Esta petición colectiva exige la construcción inmediata de sistemas sustentables de captación y distribución pluvial y saneamiento.",
+      category: "mexico",
+      categoryLabel: "🇲🇽 México",
+      image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=600&q=80",
+      url: "https://www.change.org/p/conagua-mx-garantizar-el-acceso-al-agua-potable-en-la-mixteca-oaxaque%C3%B1a",
+      signatures: 31200,
+      target: 35000
+    },
+    {
+      id: 3,
+      title: "Prohibición Absoluta de Plásticos de Un Solo Uso en Todo México",
+      excerpt: "La contaminación por plásticos inunda nuestras playas, cenotes y ciudades. Es de vital importancia avanzar de normativas locales limitadas a una prohibición general nacional y robusta de plásticos desechables en todo el territorio.",
+      category: "mexico",
+      categoryLabel: "🇲🇽 México",
+      image: "https://images.unsplash.com/photo-1618477388954-7852f32655ec?auto=format&fit=crop&w=600&q=80",
+      url: "https://www.change.org/p/congreso-mx-prohibici%C3%B3n-absoluta-de-pl%C3%A1sticos-de-un-solo-uso-en-todo-m%C3%A9xico",
+      signatures: 74510,
+      target: 100000
+    },
+    {
+      id: 4,
+      title: "Sanciones Penales Severas para el Maltrato Animal en el País",
+      excerpt: "Los seres sintientes merecen respeto y protección integral. Solicitamos la reforma del Código Penal Federal para castigar con cárcel efectiva y multas severas los actos atroces de crueldad y abandono animal.",
+      category: "mexico",
+      categoryLabel: "🇲🇽 México",
+      image: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80",
+      url: "https://www.change.org/p/camara-diputados-mx-sanciones-penales-severas-para-el-maltrato-animal-en-el-pa%C3%ADs",
+      signatures: 142100,
+      target: 150000
+    },
+    {
+      id: 5,
+      title: "Global Ban on Microplastics in Cosmetics and Personal Care",
+      excerpt: "Microplastics are invading marine ecosystems and entering the human food chain. We demand an international binding treaty to completely outlaw microplastic beads in retail makeup, soaps and consumer goods.",
+      category: "mundo",
+      categoryLabel: "🌍 Mundo",
+      image: "https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=600&q=80",
+      url: "https://www.change.org/p/unep-global-ban-on-microplastics-in-cosmetics-and-personal-care",
+      signatures: 89450,
+      target: 100000
+    },
+    {
+      id: 6,
+      title: "Stop the Destruction of the Amazon Rainforest Immediately",
+      excerpt: "The Amazon is approaching an ecological tipping point of no return. We demand strong international pressure, strict environmental policies and trade sanctions on nations enabling illegal logging and fires.",
+      category: "mundo",
+      categoryLabel: "🌍 Mundo",
+      image: "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=600&q=80",
+      url: "https://www.change.org/p/amazon-cooperation-treaty-stop-the-destruction-of-the-amazon-rainforest",
+      signatures: 324100,
+      target: 500000
+    },
+    {
+      id: 7,
+      title: "Transition to 100% Renewable Energy Grids Worldwide by 2040",
+      excerpt: "Fossil fuels are driving severe global climate breakdown. Leaders must commit to completely phasing out subsidies for oil, coal and gas, redirecting trillions in funding directly to solar and wind grids.",
+      category: "mundo",
+      categoryLabel: "🌍 Mundo",
+      image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=600&q=80",
+      url: "https://www.change.org/p/unfccc-transition-to-100-renewable-energy-grids-worldwide-by-2040",
+      signatures: 245300,
+      target: 250000
     }
+  ];
+
+  function getSignedCauses() {
+    const key = `signed_causes_${userToken}`;
+    const signed = localStorage.getItem(key);
+    return signed ? JSON.parse(signed) : [];
   }
 
-  function handleDrawerOverlayClick(e) {
-    if (e.target.id === 'bookmarksDrawer') {
-      toggleBookmarksDrawer();
-    }
+  function isCauseSigned(id) {
+    return getSignedCauses().includes(id);
   }
 
-  async function toggleBookmark(id) {
-    const isBookmarked = bookmarkedNews.some(b => b.id === id);
-    const btn = document.getElementById(`bookmarkBtn_${id}`);
+  function formatSigNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
+
+  function initChangeCenter() {
+    renderChangePetitions();
+  }
+
+  function filterChangePetitions(category) {
+    currentChangeFilter = category;
     
-    if (isBookmarked) {
-      bookmarkedNews = bookmarkedNews.filter(b => b.id !== id);
-      if (btn) btn.classList.remove('active');
-    } else {
-      const item = allNews.find(n => n.id === id);
-      if (item) {
-        bookmarkedNews.push(item);
-        if (btn) btn.classList.add('active');
+    // Toggle active tab visual state
+    const filters = ['all', 'mexico', 'mundo'];
+    filters.forEach(f => {
+      // Find element by correct ID capitalization
+      const idPart = f.charAt(0).toUpperCase() + f.slice(1);
+      const btn = document.getElementById(`changeFilter${idPart}`);
+      if (btn) {
+        if (f === category) btn.classList.add('active');
+        else btn.classList.remove('active');
       }
-    }
-
-    try {
-      const endpoint = isBookmarked ? `/api/readlater/remove` : `/api/readlater`;
-      const headers = await getAuthHeaders();
-      await fetch(endpoint, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify({ news_id: id, user_token: userToken })
-      });
-    } catch(e) {}
+    });
     
-    localStorage.setItem(`bookmarks_${userToken}`, JSON.stringify(bookmarkedNews));
-    
-    if (document.getElementById('bookmarksDrawer').classList.contains('open')) {
-      renderBookmarks();
-    }
+    renderChangePetitions();
   }
 
-  function renderBookmarks() {
-    const list = document.getElementById('bookmarksList');
-    if (bookmarkedNews.length === 0) {
-      list.innerHTML = `<div style="text-align:center; padding:40px 10px; color:var(--text-muted); font-size:0.95rem;">
-        <div style="font-size:2.2rem; margin-bottom:12px; color:var(--text-muted);"><i class="fi fi-rr-stars"></i></div>
-        No tienes marcadores guardados aún.
-      </div>`;
-      return;
-    }
-    
-    list.innerHTML = bookmarkedNews.map(item => {
-      const bookmarkImg = (item.image_url && !item.image_url.includes('picsum.photos')) ? item.image_url : getFallbackImage(item.category, item.title);
+  function renderChangePetitions() {
+    const grid = document.getElementById('changePetitionsGrid');
+    if (!grid) return;
+
+    const filtered = changePetitions.filter(item => {
+      if (currentChangeFilter === 'all') return true;
+      return item.category === currentChangeFilter;
+    });
+
+    grid.innerHTML = filtered.map(item => {
+      const signed = isCauseSigned(item.id);
+      const signaturesToShow = signed ? item.signatures + 1 : item.signatures;
+      const progressPercent = Math.min(100, (signaturesToShow / item.target) * 100);
+      
       return `
-        <div class="bookmark-item" onclick="openArticleFromBookmark(${item.id})">
-          <img class="bookmark-img" src="${bookmarkImg}" alt="${item.title}" onerror="handleImgError(this, '${item.category}')">
-          <div class="bookmark-info">
-            <div class="bookmark-title">${item.title}</div>
-            <div class="bookmark-meta">
-              <span>${item.source}</span>
-              <button class="remove-bookmark-btn" onclick="event.stopPropagation(); toggleBookmark(${item.id})">Quitar</button>
+        <div class="news-card change-card" id="petition_${item.id}">
+          <div style="position: relative; overflow: hidden;">
+            <img class="news-card-img" src="${item.image}" alt="${item.title}" loading="lazy" style="height: 200px; width: 100%; object-fit: cover;">
+            <span class="change-category-badge" style="position: absolute; top: 12px; left: 12px; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.15);">${item.categoryLabel}</span>
+          </div>
+          <div class="news-card-body" style="display: flex; flex-direction: column; gap: 12px; padding: 20px; flex-grow: 1;">
+            <div class="news-card-title" style="font-size: 1.12rem; font-weight: 800; line-height: 1.4; color: var(--text-primary); margin: 0; min-height: 50px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${item.title}</div>
+            <div class="news-excerpt" style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; margin: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; min-height: 60px;">${item.excerpt}</div>
+            
+            <div class="signature-progress-wrapper" style="margin-top: 8px;">
+              <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 6px;">
+                <span><strong style="color: var(--accent-red); font-weight: 800;" id="sigs_${item.id}">${formatSigNumber(signaturesToShow)}</strong> firmas</span>
+                <span>Meta: ${formatSigNumber(item.target)}</span>
+              </div>
+              <div class="progress-bar-bg" style="height: 8px; background: var(--border-light); border-radius: 4px; overflow: hidden; position: relative;">
+                <div class="progress-bar-fill" id="progress_${item.id}" style="width: ${progressPercent}%; height: 100%; background: linear-gradient(90deg, var(--accent-red), #f43f5e); border-radius: 4px; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+              </div>
+            </div>
+
+            <div class="change-card-actions" style="display: flex; gap: 10px; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border-light); align-items: center;">
+              <button class="newsletter-btn sign-btn ${signed ? 'signed' : ''}" id="signBtn_${item.id}" onclick="signPetition(${item.id})" style="flex: 1; height: 38px; font-size: 0.85rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: var(--radius-pill); background: ${signed ? 'var(--border-light)' : 'var(--accent-red)'}; color: ${signed ? 'var(--text-muted)' : '#ffffff'}; border: none; cursor: ${signed ? 'default' : 'pointer'}; transition: all 0.25s;" ${signed ? 'disabled' : ''}>
+                <i class="fi fi-rr-edit" style="font-size: 0.85rem;"></i>
+                <span id="signText_${item.id}">${signed ? '✍️ Causa Firmada' : 'Firmar Petición'}</span>
+              </button>
+              <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="share-btn" style="width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border-light); color: var(--text-primary) !important; background: #ffffff !important; display: flex; align-items: center; justify-content: center; text-decoration: none; flex-shrink: 0; transition: all 0.25s; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); margin: 0; padding: 0;" title="Ver en Change.org" onmouseenter="this.style.borderColor='var(--accent-blue)'; this.style.color='var(--accent-blue)';" onmouseleave="this.style.borderColor='var(--border-light)'; this.style.color='var(--text-primary)';">
+                <i class="fi fi-rr-share-square" style="font-size: 0.95rem; line-height: 1;"></i>
+              </a>
             </div>
           </div>
         </div>
@@ -3986,9 +4094,53 @@
     }).join('');
   }
 
-  function openArticleFromBookmark(id) {
-    toggleBookmarksDrawer();
-    openArticle(id);
+  function signPetition(id) {
+    if (isCauseSigned(id)) return;
+
+    // Save signed cause to localStorage
+    const key = `signed_causes_${userToken}`;
+    const signed = getSignedCauses();
+    signed.push(id);
+    localStorage.setItem(key, JSON.stringify(signed));
+
+    // Get DOM elements
+    const signBtn = document.getElementById(`signBtn_${id}`);
+    const signText = document.getElementById(`signText_${id}`);
+    const sigsCounter = document.getElementById(`sigs_${id}`);
+    const progressBar = document.getElementById(`progress_${id}`);
+
+    const cause = changePetitions.find(c => c.id === id);
+    if (!cause) return;
+
+    const newSigs = cause.signatures + 1;
+
+    // Visual updates
+    if (signBtn) {
+      signBtn.classList.add('signed');
+      signBtn.style.background = 'var(--border-light)';
+      signBtn.style.color = 'var(--text-muted)';
+      signBtn.style.cursor = 'default';
+      signBtn.disabled = true;
+    }
+    
+    if (signText) {
+      signText.innerText = '✍️ Causa Firmada';
+    }
+
+    if (sigsCounter) {
+      sigsCounter.style.animation = 'scaleUp 0.3s ease';
+      sigsCounter.innerText = formatSigNumber(newSigs);
+    }
+
+    if (progressBar) {
+      const newPercent = Math.min(100, (newSigs / cause.target) * 100);
+      progressBar.style.width = `${newPercent}%`;
+    }
+
+    // Open target Change.org petition in new window/tab
+    setTimeout(() => {
+      window.open(cause.url, '_blank');
+    }, 450);
   }
 
   // ---------- DETALLE ARTÍCULO (MODAL) ----------
